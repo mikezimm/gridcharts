@@ -11,6 +11,13 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 export default class Gridcharts extends React.Component<IGridchartsProps, {}> {
   public render(): React.ReactElement<IGridchartsProps> {
+
+    const squares = document.querySelector(styles.squares);
+    for (var i = 1; i < 365; i++) {
+      const level = Math.floor(Math.random() * 3);  
+      squares.insertAdjacentHTML('beforeend', `<li title="hello" data-level="${level}"></li>`);
+    }
+
     return (
       <div className={ styles.gridcharts }>
         <div className={ styles.container }>
@@ -40,7 +47,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, {}> {
               <li>Sat</li>
             </ul>
             <ul className={styles.squares}>
-              
+              { squares }
             </ul>
           </div>
 
