@@ -24,7 +24,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, {}> {
       <div className={ styles.gridcharts }>
         <div className={ styles.container }>
 
-          <div className={styles.graph} style={{ width: '1000px' }}>
+          <div className={styles.graph} style={{ width: '900px' }}>
             <ul className={styles.months} style={{ listStyleType: 'none' }}>
               <li>Jan</li>
               <li>Feb</li>
@@ -39,7 +39,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, {}> {
               <li>Nov</li>
               <li>Dec</li>
             </ul>
-            <ul className={styles.days}>
+            <ul className={styles.days} style={{ listStyleType: 'none' }}>
               <li>Sun</li>
               <li>Mon</li>
               <li>Tue</li>
