@@ -5,11 +5,13 @@
 
   /* Grid-related CSS */
 
+  /*
   :root {
     --square-size: 15px;
     --square-gap: 5px;
-    --week-width: calc(var(--square-size) + var(--square-gap));
+    --week-width: calc(15px + var(5px));
   }
+*/
 
   .months { grid-area: months; }
   .days { grid-area: days; }
@@ -42,13 +44,13 @@
   .days,
   .squares {
     display: grid;
-    grid-gap: var(--square-gap);
-    grid-template-rows: repeat(7, var(--square-size));
+    grid-gap: 5px;
+    grid-template-rows: repeat(7, 15px);
   }
 
   .squares {
     grid-auto-flow: column;
-    grid-auto-columns: var(--square-size);
+    grid-auto-columns: 15px;
   }
 
 
