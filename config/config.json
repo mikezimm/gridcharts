@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "gridcharts-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/gridcharts/GridchartsWebPart.js",
+          "manifest": "./src/webparts/gridcharts/GridchartsWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "GridchartsWebPartStrings": "lib/webparts/gridcharts/loc/{locale}.js"
+  }
+}
