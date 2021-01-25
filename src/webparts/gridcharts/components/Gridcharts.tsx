@@ -12,10 +12,12 @@ import { escape } from '@microsoft/sp-lodash-subset';
 export default class Gridcharts extends React.Component<IGridchartsProps, {}> {
   public render(): React.ReactElement<IGridchartsProps> {
 
-    const squares = document.querySelector(styles.squares);
+//    const squares = document.querySelector(styles.squares);
+    const squares : any[] = [];
+
     for (var i = 1; i < 365; i++) {
       const level = Math.floor(Math.random() * 3);  
-      squares.insertAdjacentHTML('beforeend', `<li title="hello" data-level="${level}"></li>`);
+      squares.push( <li title="hello" data-level={ level }></li> ) ;
     }
 
     return (
