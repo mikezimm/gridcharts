@@ -121,13 +121,21 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
       const monthScales = [ 4,4,4,5,4,4,5,4,4,5,4,5   ,   4,4,4,5,4,4,5,4,4,5,4,5 ].slice(s1,s2) ;
 
+      let entireDateArray = [];
+
       this.state = { 
+
         //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
         WebpartHeight: this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().height : null,
         WebpartWidth:  this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().width - 50 : null,
 
         monthLables: monthLables,
         monthScales: monthScales,
+
+        selectedYear: null,
+        selectedUser: null,
+        
+        entireDateArray: entireDateArray,
 
         gridData: gridData,
 
