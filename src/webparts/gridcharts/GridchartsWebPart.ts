@@ -8,8 +8,8 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'GridchartsWebPartStrings';
-import Gridcharts from './components/Gridcharts';
-import { IGridchartsProps } from './components/IGridchartsProps';
+import Gridcharts from './components/GridCharts/Gridcharts';
+import { IGridchartsProps } from './components/GridCharts/IGridchartsProps';
 
 export interface IGridchartsWebPartProps {
   description: string;

@@ -3,6 +3,11 @@
  Based upon example from
  https://codepen.io/ire/pen/Legmwo
 
+## npm installs
+```bash
+npm install @mikezimm/npmfunctions@0.0.4
+```
+
 
 ## Summary
 

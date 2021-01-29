@@ -1,11 +1,24 @@
 import * as React from 'react';
-import styles from './Gridcharts.module.scss';
+import styles from '../Gridcharts.module.scss';
 import { IGridchartsProps } from './IGridchartsProps';
 import { IGridchartsState, IGridchartsData } from './IGridchartsState';
 import { escape } from '@microsoft/sp-lodash-subset';
 
-import { monthStr3, weekday3 } from '@mikezimm/npmfunctions/dist/dateServices';
 
+import InfoPage from '../HelpInfo/infoPages';
+
+import { saveTheTime, saveAnalytics, getTheCurrentTime } from '../../../../services/createAnalytics';
+import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
+          getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3} from '@mikezimm/npmfunctions/dist/dateServices';
+
+
+import { sortObjectArrayByStringKey, doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+
+import { IPickedWebBasic, IPickedList, IMyProgress,
+  IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
+} from '../../../../services/IReUsableInterfaces';
+
+import { createDrillList } from './GetListData';
 /**
  * Based upon example from
  * https://codepen.io/ire/pen/Legmwo
@@ -111,35 +124,69 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     public constructor(props:IGridchartsProps){
       super(props);
 
-      let gridData : IGridchartsData[] = this.createSampleGridData();
+        /**
+         * This is copied later in code when you have to call the data in case something changed.
+         */
+        let drillList = createDrillList(this.props.webURL, this.props.listName, false, this.props.refiners, this.props.rules, this.props.stats, null, this.props.toggles.togOtherChartpart, '');
+        let errMessage = null;
 
-      console.log('gridData', gridData );
 
-      const s1 = gridData[0].date.getMonth();
-      const s2 = s1 + 12;
+        let gridData : IGridchartsData[] = this.createSampleGridData();
 
-      const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
-      const monthScales = [ 4,4,4,5,4,4,5,4,4,5,4,5   ,   4,4,4,5,4,4,5,4,4,5,4,5 ].slice(s1,s2) ;
+        console.log('gridData', gridData );
 
-      let entireDateArray = [];
+        const s1 = gridData[0].date.getMonth();
+        const s2 = s1 + 12;
 
-      this.state = { 
+        const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
+        const monthScales = [ 4,4,4,5,4,4,5,4,4,5,4,5   ,   4,4,4,5,4,4,5,4,4,5,4,5 ].slice(s1,s2) ;
 
-        //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
-        WebpartHeight: this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().height : null,
-        WebpartWidth:  this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().width - 50 : null,
+        let entireDateArray = [];
 
-        monthLables: monthLables,
-        monthScales: monthScales,
+        this.state = { 
 
-        selectedYear: null,
-        selectedUser: null,
-        
-        entireDateArray: entireDateArray,
+          //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+          WebpartHeight: this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().height : null,
+          WebpartWidth:  this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().width - 50 : null,
 
-        gridData: gridData,
+          monthLables: monthLables,
+          monthScales: monthScales,
 
-      };
+          selectedYear: null,
+          selectedUser: null,
+          
+          entireDateArray: entireDateArray,
+
+          gridData: gridData,
+
+          drillList: drillList,
+
+          bannerMessage: null,
+          showTips: false,
+
+          allowOtherSites: this.props.allowOtherSites === true ? true : false,
+          allLoaded: false,
+
+          allItems: [],
+          searchedItems: [],
+          stats: [],
+          first20searchedItems: [],
+          searchCount: 0,
+
+          meta: [],
+
+          webURL: this.props.webURL,
+
+          searchMeta: null, // [pivCats.all.title],
+          searchText: '',
+
+          errMessage: errMessage,
+          
+          pivotCats: [],
+
+//          style: this.props.style ? this.props.style : 'commandBar',
+
+        };                            
 
     }
 
