@@ -32,6 +32,7 @@ export async function ensureUserInfo ( webURL: string, userEmail: string ) {
             loginName: result.data.LoginName,  //Same as LoginName and Name,  From React People Picker control
             text: result.data.Title,   //Same as Title and title,         From React People Picker control
 
+            remoteID: null,
             ensureWeb: webURL,
     };
 

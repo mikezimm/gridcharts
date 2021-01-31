@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import * as strings from 'TrackMyTime7WebPartStrings';
+import * as strings from 'GridchartsWebPartStrings';
 
 import * as links from './AllLinks';
 
@@ -8,8 +8,8 @@ import { Link, ILinkProps } from 'office-ui-fabric-react';
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import { ITrackMyTime7Props } from '../ITrackMyTime7Props';
-import { ITrackMyTime7State } from '../ITrackMyTime7State';
+import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
+import { IGridchartsState } from '../GridCharts/IGridchartsState';
 
 import WebPartLinks from './WebPartLinks';
 import { IWebPartLinksProps, IWebPartLinksState } from './WebPartLinks';
@@ -19,8 +19,9 @@ import styles from './InfoPane.module.scss';
 export interface IInfoAboutMeProps {
     showInfo: boolean;
     allLoaded: boolean;
-    parentProps: ITrackMyTime7Props;
-    parentState: ITrackMyTime7State;
+
+    parentListURL: string;
+    parentListName: string;
 
 }
 
@@ -120,21 +121,21 @@ public constructor(props:IInfoAboutMeProps){
 
             thisPage = <div>
                 <WebPartLinks
-                    projectListURL={ this.props.parentState.projectListURL }
-                    projectListName={ this.props.parentState.projectListName }
-                    timeTrackerListURL={ this.props.parentState.timeTrackerListURL }
-                    timeTrackListName={ this.props.parentState.timeTrackListName }
+                    parentListURL={ this.props.parentListURL }
+                    parentListName={ this.props.parentListName }
+//                    childListURL={ this.props.parentState.childListURL }
+//                    childListName={ this.props.parentState.childListName }
                 ></WebPartLinks>
 
                 <h2>Version History</h2>
                 {/* 3 files to update version number:  package-solution.json, package-lock.json, package.json*/}
                 <table className={styles.infoTable}>
                     <tr><th>Date</th><th>Version</th><th>Focus</th><th>Notes</th></tr>
-                    <tr><td>2020-08-14</td><td>{'2.2.0.0'}</td><td>SPFx v1.11 Rebuild</td><td>Story filtering, Center Project pane, improvements, bugfixes</td></tr>
+                    <tr><td>2020-08-14</td><td>{'2.2.0.0'}</td><td>SPFx v1.11 Rebuild</td><td>Story filtering, Center parent pane, improvements, bugfixes</td></tr>
                     <tr><td>2020-08-14</td><td>{'1.1.0.1'}</td><td>Early Access Banner, others</td><td>Add Early Access banner, fix save timeTarget and optionString</td></tr>
                     <tr><td>2020-08-14</td><td>{'1.0.0.17'}</td><td>Bug fix</td><td>Styling bug fixes.</td></tr>
-                    <tr><td>2020-06-17</td><td>{'1.0.0.15'}</td><td>Project Edit</td><td>Add Project Edit screen, Project quick actions, requires 2 ne Project List columns.</td></tr>
-                    <tr><td>2020-04-01</td><td>{'1.0.0.11'}</td><td>Activity URL</td><td>Add Activity URL based on Project Task.  ActivityType, Activity, ActivityURL^</td></tr>
+                    <tr><td>2020-06-17</td><td>{'1.0.0.15'}</td><td>parent Edit</td><td>Add parent Edit screen, parent quick actions, requires 2 ne parent List columns.</td></tr>
+                    <tr><td>2020-04-01</td><td>{'1.0.0.11'}</td><td>Activity URL</td><td>Add Activity URL based on parent Task.  ActivityType, Activity, ActivityURL^</td></tr>
                     <tr><td>2020-03-18</td><td>{'1.0.0.10'}</td><td>Charts</td><td>Add Core Time, Revise Story charts, Add Chapter charts, Search to chart data.</td></tr>
                     <tr><td>2020-03-11</td><td>{'1.0.0.9'}</td><td>Charts</td><td>Fix user summary Hours, Add Last Entry.  Fix Time display error.</td></tr>
                     <tr><td></td><td>{'1.0.0.8'}</td><td>Charts</td><td>Add Story and User filters.  Add Details toggle.  Add About and Numbers page.</td></tr>

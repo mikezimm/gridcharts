@@ -28,20 +28,13 @@ export interface IGridchartsProps {
       urlVars: {};
       today: ITheTime;
   
-      webURL?: string;
+      parentListWeb?: string;
       parentListURL?: string;
+      parentListTitle?: string;
   
       listName : string;
       
       allLoaded: boolean;
-  
-      toggles: {
-          togRefinerCounts: boolean;
-          togCountChart: boolean;
-          togStats: boolean;
-          togOtherListview:  boolean;
-          togOtherChartpart:  boolean;
-      };
   
       performance: {
           fetchCount: number;
@@ -55,15 +48,6 @@ export interface IGridchartsProps {
       useListAnalytics: boolean;
       analyticsWeb?: string;
       analyticsList?: string;
-  
-      // 2 - Source and destination list information
-  
-      refiners: string[]; //String of Keys representing the static name of the column used for drill downs
-      showDisabled?: boolean;  //This will show disabled refiners for DaysOfWeek/Months when the day or month has no data
-      updateRefinersOnTextSearch?: boolean;
-  
-      showRefinerCounts?: boolean;
-      showCountChart?: boolean;
   
       /**    
        * 'parseBySemiColons' |
@@ -80,9 +64,6 @@ export interface IGridchartsProps {
   
       // 6 - User Feedback:
       //progress: IMyProgress;
-  
-      rules: string;
-      stats: string;
   
       WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
       WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
@@ -102,6 +83,9 @@ export interface IGridchartsProps {
       //For DD
       handleSwitch: any;
       handleListPost: any;
+
+      // 9 - Other web part options
+      webPartScenario: string; //Choice used to create mutiple versions of the webpart. 
 
 
 }

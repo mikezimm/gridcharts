@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import * as strings from 'TrackMyTime7WebPartStrings';
+import * as strings from 'GridchartsWebPartStrings';
 
 import * as links from './AllLinks';
 
@@ -8,16 +8,16 @@ import { Link, ILinkProps } from 'office-ui-fabric-react';
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import { ITrackMyTime7Props } from '../ITrackMyTime7Props';
-import { ITrackMyTime7State } from '../ITrackMyTime7State';
+import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
+import { IGridchartsState } from '../GridCharts/IGridchartsState';
 import styles from './InfoPane.module.scss';
 
 export interface IWebPartLinksProps {
-    projectListURL?: string; //Get from list item
-    timeTrackerListURL?: string; //Get from list item
+    parentListURL: string; //Get from list item
+    childListURL?: string; //Get from list item
   
-    projectListName: string;  // Static Name of list (for URL) - used for links and determined by first returned item
-    timeTrackListName: string;  // Static Name of list (for URL) - used for links and determined by first returned item
+    parentListName: string;  // Static Name of list (for URL) - used for links and determined by first returned item
+    childListName?: string;  // Static Name of list (for URL) - used for links and determined by first returned item
 
 }
 
@@ -116,8 +116,8 @@ public constructor(props:IWebPartLinksProps){
             thisPage = <div>
                 <Stack horizontal={true} wrap={true} horizontalAlign={"stretch"} tokens={stackTokensBody}>
                     <div><b>Your Lists:</b></div>
-                    { links.createLink(this.props.projectListURL,'_blank', this.props.projectListName ) }
-                    { links.createLink(this.props.timeTrackerListURL,'_blank', this.props.timeTrackListName ) }
+                    { links.createLink(this.props.parentListURL,'_blank', this.props.parentListName ) }
+                    { links.createLink(this.props.childListURL,'_blank', this.props.childListName ) }
                     <div></div>
                     <div><b>Webpart info on Github:</b></div>
                     { links.gitRepoTrackMyTime.repo }

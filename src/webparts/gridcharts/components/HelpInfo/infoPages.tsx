@@ -1,10 +1,6 @@
 import * as React from 'react';
 
-import { IChartData, } from '../ITrackMyTime7State';
-
-import { IUser, ILink, IChartSeries, ICharNote,  } from '../../../../services/IReUsableInterfaces';
-
-import * as strings from 'TrackMyTime7WebPartStrings';
+import * as strings from 'GridchartsWebPartStrings';
 
 import * as links from './AllLinks';
 
@@ -12,8 +8,8 @@ import { ChartControl, ChartType } from '@pnp/spfx-controls-react/lib/ChartContr
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import { ITrackMyTime7Props } from '../ITrackMyTime7Props';
-import { ITrackMyTime7State } from '../ITrackMyTime7State';
+import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
+import { IGridchartsState } from '../GridCharts/IGridchartsState';
 import styles from './InfoPane.module.scss';
 
 import * as choiceBuilders from '../fields/choiceFieldBuilder';
@@ -32,8 +28,10 @@ import About from './About';
 export interface IInfoPageProps {
     showInfo: boolean;
     allLoaded: boolean;
-    parentProps: ITrackMyTime7Props;
-    parentState: ITrackMyTime7State;
+
+    parentListURL: string;
+    parentListName: string;
+
     toggleDebug: any;
 
 }
@@ -123,50 +121,52 @@ public constructor(props:IInfoPageProps){
 
             if ( this.state.selectedChoice === 'gettingStarted' ) {
                 thisPage = <GettingStarted 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
+                    parentListURL={  this.props.parentListURL }
+                    parentListName={  this.props.parentListName }
                     allLoaded={ this.props.allLoaded }
                     showInfo={ this.props.showInfo }
                 ></GettingStarted>;
             } else if ( this.state.selectedChoice === 'basics' ) {
                 thisPage = <Basics 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
+                    parentListURL={  this.props.parentListURL }
+                    parentListName={  this.props.parentListName }
                     allLoaded={ this.props.allLoaded }
                     showInfo={ this.props.showInfo }
                 ></Basics>;
             } else if ( this.state.selectedChoice === 'advanced' ) {
                 thisPage = <Advanced 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
+                    parentListURL={  this.props.parentListURL }
+                    parentListName={  this.props.parentListName }
                     allLoaded={ this.props.allLoaded }
                     showInfo={ this.props.showInfo }
                 ></Advanced>;
             } else if ( this.state.selectedChoice === 'futurePlans' ) {
                 thisPage = <FuturePlans 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
+                    parentListURL={  this.props.parentListURL }
+                    parentListName={  this.props.parentListName }
                     allLoaded={ this.props.allLoaded }
                     showInfo={ this.props.showInfo }
                 ></FuturePlans>;
             } else if ( this.state.selectedChoice === 'dev' ) {
                 thisPage = <InfoDevelopers 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
+                    parentListURL={  this.props.parentListURL }
+                    parentListName={  this.props.parentListName }
                     allLoaded={ this.props.allLoaded }
                     showInfo={ this.props.showInfo }
                 ></InfoDevelopers>;
             } else if ( this.state.selectedChoice === 'errors' ) {
                 thisPage = <Errors 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
+                    parentListURL={  this.props.parentListURL }
+                    parentListName={  this.props.parentListName }
                     allLoaded={ this.props.allLoaded }
                     showInfo={ this.props.showInfo }
                 ></Errors>;
             } else if ( this.state.selectedChoice === 'about' ) {
                 thisPage = <About 
-                    parentProps={  this.props.parentProps }
-                    parentState={  this.props.parentState }
+
+                    parentListURL={  this.props.parentListURL }
+                    parentListName={  this.props.parentListName }
+
                     allLoaded={ this.props.allLoaded }
                     showInfo={ this.props.showInfo }
                 ></About>;
@@ -205,21 +205,12 @@ public constructor(props:IInfoPageProps){
 
             const stackButtonTokensBody: IStackTokens = { childrenGap: 40 };
 
-            let toggleDebug = <Toggle label="" 
-            onText={ 'Debug colors' } 
-            offText={ 'Default colors' } 
-            onChange={this.props.toggleDebug.bind(this)} 
-            checked={this.props.parentState.debugColors}
-            styles={{ root: { width: 160, paddingTop: 13, paddingLeft: 20, } }}
-            />;
-
             const ColoredLine = ({ color }) => ( <hr style={{ color: color, backgroundColor: color, height: 1 }}/> );
 
             return (
                 <div className={ styles.infoPane }>
                     <Stack padding={20} horizontal={true} horizontalAlign={"space-between"} tokens={stackButtonTokensBody}> {/* Stack for Projects and body */}
                         { pageChoices }
-                        { toggleDebug }
                     </Stack>
                     { thisPage }
                     <ColoredLine color="gray" />

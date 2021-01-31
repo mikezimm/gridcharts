@@ -73,7 +73,6 @@ export function updateDrillListColumns( list: IDrillList ) {
     let allColumns = ['Title','Id','Created','Modified','Author/Title','Author/ID','Author/Name','Editor/Title','Editor/ID','Editor/Name'];
 
     //Add all refiner columns to array.
-    list.refiners.map( r => { allColumns.push(r); }); 
 
     let expColumns = getExpandColumns(allColumns);
     let selColumns = getSelectColumns(allColumns);
@@ -105,32 +104,30 @@ export function updateDrillListColumns( list: IDrillList ) {
  *                                                                                                                                          
  */
 
-export function createDrillList(webURL: string, name: string, isLibrary: boolean, refiners: string[], rules: string, stats: string, viewDefs: ICustViewDef[], togOtherChartpart: boolean, title: string = null) {
+export function createDrillList(webURL: string, parentListURL: string, name: string, isLibrary: boolean, performance: any, pageContext: any, title: string = null) {
 
     let list: IDrillList = {
         title: title,
         name: name,
         guid: '',
         contextUserInfo: {
-            LoginName: this.props.pageContext.user.loginName,
-            Title: this.props.pageContext.user.displayName,
-            email: this.props.pageContext.user.email,
+            LoginName: pageContext.user.loginName,
+            Title: pageContext.user.displayName,
+            email: pageContext.user.email,
             remoteID: null, //This is for cross site ID requirements
-            Id: this.props.pageContext.user.Id
+            Id: pageContext.user.Id
 
         },
         sourceUserInfo: null,
-        fetchCount: this.props.performance.fetchCount,
-        fetchCountMobile: this.props.performance.fetchCountMobile,
-        restFilter: !this.props.performance.restFilter ? ' ' : this.props.performance.restFilter,
+        fetchCount: performance.fetchCount,
+        fetchCountMobile: performance.fetchCountMobile,
+        restFilter: !performance.restFilter ? ' ' : performance.restFilter,
 
         isLibrary: isLibrary,
         hasAttach: false,
 
         webURL: webURL,
-        parentListURL: this.props.parentListURL,
-        refiners: refiners,
-        emptyRefiner: 'Unknown',
+        parentListURL: parentListURL,
         staticColumns: [],
         selectColumns: [],
         expandColumns: [],
@@ -171,8 +168,6 @@ export interface IDrillList extends Partial<IPickedList> {
     contextUserInfo?: IUser;  //For site you are on ( aka current page context )
     sourceUserInfo?: IUser;   //For site where the list is stored
 
-    refiners: string[]; //String of Keys representing the static name of the column used for drill downs
-    emptyRefiner: string;
 //    refinerRules: IRefinerRules[][];
 //    refinerStats: IRefinerStat[];
 //    viewDefs: ICustViewDef[];

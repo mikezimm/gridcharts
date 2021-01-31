@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import * as strings from 'TrackMyTime7WebPartStrings';
+import * as strings from 'GridchartsWebPartStrings';
 
 import { Link, ILinkProps } from 'office-ui-fabric-react';
 
@@ -9,8 +9,8 @@ import * as links from './AllLinks';
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import { ITrackMyTime7Props } from '../ITrackMyTime7Props';
-import { ITrackMyTime7State } from '../ITrackMyTime7State';
+import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
+import { IGridchartsState } from '../GridCharts/IGridchartsState';
 
 import WebPartLinks from './WebPartLinks';
 
@@ -19,8 +19,8 @@ import styles from './InfoPane.module.scss';
 export interface IGettingStartedProps {
     showInfo: boolean;
     allLoaded: boolean;
-    parentProps: ITrackMyTime7Props;
-    parentState: ITrackMyTime7State;
+    parentListURL: string;
+    parentListName: string;
 
 }
 
@@ -119,47 +119,10 @@ public constructor(props:IGettingStartedProps){
 
             <h3>Please submit any issues or suggestions on github (requires free account)</h3>
             <WebPartLinks
-                    projectListURL={ this.props.parentState.projectListURL }
-                    projectListName={ this.props.parentState.projectListName }
-                    timeTrackerListURL={ this.props.parentState.timeTrackerListURL }
-                    timeTrackListName={ this.props.parentState.timeTrackListName }
+                    parentListURL={  this.props.parentListURL }
+                    parentListName={  this.props.parentListName }
             ></WebPartLinks>
 
-            <h2><mark>Before you start:</mark>  Set your time zone in Office 365 Personal settings</h2>
-            
-            Go to { links.blogSPTimeZone } and scroll down to Personal Setting Option 2, set your personal regional time zone:<br/>
-
-            If you do not do this first, your times will be saved in the site's local time zone and will cause the webpart not to work properly.<br/>
-            NOTE:  This will also insure that wherever you go in SharePoint, things will be converted to your local time :).
-
-            <h2>First:  Create a Project List and TrackMyTime List in your site</h2>
-                <ol>
-                    <li>Go to <b>WebPart Properties</b> - Edit Page, Edit Webpart.</li>
-                    <li>Expand <b>Create-Verify Lists</b> section.</li>
-                    <li>Press <b>Create-Verify Projects List</b> button.</li>
-                    <li>Press <b>Create-Verify TrackMyTime List</b> button.</li>
-                    <li>Exit <b>WebPart Properties</b></li>
-                    <li><b>Save</b> this page.</li>
-                    <li><b>Refresh</b> this page.</li>
-                </ol>
-
-            <h2>Second:  Create some Projects in the Projects list</h2>
-                <ol>
-                    <li>Go to <b>Project List</b> section in this guide and review what the columns do.</li>
-                    <li>Go to your <Link href={this.props.parentState.projectListURL} target='_blank'>{ this.props.parentProps.projectListTitle }
-                        </Link> and create some new Projects.
-                    </li>
-                </ol>
-
-            <h2>Third:  Start Tracking your Time!</h2>
-                <ol>
-                    <li><b>Refresh</b> this page.</li>
-                    <li>Select a <b>Project</b> from the list on the left side.  If you do not see any, click the tabs in upper left to find one</li>
-                    <li>Select a <b>Time Entry Mode</b> in upper right</li>
-                    <li><b>Fill in any details</b> you want to save.</li>
-                    <li>Press <b>Save Item</b> button.</li>
-                    <li>{ links.createLink(this.props.parentState.timeTrackerListURL,'_blank', this.props.parentState.timeTrackListName + ' list' ) }</li>
-                </ol>
           </div>;
 
 

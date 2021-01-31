@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import * as strings from 'TrackMyTime7WebPartStrings';
+import * as strings from 'GridchartsWebPartStrings';
 
 import { Link, ILinkProps } from 'office-ui-fabric-react';
 

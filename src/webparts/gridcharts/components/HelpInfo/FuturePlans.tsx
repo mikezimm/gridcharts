@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import * as strings from 'TrackMyTime7WebPartStrings';
+import * as strings from 'GridchartsWebPartStrings';
 
 import { Link, ILinkProps } from 'office-ui-fabric-react';
 
@@ -9,16 +9,15 @@ import * as links from './AllLinks';
 import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import { ITrackMyTime7Props } from '../ITrackMyTime7Props';
-import { ITrackMyTime7State } from '../ITrackMyTime7State';
+import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
+import { IGridchartsState } from '../GridCharts/IGridchartsState';
 import styles from './InfoPane.module.scss';
 
 export interface IFuturePlansProps {
     showInfo: boolean;
     allLoaded: boolean;
-    parentProps: ITrackMyTime7Props;
-    parentState: ITrackMyTime7State;
-
+    parentListURL: string;
+    parentListName: string;
 }
 
 export interface IFuturePlansState {

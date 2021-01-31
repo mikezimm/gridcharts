@@ -96,7 +96,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           date: null,
           label: null,
           dataLevel: null,
-        }
+        };
 
         const level : number = Math.floor(Math.random() * 3);  
         data.dataLevel= level ;
@@ -126,10 +126,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         /**
          * This is copied later in code when you have to call the data in case something changed.
-         */
-        let drillList = createDrillList(this.props.webURL, this.props.listName, false, this.props.refiners, this.props.rules, this.props.stats, null, this.props.toggles.togOtherChartpart, '');
-        let errMessage = null;
+         */  //createDrillList(webURL, parentListURL, name, isLibrary, performance, pageContext, title: string = null)
 
+        let drillList = createDrillList(this.props.parentListWeb, null, this.props.listName, null, this.props.performance, this.props.pageContext, '');
+        let errMessage = null;
 
         let gridData : IGridchartsData[] = this.createSampleGridData();
 
@@ -175,7 +175,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
           meta: [],
 
-          webURL: this.props.webURL,
+          webURL: this.props.parentListWeb,
 
           searchMeta: null, // [pivCats.all.title],
           searchText: '',
