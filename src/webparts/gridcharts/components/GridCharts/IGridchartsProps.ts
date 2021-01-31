@@ -31,15 +31,22 @@ export interface IGridchartsProps {
       parentListWeb?: string;
       parentListURL?: string;
       parentListTitle?: string;
-  
       listName : string;
-      
+
+      dateColumn: string;
+      valueColumn: string;
+      valueType: string;
+      valueOperator: string;
+      dropDownColumns: string[];
+
+
       allLoaded: boolean;
   
       performance: {
           fetchCount: number;
           fetchCountMobile: number;
           restFilter: string;
+          minDataDownload: boolean;
       };
   
       parentListFieldTitles: string;

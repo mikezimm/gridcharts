@@ -7,7 +7,7 @@ import { IPickedWebBasic, IPickedList, IMyProgress,
     IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
     } from '../../../../services/IReUsableInterfaces';
 
-import { IDrillList } from './GetListData';
+import { IGridList } from './GetListData';
 
 export interface IGridchartsData {
     date: any;
@@ -79,7 +79,7 @@ export interface IGridchartsState {
 
     errMessage: string | JSX.Element;
 
-    drillList: IDrillList;
+    gridList: IGridList;
 
     pivotCats: IMyPivCat[][];
  

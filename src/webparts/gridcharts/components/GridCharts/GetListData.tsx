@@ -65,12 +65,16 @@ import { IDrillItemInfo } from './IGridchartsState';
  */
 
 
-export function updateDrillListColumns( list: IDrillList ) {
+export function updateGridListColumns( list: IGridList ) {
        
-    let selectCols: string = "*";
+    let selectCols: string = list.minDataDownload === true ? "" : "*";
     let expandThese = "";
 
     let allColumns = ['Title','Id','Created','Modified','Author/Title','Author/ID','Author/Name','Editor/Title','Editor/ID','Editor/Name'];
+
+    list.staticColumns.map( c => {
+        allColumns.push( c );
+    })
 
     //Add all refiner columns to array.
 
@@ -104,9 +108,9 @@ export function updateDrillListColumns( list: IDrillList ) {
  *                                                                                                                                          
  */
 
-export function createDrillList(webURL: string, parentListURL: string, name: string, isLibrary: boolean, performance: any, pageContext: any, title: string = null) {
+export function createGridList(webURL: string, parentListURL: string, title: string, name: string, isLibrary: boolean, performance: any, pageContext: any, staticColumns: string[] ) {
 
-    let list: IDrillList = {
+    let list: IGridList = {
         title: title,
         name: name,
         guid: '',
@@ -122,13 +126,14 @@ export function createDrillList(webURL: string, parentListURL: string, name: str
         fetchCount: performance.fetchCount,
         fetchCountMobile: performance.fetchCountMobile,
         restFilter: !performance.restFilter ? ' ' : performance.restFilter,
+        minDataDownload: performance.minDataDownload === true ? true : false,
 
         isLibrary: isLibrary,
         hasAttach: false,
 
         webURL: webURL,
         parentListURL: parentListURL,
-        staticColumns: [],
+        staticColumns: staticColumns,
         selectColumns: [],
         expandColumns: [],
         staticColumnsStr: '',
@@ -137,7 +142,7 @@ export function createDrillList(webURL: string, parentListURL: string, name: str
         removeFromSelect: ['currentTime','currentUser'],
     };
 
-    list = this.updateDrillListColumns( list ) ;
+    list = updateGridListColumns( list ) ;
 
     return list;
 }
@@ -154,13 +159,14 @@ export function createDrillList(webURL: string, parentListURL: string, name: str
  *                                                                                             
  */
 
-export interface IDrillList extends Partial<IPickedList> {
+export interface IGridList extends Partial<IPickedList> {
     title: string;
     name?: string;
     guid?: string;
     fetchCount: number;
     fetchCountMobile: number;
     restFilter: string;
+    minDataDownload: boolean;
     isLibrary?: boolean;
     hasAttach: boolean;
     webURL?: string;
@@ -192,33 +198,33 @@ export interface IDrillList extends Partial<IPickedList> {
 //        
 
 // This is what it was before I split off the other part
-export async function getAllItems( drillList: IDrillList, addTheseItemsToState: any, setProgress: any, markComplete: any ): Promise<void>{
+export async function getAllItems( gridList: IGridList, addTheseItemsToState: any, setProgress: any, markComplete: any ): Promise<void>{
 
-    let sourceUserInfo: any = await ensureUserInfo( drillList.webURL, drillList.contextUserInfo.email );
+    let sourceUserInfo: any = await ensureUserInfo( gridList.webURL, gridList.contextUserInfo.email );
 
-    drillList.sourceUserInfo = sourceUserInfo;
+    gridList.sourceUserInfo = sourceUserInfo;
     //lists.getById(listGUID).webs.orderBy("Title", true).get().then(function(result) {
     //let allItems : IDrillItemInfo[] = await sp.web.webs.get();
 
     let allItems : IDrillItemInfo[] = [];
     let errMessage = '';
 
-    let thisListWeb = Web(drillList.webURL);
-    let selColumns = drillList.selectColumnsStr;
-    let expandThese = drillList.expandColumnsStr;
-    let staticCols = drillList.staticColumns.length > 0 ? drillList.staticColumns.join(',') : '';
-    let selectCols = '*,' + staticCols;
+    let thisListWeb = Web(gridList.webURL);
+    let selColumns = gridList.selectColumnsStr;
+    let expandThese = gridList.expandColumnsStr;
+    let staticCols = gridList.staticColumns.length > 0 ? gridList.staticColumns.join(',') : '';
+    let selectCols = gridList.minDataDownload === true ?  staticCols :  '*,' + staticCols;
 
-    let thisListObject = thisListWeb.lists.getByTitle(drillList.name);
+    let thisListObject = thisListWeb.lists.getByTitle(gridList.title);
 
     /**
      * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
      */
 
     try {
-        let fetchCount = drillList.fetchCount > 0 ? drillList.fetchCount : 200;
-        if ( drillList.restFilter.length > 1 ) {
-            allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(fetchCount).filter(drillList.restFilter).get();
+        let fetchCount = gridList.fetchCount > 0 ? gridList.fetchCount : 200;
+        if ( gridList.restFilter.length > 1 ) {
+            allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(fetchCount).filter(gridList.restFilter).get();
         } else {
             allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(fetchCount).get();
         }
@@ -227,7 +233,8 @@ export async function getAllItems( drillList: IDrillList, addTheseItemsToState: 
 
     }
 
-//    allItems = processAllItems( allItems, errMessage, drillList, addTheseItemsToState, setProgress, markComplete );
+    //private addTheseItemsToState( gridList: IGridList, allItems , errMessage : string ) {
+    allItems = addTheseItemsToState( gridList, allItems, errMessage );
 
 }
 

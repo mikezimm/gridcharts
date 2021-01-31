@@ -3,11 +3,12 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
   PropertyPaneHorizontalRule, PropertyPaneTextField, IPropertyPaneTextFieldProps, 
   PropertyPaneLink, IPropertyPaneLinkProps, PropertyPaneDropdown, 
   IPropertyPaneDropdownProps, IPropertyPaneDropdownOption, PropertyPaneToggle, 
-  IPropertyPaneConfiguration, PropertyPaneButton, PropertyPaneButtonType,
+  IPropertyPaneConfiguration, PropertyPaneButton, PropertyPaneButtonType, PropertyPaneSlider
 } from "@microsoft/sp-property-pane";
 
 import * as strings from 'GridchartsWebPartStrings';
 import { pivotOptionsGroup} from './index';
+import { gridChartsOptionsGroup } from './index';
 
 import * as links from '../../webparts/gridcharts/components/HelpInfo/AllLinks';   //              { links.gitRepoTrackMyTime.issues }
 
@@ -92,15 +93,81 @@ export class IntroPage {
         { groupName: 'Your list info',
         isCollapsed: true ,
         groupFields: [
-          PropertyPaneTextField('projectListWeb', {
+          PropertyPaneTextField('parentListWeb', {
               label: 'Your List Web url'
           }),
-          PropertyPaneTextField('projectListTitle', {
+          PropertyPaneTextField('parentListTitle', {
             label: 'Your List Title'
           }),
+
+          PropertyPaneTextField('dateColumn', {
+            label: 'Date Column'
+          }),
+
+          PropertyPaneTextField('valueColumn', {
+            label: 'Value Column'
+          }),
+
+          PropertyPaneTextField('dropDownColumns', {
+            label: 'Dropdown Columns',
+            description: 'comma separated column names'
+          }),
+          
+
+          PropertyPaneDropdown('valueType', <IPropertyPaneDropdownProps>{
+            label: 'Value type',
+            options: gridChartsOptionsGroup.valueTypeChoices,
+          }),
+
+          PropertyPaneDropdown('valueOperator', <IPropertyPaneDropdownProps>{
+            label: 'Value operator',
+            options: gridChartsOptionsGroup.valueOperatorChoices,
+          }),
+
         ]}, // this group
 /* */
-        
+
+
+
+        { groupName: 'Performance Properties',
+        isCollapsed: true ,
+        groupFields: [
+
+          //minDataDownload
+
+          PropertyPaneToggle('minDataDownload', {
+            label: 'Download only required item data',
+            offText: 'Everything',
+            onText: 'Minimual',
+          }),
+
+          PropertyPaneSlider('fetchCount', {
+            label: 'Load this many items from PC',
+            min: 100,
+            max: 2000,
+            step: 100,
+            value: webPartProps.fetchCount,
+          }),
+
+          PropertyPaneSlider('fetchCountMobile', {
+            label: 'Load this many items',
+            min: 100,
+            max: 2000,
+            step: 100,
+            value: webPartProps.fetchCountMobile,
+            disabled: true,
+          }),
+
+          PropertyPaneTextField('restFilter', {
+            label: 'Rest filter to load only specific items.',
+            description: 'See Github Wiki for examples',
+            multiline: true,
+            value: webPartProps.restFilter,
+          }),
+
+        ]}, // this group
+
+
         // 9 - Other web part options
         { groupName: 'Pivot Styles (headings)',
           isCollapsed: true ,

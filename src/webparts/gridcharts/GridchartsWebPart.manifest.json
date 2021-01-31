@@ -21,7 +21,16 @@
     "description": { "default": "gridcharts description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "gridcharts"
+      "description": "gridcharts",
+      "parentListWeb": "https://mcclickster.sharepoint.com/sites/Templates/Tmt/",
+      "parentListTitle": "TrackMyTime",
+
+      "dateColumn": "StartTime",
+      "valueColumn": "Hours",
+      "valueType": "Number",
+      "valueOperator": "Sum",
+      "minDataDownload": true
+
     }
   }]
 }

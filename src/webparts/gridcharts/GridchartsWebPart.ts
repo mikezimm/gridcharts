@@ -32,6 +32,13 @@ export interface IGridchartsWebPartProps {
     parentListName: string;
     parentListWeb: string;
 
+    dateColumn: string;
+    valueColumn: string;
+    valueType: string;
+    valueOperator: string;
+    minDataDownload: boolean;
+    dropDownColumns: string;
+
     webPartScenario: string; //Choice used to create mutiple versions of the webpart.
 
     advancedPivotStyles: boolean;
@@ -127,9 +134,16 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         today: makeTheTimeObject(''),
 
         // 2 - Source and destination list information
+        parentListWeb: this.properties.parentListWeb,
         parentListTitle: this.properties.parentListTitle,
         parentListURL: null,
         listName: null,
+        
+        dateColumn: this.properties.dateColumn,
+        valueColumn: this.properties.valueColumn,
+        valueType: this.properties.valueType,
+        valueOperator: this.properties.valueOperator,
+        dropDownColumns: this.properties.dropDownColumns ? this.properties.dropDownColumns.split(',') : [],
 
         style: null,
 
@@ -159,7 +173,8 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
           fetchCount: this.properties.fetchCount,
           fetchCountMobile: this.properties.fetchCountMobile,
           restFilter: !this.properties.restFilter ? '' : this.properties.restFilter,
-      },
+          minDataDownload: this.properties.minDataDownload,
+        },
     
         parentListFieldTitles: null,
   
@@ -246,8 +261,12 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
      */
 
     let updateOnThese = [
-      'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab',
-      'projectListFieldTitles',
+      'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
+      'stressMultiplierTime', 'webPartScenario', '', '', '',
+      'parentListTitle', 'parentListName', 'parentListWeb', '', '',
+      'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns',
+      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', '',
+      'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',
       'centerPaneFields','centerPaneStyles',
     ];
     //alert('props updated');

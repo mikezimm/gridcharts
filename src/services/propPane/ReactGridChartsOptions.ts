@@ -10,7 +10,7 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
 
   import * as strings from 'GridchartsWebPartStrings';
 
-  export class TrackTimeOptionsGroup {
+  export class GridChartsOptionsGroup {
     
     public timeSliderIncChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
         {   index: 0,   key: 5, text: "5 minutes"  },
@@ -39,6 +39,19 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
         
     }
 
+    public valueTypeChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
+        {   index: 0,   key: "Any", text: "Any"  },
+        {   index: 1,   key: "Number", text: "Number"  },
+        {   index: 2,   key: "Date", text: "Date"  },
+    ];
+
+    public valueOperatorChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
+        {   index: 0,   key: "Count", text: "Count"  },
+        {   index: 1,   key: "Sum", text: "Sum"  },
+        {   index: 2,   key: "Min", text: "Min"  },
+        {   index: 3,   key: "Max", text: "Max"  },
+    ];
+
   }
 
-  export let trackTimeOptionsGroup = new TrackTimeOptionsGroup();
+  export let gridChartsOptionsGroup = new GridChartsOptionsGroup();

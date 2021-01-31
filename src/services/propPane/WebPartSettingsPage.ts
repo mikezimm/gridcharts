@@ -13,7 +13,7 @@ import {
 //  import { PropertyFieldMultiSelect } from '@pnp/spfx-property-controls/lib/PropertyFieldMultiSelect';
   
   import * as strings from 'GridchartsWebPartStrings';
-  import { pivotOptionsGroup, trackTimeOptionsGroup } from './index';
+  import { pivotOptionsGroup, gridChartsOptionsGroup } from './index';
   
   export class WebPartSettingsPage {
 
@@ -126,7 +126,7 @@ import {
           PropertyPaneDropdown('timeSliderInc', <IPropertyPaneDropdownProps>{
             disabled: webPartProps.showTimeSlider === true ? false : true,
             label: strings.FieldLabel_TimeSliderInc,
-            options: trackTimeOptionsGroup.timeSliderIncChoices,
+            options: gridChartsOptionsGroup.timeSliderIncChoices,
           }),    
 /*
           PropertyPaneSlider('timeSliderInc', {

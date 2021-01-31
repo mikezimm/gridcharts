@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from '../Gridcharts.module.scss';
 import { IGridchartsProps } from './IGridchartsProps';
-import { IGridchartsState, IGridchartsData } from './IGridchartsState';
+import { IGridchartsState, IGridchartsData, } from './IGridchartsState';
 import { escape } from '@microsoft/sp-lodash-subset';
 
 
@@ -18,7 +18,7 @@ import { IPickedWebBasic, IPickedList, IMyProgress,
   IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
 } from '../../../../services/IReUsableInterfaces';
 
-import { createDrillList } from './GetListData';
+import { createGridList, getAllItems, IGridList } from './GetListData';
 /**
  * Based upon example from
  * https://codepen.io/ire/pen/Legmwo
@@ -126,9 +126,19 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         /**
          * This is copied later in code when you have to call the data in case something changed.
-         */  //createDrillList(webURL, parentListURL, name, isLibrary, performance, pageContext, title: string = null)
+         */  //createGridList(webURL, parentListURL, name, isLibrary, performance, pageContext, title: string = null)
 
-        let drillList = createDrillList(this.props.parentListWeb, null, this.props.listName, null, this.props.performance, this.props.pageContext, '');
+         /*
+         dateColumn: string;
+         valueColumn: string;
+         valueType: string;
+         valueOperator: string;
+      */
+        let allColumns : string[] = this.props.dropDownColumns;
+        allColumns.push( this.props.dateColumn );
+        allColumns.push( this.props.valueColumn );
+
+        let gridList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns );
         let errMessage = null;
 
         let gridData : IGridchartsData[] = this.createSampleGridData();
@@ -159,7 +169,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
           gridData: gridData,
 
-          drillList: drillList,
+          gridList: gridList,
 
           bannerMessage: null,
           showTips: false,
@@ -186,14 +196,14 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
 //          style: this.props.style ? this.props.style : 'commandBar',
 
-        };                            
+        };  
 
     }
 
 
     public componentDidMount() {
 
-      //this._getListItems();
+      getAllItems( this.state.gridList, this.addTheseItemsToState.bind(this), null, null );
       
     }
 
@@ -211,7 +221,38 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     public componentDidUpdate(prevProps){
 
-      let rebuildTiles = false;
+      let reloadData : any = false;
+      let refreshMe : any = false;
+
+      let reloadOnThese = [
+        'stressMultiplierTime', 'webPartScenario', '', '', '',
+        'parentListTitle', 'parentListName', 'parentListWeb', '', '',
+        'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns',
+        'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',
+      ];
+
+      let refreshOnThese = [
+        'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
+        'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', '',
+
+      ];
+
+      reloadOnThese.map( key => {
+        if ( prevProps[key] !== this.props[key] ) { reloadData = true; }
+      });
+
+      if (reloadData === false) {
+        refreshOnThese.map( key => {
+          if ( prevProps[key] !== this.props[key] ) { refreshMe = true; }
+        });
+      }
+
+      if (reloadData === true) {
+        //Need to first update gridList and pass it on.
+        getAllItems( this.state.gridList, this.addTheseItemsToState.bind(this), null, null );
+      }
+
+
       //if (this.props.defaultProjectPicker !== prevProps.defaultProjectPicker) {  rebuildTiles = true ; }
 
       //if (rebuildTiles === true) {
@@ -268,4 +309,33 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       </div>
     );
   }
+
+  private addTheseItemsToState( gridList: IGridList, allItems , errMessage : string ) {
+
+      if ( allItems.length < 300 ) {
+          console.log('addTheseItemsToState allItems: ', allItems);
+      } {
+          console.log('addTheseItemsToState allItems: QTY: ', allItems.length );
+      }
+
+
+      this.setState({
+        /*          */
+          allItems: allItems,
+          searchedItems: allItems, //newFilteredItems,  //Replaced with allItems to update when props change.
+          searchCount: allItems.length,
+          errMessage: errMessage,
+          searchText: '',
+          searchMeta: [],
+          gridList: gridList,
+
+      });
+
+      //This is required so that the old list items are removed and it's re-rendered.
+      //If you do not re-run it, the old list items will remain and new results get added to the list.
+      //However the list will show correctly if you click on a pivot.
+      //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
+      return true;
+  }
+
 }
