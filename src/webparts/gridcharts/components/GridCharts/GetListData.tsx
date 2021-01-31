@@ -23,6 +23,8 @@ import "@pnp/sp/site-users/web";
 
 import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist, sortKeysByOtherKey } from '@mikezimm/npmfunctions/dist/arrayServices';
 
+import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/dateServices';
+
 import { getHelpfullError } from '@mikezimm/npmfunctions/dist/ErrorHandler';
 
 /**
@@ -48,7 +50,7 @@ import { getExpandColumns, getSelectColumns } from '../../../../services/getFunc
  * 
  */
 
-import { IDrillItemInfo } from './IGridchartsState';
+import { IZBasicItemInfo } from './IGridchartsState';
 
 
 
@@ -74,7 +76,7 @@ export function updateGridListColumns( list: IGridList ) {
 
     list.staticColumns.map( c => {
         allColumns.push( c );
-    })
+    });
 
     //Add all refiner columns to array.
 
@@ -108,7 +110,7 @@ export function updateGridListColumns( list: IGridList ) {
  *                                                                                                                                          
  */
 
-export function createGridList(webURL: string, parentListURL: string, title: string, name: string, isLibrary: boolean, performance: any, pageContext: any, staticColumns: string[] ) {
+export function createGridList(webURL: string, parentListURL: string, title: string, name: string, isLibrary: boolean, performance: any, pageContext: any, staticColumns: string[] , searchColumns: string[], metaColumns: string[], expandDates: string[] ) {
 
     let list: IGridList = {
         title: title,
@@ -134,6 +136,9 @@ export function createGridList(webURL: string, parentListURL: string, title: str
         webURL: webURL,
         parentListURL: parentListURL,
         staticColumns: staticColumns,
+        searchColumns: searchColumns,
+        metaColumns: metaColumns,
+        expandDates: expandDates,
         selectColumns: [],
         expandColumns: [],
         staticColumnsStr: '',
@@ -159,7 +164,7 @@ export function createGridList(webURL: string, parentListURL: string, title: str
  *                                                                                             
  */
 
-export interface IGridList extends Partial<IPickedList> {
+export interface IZBasicList extends Partial<IPickedList> {
     title: string;
     name?: string;
     guid?: string;
@@ -177,13 +182,24 @@ export interface IGridList extends Partial<IPickedList> {
 //    refinerRules: IRefinerRules[][];
 //    refinerStats: IRefinerStat[];
 //    viewDefs: ICustViewDef[];
+    metaColumns: string[];
+    searchColumns: string[];
+    expandDates: string[];
+
     staticColumns: string[];
     selectColumns: string[];
     expandColumns: string[];
+
     staticColumnsStr: string;
     selectColumnsStr: string;
     expandColumnsStr: string;
     removeFromSelect: string[];
+}
+
+
+export interface IGridList extends IZBasicList {
+
+
   }
 
 
@@ -204,9 +220,9 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
 
     gridList.sourceUserInfo = sourceUserInfo;
     //lists.getById(listGUID).webs.orderBy("Title", true).get().then(function(result) {
-    //let allItems : IDrillItemInfo[] = await sp.web.webs.get();
+    //let allItems : IZBasicItemInfo[] = await sp.web.webs.get();
 
-    let allItems : IDrillItemInfo[] = [];
+    let allItems : IZBasicItemInfo[] = [];
     let errMessage = '';
 
     let thisListWeb = Web(gridList.webURL);
@@ -233,6 +249,22 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
 
     }
 
+    /**
+     * Add meta and searchString to every item
+     */
+    allItems.map( i => {
+        //Add all date field objects
+        gridList.expandDates.map( d => {
+            i['time' + d] = makeTheTimeObject(i[d]);
+        });
+
+        //Add Meta tags
+        i.meta = buildMetaFromItem( i, gridList );
+        
+        //Add Search string
+        i.searchString = buildSearchStringFromItem( i, gridList );
+    });
+
     //private addTheseItemsToState( gridList: IGridList, allItems , errMessage : string ) {
     allItems = addTheseItemsToState( gridList, allItems, errMessage );
 
@@ -254,28 +286,21 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
 //                                                                                     
 //     
 
-function buildMetaFromItem( theItem: IDrillItemInfo ) {
+function buildMetaFromItem( theItem: IZBasicItemInfo, gridList: IGridList, ) {
     let meta: string[] = ['All'];
 
-    if ( theItem.timeCreated.daysAgo === 0 ) {
-        meta = addItemToArrayIfItDoesNotExist(meta, 'New');
-    } else {
-        meta = theItem.timeCreated.daysAgo < 180 ? addItemToArrayIfItDoesNotExist(meta, 'RecentlyCreated') : addItemToArrayIfItDoesNotExist(meta, 'Old');
-    }
-
-    meta = theItem.timeModified.daysAgo < 180 ? addItemToArrayIfItDoesNotExist(meta, 'RecentlyUpdated') : addItemToArrayIfItDoesNotExist(meta, 'Stale');
-
-    for ( let L of Object.keys(theItem.refiners) ) {
-        //Gets rid of the 'undefined' meta key found at the end of the keys
-        //Only do this if it is the lev0, lev1 or lev2 arrays
-        if (L.indexOf('lev') === 0 ) { 
-            for ( let R in theItem.refiners[L] ) {
-                meta = addItemToArrayIfItDoesNotExist(meta, theItem.refiners[L][R]);
-            }
+    gridList.metaColumns.map( c=> {
+        if ( c.indexOf('/') > -1 ) { 
+            let cols = c.split('/');
+            meta = addItemToArrayIfItDoesNotExist( meta, theItem[ cols[0] ][ cols[1] ] ) ;
+        } else if ( c.indexOf('.') > -1 ) { 
+            let cols = c.split('.');
+            meta = addItemToArrayIfItDoesNotExist( meta, theItem[ cols[0] ][ cols[1]]  ) ;
+        } else {
+            meta = addItemToArrayIfItDoesNotExist( meta, theItem[ c ] ) ;
         }
-    }
-
-    meta = addItemToArrayIfItDoesNotExist(meta, theItem.sort );
+        
+    });
 
     return meta;
 }
@@ -289,22 +314,31 @@ function buildMetaFromItem( theItem: IDrillItemInfo ) {
 //                                                                                                 
 //         
 
-function buildSearchStringFromItem (newItem : IDrillItemInfo, staticColumns: string[]) {
+function buildSearchStringFromItem ( theItem: IZBasicItemInfo, gridList: IGridList, ) {
 
     let result = '';
     let delim = '|||';
 
-    if ( newItem.Title ) { result += 'Title=' + newItem.Title + delim ; }
-    if ( newItem.Id ) { result += 'Id=' + newItem.Id + delim ; }
+    if ( theItem.Title ) { result += 'Title=' + theItem.Title + delim ; }
+    if ( theItem.Id ) { result += 'Id=' + theItem.Id + delim ; }
 
-    staticColumns.map( c => {
+    gridList.searchColumns.map( c => {
         let thisCol = c.replace('/','');
-        if ( newItem[thisCol] ) { result += c + '=' + newItem[thisCol] + delim ; }
+        if ( c.indexOf('/') > -1 ) { 
+            let cols = c.split('/');
+            if ( theItem[ cols[0] ][ cols[1] ] ) { result += thisCol + '=' + theItem[ cols[0] ][ cols[1] ] + delim ; }
+        } else if ( c.indexOf('.') > -1 ) { 
+            let cols = c.split('.');
+            if ( theItem[ cols[0] ][ cols[1] ] ) { result += thisCol + '=' + theItem[ cols[0] ][ cols[1] ] + delim ; }
+        } else {
+            if ( theItem[thisCol] ) { result += thisCol + '=' + theItem[thisCol] + delim ; }
+        }  
+        
     });
 
-    if ( newItem['odata.type'] ) { result += newItem['odata.type'] + delim ; }
+    if ( theItem['odata.type'] ) { result += theItem['odata.type'] + delim ; }
 
-    if ( newItem.meta.length > 0 ) { result += 'Meta=' + newItem.meta.join(',') + delim ; }
+    if ( theItem.meta.length > 0 ) { result += 'Meta=' + theItem.meta.join(',') + delim ; }
 
     result = result.toLowerCase();
 

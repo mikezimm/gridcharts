@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from '../Gridcharts.module.scss';
 import { IGridchartsProps } from './IGridchartsProps';
-import { IGridchartsState, IGridchartsData, } from './IGridchartsState';
+import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IZBasicItemInfo } from './IGridchartsState';
 import { escape } from '@microsoft/sp-lodash-subset';
 
 
@@ -82,20 +82,22 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     }
 
     private createSampleGridData() {
-      let gridData : IGridchartsData[] = [];
+
       let arrDates: any[] = [];
       let startDate = new Date();
       let endDate = new Date();
       endDate.setDate(endDate.getDate() + 365 - 2 );
 
       arrDates = this.getDates( startDate, endDate);
+      let dataPoints : IGridchartsDataPoint[] = [];
 
       for (var i = 1; i < 365; i++) {
 
-        let data : IGridchartsData = {
+        let data : IGridchartsDataPoint = {
           date: null,
           label: null,
           dataLevel: null,
+          items: [],
         };
 
         const level : number = Math.floor(Math.random() * 3);  
@@ -103,10 +105,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let thisDate : Date = arrDates[ i- 1];
         data.label = thisDate.toLocaleDateString();
         data.date = thisDate;
-        gridData.push( data ); 
+        dataPoints.push( data ); 
 
       }
-      return gridData;
+      return dataPoints;
     }
 
 /***
@@ -122,36 +124,51 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
 
     public constructor(props:IGridchartsProps){
-      super(props);
+        super(props);
+          /**
+           * This is copied later in code when you have to call the data in case something changed.
+           */  //createGridList(webURL, parentListURL, name, isLibrary, performance, pageContext, title: string = null)
 
-        /**
-         * This is copied later in code when you have to call the data in case something changed.
-         */  //createGridList(webURL, parentListURL, name, isLibrary, performance, pageContext, title: string = null)
-
-         /*
-         dateColumn: string;
-         valueColumn: string;
-         valueType: string;
-         valueOperator: string;
-      */
-        let allColumns : string[] = this.props.dropDownColumns;
+          /*
+          dateColumn: string;
+          valueColumn: string;
+          valueType: string;
+          valueOperator: string;
+        */
+        let allColumns : string[] = [];
+        let dropDownColumns: string[] = this.props.dropDownColumns;
+        let searchColumns : string[] = this.props.searchColumns;
+        let metaColumns : string[] = this.props.metaColumns;
+        let expandDates : string[] = [this.props.dateColumn, 'Created', 'Modified'];
+        
         allColumns.push( this.props.dateColumn );
         allColumns.push( this.props.valueColumn );
 
-        let gridList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns );
+        searchColumns.map( c => { allColumns.push( c ) ; });
+        metaColumns.map( c => { allColumns.push( c ) ; });
+
+        dropDownColumns.map( c => { searchColumns.push( c ) ; metaColumns.push( c ) ; allColumns.push( c ); });
+
+        let gridList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates );
         let errMessage = null;
 
-        let gridData : IGridchartsData[] = this.createSampleGridData();
 
-        console.log('gridData', gridData );
+        let dataPoints : IGridchartsDataPoint[] = this.createSampleGridData();
 
-        const s1 = gridData[0].date.getMonth();
+        console.log('gridData', dataPoints );
+
+        const s1 = dataPoints[0].date.getMonth();
         const s2 = s1 + 12;
 
         const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
         const monthScales = [ 4,4,4,5,4,4,5,4,4,5,4,5   ,   4,4,4,5,4,4,5,4,4,5,4,5 ].slice(s1,s2) ;
 
         let entireDateArray = [];
+
+        let gridData: IGridchartsData = {
+          dataPoints: dataPoints,
+          entireDateArray: entireDateArray,
+        };
 
         this.state = { 
 
@@ -165,8 +182,6 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           selectedYear: null,
           selectedUser: null,
           
-          entireDateArray: entireDateArray,
-
           gridData: gridData,
 
           gridList: gridList,
@@ -280,7 +295,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     const squares : any[] = [];
 
-    this.state.gridData.map( ( d ) => {
+    this.state.gridData.dataPoints.map( ( d ) => {
       squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
     });
 
@@ -336,6 +351,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       //However the list will show correctly if you click on a pivot.
       //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
       return true;
+  }
+
+  private buildGridData ( gridList: IGridList, allItems : IZBasicItemInfo[] ) {
+
   }
 
 }

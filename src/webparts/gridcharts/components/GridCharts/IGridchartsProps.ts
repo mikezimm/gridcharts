@@ -35,9 +35,11 @@ export interface IGridchartsProps {
 
       dateColumn: string;
       valueColumn: string;
+      searchColumns: string[];
       valueType: string;
       valueOperator: string;
       dropDownColumns: string[];
+      metaColumns: string[];
 
 
       allLoaded: boolean;

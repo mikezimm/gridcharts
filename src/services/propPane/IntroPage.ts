@@ -112,7 +112,16 @@ export class IntroPage {
             label: 'Dropdown Columns',
             description: 'comma separated column names'
           }),
+
+          PropertyPaneTextField('searchColumns', {
+            label: 'Search Columns',
+            description: 'comma separated column names'
+          }),         
           
+          PropertyPaneTextField('metaColumns', {
+            label: 'Meta Columns',
+            description: 'comma separated column names'
+          }),
 
           PropertyPaneDropdown('valueType', <IPropertyPaneDropdownProps>{
             label: 'Value type',

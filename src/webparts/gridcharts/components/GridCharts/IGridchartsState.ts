@@ -9,10 +9,19 @@ import { IPickedWebBasic, IPickedList, IMyProgress,
 
 import { IGridList } from './GetListData';
 
+
 export interface IGridchartsData {
+
+    entireDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
+    dataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
+
+}
+
+export interface IGridchartsDataPoint {
     date: any;
     label: any;
     dataLevel: number;
+    items: IZBasicItemInfo[];
 }
 
 /***
@@ -42,12 +51,11 @@ export interface IGridchartsState {
     selectedYear: number; //Used to determine selected Year Pivot
     selectedUser: any; //Used to determine filter of items ( current user or everyone )
 
-    gridData: IGridchartsData[]; //One IGridchartsData per date between lowest and highest date range for input data
+    gridData: IGridchartsData; //One IGridchartsDataPoint per date between lowest and highest date range for input data
 
     monthLables: string[];  //Used to build the month labels on top of the gridChart
     monthScales: number[];  //Used to space the month labels on top of the gridChart
 
-    entireDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
 
     WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
     WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
@@ -67,11 +75,11 @@ export interface IGridchartsState {
     searchText: string;
     searchMeta: string[];
 
-    searchedItems: IDrillItemInfo[];
+    searchedItems: IZBasicItemInfo[];
     stats: IStat[];
-    first20searchedItems: IDrillItemInfo[];
+    first20searchedItems: IZBasicItemInfo[];
 
-    allItems: IDrillItemInfo[];
+    allItems: IZBasicItemInfo[];
 
 //    viewType?: IViewType;
 
@@ -119,7 +127,7 @@ export interface IMyPivCat {
  *                                                                                                                                             
  */
 
-export interface IDrillItemInfo extends Partial<any>{
+export interface IZBasicItemInfo extends Partial<any>{
 
     sort: string;
     searchString: string;
