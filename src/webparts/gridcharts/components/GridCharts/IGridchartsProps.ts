@@ -41,7 +41,6 @@ export interface IGridchartsProps {
       dropDownColumns: string[];
       metaColumns: string[];
 
-
       allLoaded: boolean;
   
       performance: {

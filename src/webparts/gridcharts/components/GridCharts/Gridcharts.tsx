@@ -4,6 +4,7 @@ import { IGridchartsProps } from './IGridchartsProps';
 import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IGridItemInfo } from './IGridchartsState';
 import { escape } from '@microsoft/sp-lodash-subset';
 
+import { Spinner, SpinnerSize, SpinnerLabelPosition } from 'office-ui-fabric-react/lib/Spinner';
 
 import InfoPage from '../HelpInfo/infoPages';
 
@@ -97,9 +98,11 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let data : IGridchartsDataPoint = {
           date: null,
           label: null,
+          dateString: '',
           dataLevel: Math.floor(Math.random() * 3),
           value: Math.floor(Math.random() * 20),
           values: [],
+          valuesString: [],
           count: null,
           sum: null,
           avg: null,
@@ -174,6 +177,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let gridData: IGridchartsData = {
           startDate: null,
           endDate: null,
+          gridEnd: null,
+          gridStart: null,
           dataPoints: dataPoints,
           entireDateArray: entireDateArray,
           entireDateStringArray: [],
@@ -251,9 +256,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       let reloadOnThese = [
         'stressMultiplierTime', 'webPartScenario', '', '', '',
         'parentListTitle', 'parentListName', 'parentListWeb', '', '',
-        'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns',
-        'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',
+        'dateColumn', 'valueColumn', 'valueType', 'valueOperator','dropDownColumns',
       ];
+
+      let reloadOnPerformance = [ 'fetchCount', 'fetchCountMobile', 'restFilter', 'minDataDownload' ] ;
 
       let refreshOnThese = [
         'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
@@ -265,6 +271,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         if ( prevProps[key] !== this.props[key] ) { reloadData = true; }
       });
 
+      reloadOnPerformance.map ( key => {
+        if ( prevProps.performance[key] !== this.props.performance[key] ) { reloadData = true; }
+      });
+
       if (reloadData === false) {
         refreshOnThese.map( key => {
           if ( prevProps[key] !== this.props[key] ) { refreshMe = true; }
@@ -273,7 +283,24 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
       if (reloadData === true) {
         //Need to first update gridList and pass it on.
-        getAllItems( this.state.gridList, this.addTheseItemsToState.bind(this), null, null );
+
+        let allColumns : string[] = [];
+        let dropDownColumns: string[] = this.props.dropDownColumns;
+        let searchColumns : string[] = this.props.searchColumns;
+        let metaColumns : string[] = this.props.metaColumns;
+        let expandDates : string[] = [this.props.dateColumn, 'Created', 'Modified'];
+        
+        allColumns.push( this.props.dateColumn );
+        allColumns.push( this.props.valueColumn );
+
+        searchColumns.map( c => { allColumns.push( c ) ; });
+        metaColumns.map( c => { allColumns.push( c ) ; });
+
+        dropDownColumns.map( c => { searchColumns.push( c ) ; metaColumns.push( c ) ; allColumns.push( c ); });
+
+        let gridList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates );
+
+        getAllItems( gridList, this.addTheseItemsToState.bind(this), null, null );
       }
 
 
@@ -303,10 +330,27 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 //    const squares = document.querySelector(styles.squares);
 
     const squares : any[] = [];
+    let gridElement = null;
 
-    this.state.gridData.dataPoints.map( ( d ) => {
-      squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
-    });
+    if ( this.state.allLoaded === true ) {
+      this.state.gridData.dataPoints.map( ( d ) => {
+        squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
+      });
+      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none' }}>
+                      { squares }
+                    </ul>;
+
+    } else {
+
+      gridElement = <div style={{ position: 'absolute', top: '50%', left: '42%' }}>
+          <Spinner 
+            size={SpinnerSize.large}
+            label={ 'Loading data' }
+            labelPosition='left'
+          ></Spinner>
+        </div> ;
+    }
+
 
     const months : any[] = this.state.monthLables;
     const days : any[] = weekday3['en-us'];
@@ -324,9 +368,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
             <ul className={styles.days} style={{ listStyleType: 'none' }}>
                 { days.map( d=> { return <li> { d } </li> ; }) }
             </ul>
-            <ul className={styles.squares} style={{ listStyleType: 'none' }}>
-              { squares }
-            </ul>
+            { gridElement }
           </div>
 
         </div>
@@ -357,6 +399,13 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
       let gridData : IGridchartsData = this.buildGridData (gridList, allItems);
 
+      
+      const s1 = gridData.gridStart.getMonth();
+      const s2 = s1 + 12;
+
+      const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
+      const monthScales = [ 4,4,4,5,4,4,5,4,4,5,4,5   ,   4,4,4,5,4,4,5,4,4,5,4,5 ].slice(s1,s2) ;
+
       this.setState({
         /*          */
           allItems: allItems,
@@ -367,9 +416,13 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           searchMeta: [],
           gridList: gridList,
           gridData: gridData,
+          allLoaded: true,
+          monthLables: monthLables,
+          monthScales: monthScales,
 
       });
 
+      console.log('loadedState:', this.state );
       //This is required so that the old list items are removed and it's re-rendered.
       //If you do not re-run it, the old list items will remain and new results get added to the list.
       //However the list will show correctly if you click on a pivot.
@@ -422,9 +475,14 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let startDate = new Date( firstDate );
     startDate.setHours(0,0,0,0);
+    let gridStart = new Date( startDate.setDate(0) ) ;
     let endDate = new Date( lastDate );
     endDate.setHours(0,0,0,0);
-    entireDateArray = this.getDates( startDate, endDate);
+
+    //https://stackoverflow.com/a/222439
+    let gridEnd  = new Date( endDate.getFullYear(), endDate.getMonth() + 1, 0 );
+    //let gridEnd = new Date( tempEnd.toLocaleString() );
+    entireDateArray = this.getDates( gridStart, gridEnd);
     entireDateArray.map ( d => { entireDateStringArray.push( d.toLocaleDateString() ) ; });
 
     /**
@@ -434,6 +492,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     entireDateArray.map( theDate => {
       dataPoints.push( {
         date: theDate,
+        dateString: theDate.toLocaleDateString(),
         label: '',
         dataLevel: null,
         value: null,
@@ -443,6 +502,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         min: null,
         max: null,
         values: [],
+        valuesString: [],
         items: [],
       });
     });
@@ -472,6 +532,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
       dataPoints[dateIndex].items.push( item );
       dataPoints[dateIndex].values.push( valueColumn );
+      dataPoints[dateIndex].valuesString.push( valueColumn.toFixed(2) );
 
       dataPoints[dateIndex].count ++;
       dataPoints[dateIndex].sum += valueColumn;      
@@ -494,14 +555,19 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       data.avg = data.count !== null && data.count !== undefined && data.count !== 0 ? data.sum / data.count : null;
       data.value = data[ this.props.valueOperator.toLowerCase() ] ;
 
-      if ( data.value > ( maxValue - 1 * dataLevelIncriment ) ) { data.dataLevel = 3 ; }
+      if ( data.count === 0 ) { data.dataLevel = 0 ; }
+      else if ( data.value > ( maxValue - 1 * dataLevelIncriment ) ) { data.dataLevel = 3 ; }
       else if ( data.value > ( maxValue - 2 * dataLevelIncriment ) ) { data.dataLevel = 2 ; }
       else if ( data.value > ( maxValue - 3 * dataLevelIncriment ) ) { data.dataLevel = 1 ; }
       else { data.dataLevel = 0 ; }
 
+      data.label = data.count === 0 ? `${data.dateString} : No data available` : `${data.dateString} : ${this.props.valueOperator} = ${data.value.toFixed(this.props.valueOperator === 'count' ? 0 : 2 )}  ( ${data.valuesString.join(', ') } )`;
     });
 
     let gridData: IGridchartsData = {
+
+      gridStart: gridStart,
+      gridEnd: gridEnd,
       startDate: startDate,
       endDate: endDate,
       entireDateArray: entireDateArray,

@@ -12,8 +12,10 @@ import { IGridList } from './GetListData';
 
 export interface IGridchartsData {
 
+    gridStart: any;
     startDate: any;
     endDate: any;
+    gridEnd: any;
     entireDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
     entireDateStringArray: string[];
     dataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
@@ -22,6 +24,7 @@ export interface IGridchartsData {
 
 export interface IGridchartsDataPoint {
     date: any;
+    dateString: string;
     label: any;
     dataLevel: number;
     value: number;
@@ -31,6 +34,7 @@ export interface IGridchartsDataPoint {
     min: number;
     max: number;
     values: number[];
+    valuesString: string[];
     items: IGridItemInfo[];
 }
 
