@@ -50,7 +50,7 @@ import { getExpandColumns, getSelectColumns } from '../../../../services/getFunc
  * 
  */
 
-import { IZBasicItemInfo } from './IGridchartsState';
+import { IGridItemInfo } from './IGridchartsState';
 
 
 
@@ -220,9 +220,9 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
 
     gridList.sourceUserInfo = sourceUserInfo;
     //lists.getById(listGUID).webs.orderBy("Title", true).get().then(function(result) {
-    //let allItems : IZBasicItemInfo[] = await sp.web.webs.get();
+    //let allItems : IGridItemInfo[] = await sp.web.webs.get();
 
-    let allItems : IZBasicItemInfo[] = [];
+    let allItems : IGridItemInfo[] = [];
     let errMessage = '';
 
     let thisListWeb = Web(gridList.webURL);
@@ -286,7 +286,7 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
 //                                                                                     
 //     
 
-function buildMetaFromItem( theItem: IZBasicItemInfo, gridList: IGridList, ) {
+function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
     let meta: string[] = ['All'];
 
     gridList.metaColumns.map( c=> {
@@ -314,7 +314,7 @@ function buildMetaFromItem( theItem: IZBasicItemInfo, gridList: IGridList, ) {
 //                                                                                                 
 //         
 
-function buildSearchStringFromItem ( theItem: IZBasicItemInfo, gridList: IGridList, ) {
+function buildSearchStringFromItem ( theItem: IGridItemInfo, gridList: IGridList, ) {
 
     let result = '';
     let delim = '|||';
@@ -333,7 +333,7 @@ function buildSearchStringFromItem ( theItem: IZBasicItemInfo, gridList: IGridLi
         } else {
             if ( theItem[thisCol] ) { result += thisCol + '=' + theItem[thisCol] + delim ; }
         }  
-        
+
     });
 
     if ( theItem['odata.type'] ) { result += theItem['odata.type'] + delim ; }

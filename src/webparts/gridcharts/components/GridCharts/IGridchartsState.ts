@@ -12,7 +12,10 @@ import { IGridList } from './GetListData';
 
 export interface IGridchartsData {
 
+    startDate: any;
+    endDate: any;
     entireDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
+    entireDateStringArray: string[];
     dataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
 
 }
@@ -21,7 +24,14 @@ export interface IGridchartsDataPoint {
     date: any;
     label: any;
     dataLevel: number;
-    items: IZBasicItemInfo[];
+    value: number;
+    count: number;
+    sum: number;
+    avg: number;
+    min: number;
+    max: number;
+    values: number[];
+    items: IGridItemInfo[];
 }
 
 /***
@@ -75,11 +85,11 @@ export interface IGridchartsState {
     searchText: string;
     searchMeta: string[];
 
-    searchedItems: IZBasicItemInfo[];
+    searchedItems: IGridItemInfo[];
     stats: IStat[];
-    first20searchedItems: IZBasicItemInfo[];
+    first20searchedItems: IGridItemInfo[];
 
-    allItems: IZBasicItemInfo[];
+    allItems: IGridItemInfo[];
 
 //    viewType?: IViewType;
 
@@ -127,6 +137,7 @@ export interface IMyPivCat {
  *                                                                                                                                             
  */
 
+
 export interface IZBasicItemInfo extends Partial<any>{
 
     sort: string;
@@ -154,5 +165,10 @@ export interface IZBasicItemInfo extends Partial<any>{
 //    refiners: IItemRefiners; //String of Keys representing the static name of the column used for drill downs
 
     Id: any;
+
+}
+
+export interface IGridItemInfo extends IZBasicItemInfo {
+    dateIndex: number;
 
 }

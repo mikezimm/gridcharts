@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from '../Gridcharts.module.scss';
 import { IGridchartsProps } from './IGridchartsProps';
-import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IZBasicItemInfo } from './IGridchartsState';
+import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IGridItemInfo } from './IGridchartsState';
 import { escape } from '@microsoft/sp-lodash-subset';
 
 
@@ -19,6 +19,7 @@ import { IPickedWebBasic, IPickedList, IMyProgress,
 } from '../../../../services/IReUsableInterfaces';
 
 import { createGridList, getAllItems, IGridList } from './GetListData';
+import { IGrid } from 'office-ui-fabric-react';
 /**
  * Based upon example from
  * https://codepen.io/ire/pen/Legmwo
@@ -96,12 +97,17 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let data : IGridchartsDataPoint = {
           date: null,
           label: null,
-          dataLevel: null,
+          dataLevel: Math.floor(Math.random() * 3),
+          value: Math.floor(Math.random() * 20),
+          values: [],
+          count: null,
+          sum: null,
+          avg: null,
+          min: null,
+          max: null,
           items: [],
         };
 
-        const level : number = Math.floor(Math.random() * 3);  
-        data.dataLevel= level ;
         let thisDate : Date = arrDates[ i- 1];
         data.label = thisDate.toLocaleDateString();
         data.date = thisDate;
@@ -166,8 +172,11 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let entireDateArray = [];
 
         let gridData: IGridchartsData = {
+          startDate: null,
+          endDate: null,
           dataPoints: dataPoints,
           entireDateArray: entireDateArray,
+          entireDateStringArray: [],
         };
 
         this.state = { 
@@ -325,6 +334,19 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     );
   }
 
+
+  /***
+ *     .d8b.  d8888b. d8888b.      d888888b d888888b d88888b .88b  d88. .d8888.      d888888b  .d88b.       .d8888. d888888b  .d8b.  d888888b d88888b 
+ *    d8' `8b 88  `8D 88  `8D        `88'   `~~88~~' 88'     88'YbdP`88 88'  YP      `~~88~~' .8P  Y8.      88'  YP `~~88~~' d8' `8b `~~88~~' 88'     
+ *    88ooo88 88   88 88   88         88       88    88ooooo 88  88  88 `8bo.           88    88    88      `8bo.      88    88ooo88    88    88ooooo 
+ *    88~~~88 88   88 88   88         88       88    88~~~~~ 88  88  88   `Y8b.         88    88    88        `Y8b.    88    88~~~88    88    88~~~~~ 
+ *    88   88 88  .8D 88  .8D        .88.      88    88.     88  88  88 db   8D         88    `8b  d8'      db   8D    88    88   88    88    88.     
+ *    YP   YP Y8888D' Y8888D'      Y888888P    YP    Y88888P YP  YP  YP `8888Y'         YP     `Y88P'       `8888Y'    YP    YP   YP    YP    Y88888P 
+ *                                                                                                                                                    
+ *                                                                                                                                                    
+ */
+
+
   private addTheseItemsToState( gridList: IGridList, allItems , errMessage : string ) {
 
       if ( allItems.length < 300 ) {
@@ -333,6 +355,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           console.log('addTheseItemsToState allItems: QTY: ', allItems.length );
       }
 
+      let gridData : IGridchartsData = this.buildGridData (gridList, allItems);
 
       this.setState({
         /*          */
@@ -343,6 +366,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           searchText: '',
           searchMeta: [],
           gridList: gridList,
+          gridData: gridData,
 
       });
 
@@ -353,7 +377,140 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       return true;
   }
 
-  private buildGridData ( gridList: IGridList, allItems : IZBasicItemInfo[] ) {
+/***
+ *    d8888b. db    db d888888b db      d8888b.       d888b  d8888b. d888888b d8888b.      d8888b.  .d8b.  d888888b  .d8b.  
+ *    88  `8D 88    88   `88'   88      88  `8D      88' Y8b 88  `8D   `88'   88  `8D      88  `8D d8' `8b `~~88~~' d8' `8b 
+ *    88oooY' 88    88    88    88      88   88      88      88oobY'    88    88   88      88   88 88ooo88    88    88ooo88 
+ *    88~~~b. 88    88    88    88      88   88      88  ooo 88`8b      88    88   88      88   88 88~~~88    88    88~~~88 
+ *    88   8D 88b  d88   .88.   88booo. 88  .8D      88. ~8~ 88 `88.   .88.   88  .8D      88  .8D 88   88    88    88   88 
+ *    Y8888P' ~Y8888P' Y888888P Y88888P Y8888D'       Y888P  88   YD Y888888P Y8888D'      Y8888D' YP   YP    YP    YP   YP 
+ *                                                                                                                          
+ *                                                                                                                          
+ */
+
+  private buildGridData ( gridList: IGridList, allItems : IGridItemInfo[] ) {
+    let entireDateArray : any[] = [];
+    let entireDateStringArray : string[] = [];
+    let dataPoints : IGridchartsDataPoint[] = [];
+
+    /**
+     * Get entire date range
+     * miliseconds for "2021-01-31" is 1612127321000
+     * 
+     * 1012127321000; 
+     * 1612127321000
+     */
+
+    let firstTime = 2512127321000; 
+    let lastTime = 1012127321000;
+    let firstDate = "";
+    let lastDate = "";
+
+    allItems.map( item => {
+      let theStartTimeMS = item['time' + this.props.dateColumn ].milliseconds;
+      let theStartTimeStr = item['time' + this.props.dateColumn ].theTime;
+
+      if ( theStartTimeMS > lastTime ) { 
+        lastTime = theStartTimeMS ; 
+        lastDate = theStartTimeStr ; }
+
+      if ( theStartTimeMS < firstTime ) { 
+        firstTime = theStartTimeMS ; 
+        firstDate = theStartTimeStr ; }
+
+    });
+
+    let startDate = new Date( firstDate );
+    startDate.setHours(0,0,0,0);
+    let endDate = new Date( lastDate );
+    endDate.setHours(0,0,0,0);
+    entireDateArray = this.getDates( startDate, endDate);
+    entireDateArray.map ( d => { entireDateStringArray.push( d.toLocaleDateString() ) ; });
+
+    /**
+     * Build the IGridchartsDataPoint[] array
+     */
+
+    entireDateArray.map( theDate => {
+      dataPoints.push( {
+        date: theDate,
+        label: '',
+        dataLevel: null,
+        value: null,
+        count: 0,
+        sum: null,
+        avg: null,
+        min: null,
+        max: null,
+        values: [],
+        items: [],
+      });
+    });
+
+    /**
+     * Go through items and add to dataPoints
+     */
+
+    let minValue = 951212732100099;
+    let maxValue = -951212732100099;
+
+    allItems.map( item => {
+      let itemDateProp = item['time' + this.props.dateColumn ];
+      let itemDate = new Date( itemDateProp.theTime ).toLocaleDateString();
+      let dateIndex = entireDateStringArray.indexOf( itemDate ) ;
+      item.dateIndex = dateIndex;
+
+      let valueColumn = item[ this.props.valueColumn ];
+      let valueType = typeof valueColumn;
+
+      if ( valueType === 'string' ) { valueColumn = parseFloat( valueColumn ) ; }
+      else if ( valueType === 'number' ) { valueColumn = parseFloat( valueColumn ) ; }
+      else if ( valueType === 'boolean' ) { valueColumn = valueColumn === true ? 1 : 0 ; }
+      else if ( valueType === 'object' ) { valueColumn = 0 ; }
+      else if ( valueType === 'undefined' ) { valueColumn = 0 ; }
+      else if ( valueType === 'function' ) { valueColumn = 0 ; }
+
+      dataPoints[dateIndex].items.push( item );
+      dataPoints[dateIndex].values.push( valueColumn );
+
+      dataPoints[dateIndex].count ++;
+      dataPoints[dateIndex].sum += valueColumn;      
+      if ( dataPoints[dateIndex].min === null || dataPoints[dateIndex].min > valueColumn ) { dataPoints[dateIndex].min = valueColumn; }  
+      if ( dataPoints[dateIndex].max === null || dataPoints[dateIndex].max < valueColumn ) { dataPoints[dateIndex].max = valueColumn; }  
+
+      let compareValue = dataPoints[dateIndex][ this.props.valueOperator.toLowerCase() ] ;
+      if ( compareValue < minValue ) { minValue = compareValue; }
+      if ( compareValue > maxValue ) { maxValue = compareValue; }      
+
+    });
+
+    /**
+     * Update datalevel based on min/max
+     */
+    
+    let dataLevelIncriment = ( maxValue - minValue ) / 3;
+
+    dataPoints.map( data => {
+      data.avg = data.count !== null && data.count !== undefined && data.count !== 0 ? data.sum / data.count : null;
+      data.value = data[ this.props.valueOperator.toLowerCase() ] ;
+
+      if ( data.value > ( maxValue - 1 * dataLevelIncriment ) ) { data.dataLevel = 3 ; }
+      else if ( data.value > ( maxValue - 2 * dataLevelIncriment ) ) { data.dataLevel = 2 ; }
+      else if ( data.value > ( maxValue - 3 * dataLevelIncriment ) ) { data.dataLevel = 1 ; }
+      else { data.dataLevel = 0 ; }
+
+    });
+
+    let gridData: IGridchartsData = {
+      startDate: startDate,
+      endDate: endDate,
+      entireDateArray: entireDateArray,
+      entireDateStringArray: entireDateStringArray,
+      dataPoints: dataPoints,
+
+    };
+
+    return gridData;
 
   }
 
