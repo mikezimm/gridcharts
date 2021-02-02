@@ -1,4 +1,5 @@
 
+import {    IDropdownOption,  } from "office-ui-fabric-react";
 
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
     getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime, } from '@mikezimm/npmfunctions/dist/dateServices';
@@ -9,10 +10,33 @@ import { IPickedWebBasic, IPickedList, IMyProgress,
 
 import { IGridList } from './GetListData';
 
+
 export interface IGridchartsData {
+
+    gridStart: any;
+    startDate: any;
+    endDate: any;
+    gridEnd: any;
+    entireDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
+    entireDateStringArray: string[];
+    dataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
+
+}
+
+export interface IGridchartsDataPoint {
     date: any;
+    dateString: string;
     label: any;
     dataLevel: number;
+    value: number;
+    count: number;
+    sum: number;
+    avg: number;
+    min: number;
+    max: number;
+    values: number[];
+    valuesString: string[];
+    items: IGridItemInfo[];
 }
 
 /***
@@ -37,17 +61,21 @@ export interface IStat {
     result?: string;
 }
 
+
+
 export interface IGridchartsState {
 
     selectedYear: number; //Used to determine selected Year Pivot
     selectedUser: any; //Used to determine filter of items ( current user or everyone )
 
-    gridData: IGridchartsData[]; //One IGridchartsData per date between lowest and highest date range for input data
+    selectedDropdowns: string[]; //array of selected choices for dropdowns
+    dropDownItems: IDropdownOption[][]; //array of array of options for selected dropdown fields
+
+    gridData: IGridchartsData; //One IGridchartsDataPoint per date between lowest and highest date range for input data
 
     monthLables: string[];  //Used to build the month labels on top of the gridChart
     monthScales: number[];  //Used to space the month labels on top of the gridChart
 
-    entireDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
 
     WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
     WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
@@ -67,11 +95,11 @@ export interface IGridchartsState {
     searchText: string;
     searchMeta: string[];
 
-    searchedItems: IDrillItemInfo[];
+    searchedItems: IGridItemInfo[];
     stats: IStat[];
-    first20searchedItems: IDrillItemInfo[];
+    first20searchedItems: IGridItemInfo[];
 
-    allItems: IDrillItemInfo[];
+    allItems: IGridItemInfo[];
 
 //    viewType?: IViewType;
 
@@ -83,7 +111,8 @@ export interface IGridchartsState {
 
     pivotCats: IMyPivCat[][];
  
-
+    lastStateChange: string;
+    stateChanges: string[]; //Log of state changes into array
   }
 
   
@@ -119,7 +148,8 @@ export interface IMyPivCat {
  *                                                                                                                                             
  */
 
-export interface IDrillItemInfo extends Partial<any>{
+
+export interface IZBasicItemInfo extends Partial<any>{
 
     sort: string;
     searchString: string;
@@ -146,5 +176,10 @@ export interface IDrillItemInfo extends Partial<any>{
 //    refiners: IItemRefiners; //String of Keys representing the static name of the column used for drill downs
 
     Id: any;
+
+}
+
+export interface IGridItemInfo extends IZBasicItemInfo {
+    dateIndex: number;
 
 }

@@ -46,10 +46,10 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
     ];
 
     public valueOperatorChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
-        {   index: 0,   key: "Count", text: "Count"  },
-        {   index: 1,   key: "Sum", text: "Sum"  },
-        {   index: 2,   key: "Min", text: "Min"  },
-        {   index: 3,   key: "Max", text: "Max"  },
+        {   index: 0,   key: "count", text: "Count"  },
+        {   index: 1,   key: "sum", text: "Sum"  },
+        {   index: 2,   key: "min", text: "Min"  },
+        {   index: 3,   key: "max", text: "Max"  },
     ];
 
   }

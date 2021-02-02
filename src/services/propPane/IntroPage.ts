@@ -108,12 +108,6 @@ export class IntroPage {
             label: 'Value Column'
           }),
 
-          PropertyPaneTextField('dropDownColumns', {
-            label: 'Dropdown Columns',
-            description: 'comma separated column names'
-          }),
-          
-
           PropertyPaneDropdown('valueType', <IPropertyPaneDropdownProps>{
             label: 'Value type',
             options: gridChartsOptionsGroup.valueTypeChoices,
@@ -127,7 +121,35 @@ export class IntroPage {
         ]}, // this group
 /* */
 
+        // 2 - Source and destination list information    
+        { groupName: 'Search settings',
+        isCollapsed: true ,
+        groupFields: [
+ 
+          PropertyPaneTextField('dropDownColumns', {
+            label: 'Dropdown Columns',
+            description: 'comma separated column names'
+          }),
 
+          PropertyPaneTextField('searchColumns', {
+            label: 'Search Columns',
+            description: 'comma separated column names'
+          }),         
+          
+          PropertyPaneTextField('metaColumns', {
+            label: 'Meta Columns',
+            description: 'comma separated column names'
+          }),
+
+          PropertyPaneToggle('enableSearch', {
+            label: 'Allow for text searching',
+            offText: 'Off',
+            onText: 'On',
+          }),
+
+
+        ]}, // this group
+/* */
 
         { groupName: 'Performance Properties',
         isCollapsed: true ,
