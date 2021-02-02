@@ -49,7 +49,7 @@ export const baseMyRepos = 'https://github.com/mikezimm/';
 export const gitRepoTrackMyTime = createRepoLinks( baseMyRepos + 'TrackMyTime7v2021', '_blank', 'TrackMyTime7' );
 export const gitRepoPivotTiles = createRepoLinks( baseMyRepos + 'Pivot-Tiles','_blank', 'Pivot-Tiles' );
 export const gitRepoSocialiis = createRepoLinks( baseMyRepos + 'Social-iis-7','_blank', 'Social-iis-7' );
-
+export const gitRepoGridCharts = createRepoLinks( baseMyRepos + 'gridcharts','_blank', 'GridCharts' );
 
 /**
  * Track My Time links
@@ -82,6 +82,7 @@ export function createRepoLinks(href: string, target: string, linkDesc: string){
         repo: createLink( href, target, linkDesc + ' on Github' ),
         issues: createLink( href + '/issues', target, linkDesc + " Issues" ),
         wiki: createLink( href + '/wiki', target, linkDesc + " Wiki" ),
+        projects: createLink( href + '/projects', target, linkDesc + " Projects" ),        
         href: href,
         target: target,
         desc: linkDesc,
