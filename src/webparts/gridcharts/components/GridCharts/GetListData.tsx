@@ -202,7 +202,7 @@ export interface IZBasicList extends Partial<IPickedList> {
 
 export interface IGridList extends IZBasicList {
     dropdownColumns: string[];
-    dropDownSort: string[],
+    dropDownSort: string[];
   }
 
 
@@ -307,9 +307,10 @@ function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
 
     gridList.dropdownColumns.map( ( col , colIndex ) => {
 
-        let actualColName = col.replace('>', '' );
+        let actualColName = col.replace('>', '' ).replace('+', '' ).replace('-', '' );
         let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? gridList.dropdownColumns[colIndex - 1] : null;
-  
+        parentColName = parentColName !== null ? parentColName.replace('>', '' ).replace('+', '' ).replace('-', '' ) : null;
+
         let thisItemsChoices = theItem[ actualColName ];
         if ( parentColName !== null ) { thisItemsChoices = theItem[ parentColName ] + ' > ' + theItem[ actualColName ] ; }
 

@@ -318,11 +318,12 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         let dropDownSort : string[] = dropDownColumns.map( c => { let c1 = c.replace('>','') ; if ( c1.indexOf('-') === 0 ) { return 'dec' ; } else if ( c1.indexOf('+') === 0 ) { return 'asc' ; } else { return ''; } });
 
-        dropDownColumns.map( c => { let c1 = c.replace('>','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); });
+        dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); });
 
         let gridList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
 
         getAllItems( gridList, this.addTheseItemsToState.bind(this), null, null );
+        
       }
 
 
@@ -371,10 +372,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
             let dropDownSort = this.state.gridList.dropDownSort[ index ];
             let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
-
+            let DDLabel = this.state.gridList.dropdownColumns[ index ].replace('>','').replace('+','').replace('-','');
             return <Dropdown
-                placeholder={ 'DDPlaceholder' }
-                label={'DDSLabel'}
+                placeholder={ `Select a ${ DDLabel }` }
+                label={ DDLabel }
                 options={dropDownChoicesSorted}
                 selectedKey={ this.state.selectedDropdowns [index ] }
                 onChange={(ev: any, value: IDropdownOption) => {
@@ -457,7 +458,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           /*
     */
 
-    let dropdownColumnIndex = null;
+    let dropdownColumnIndex = null; //Index of dropdown column that was picked
     this.state.dropDownItems.map ( ( thisDropDown, ddIndex ) => {
       thisDropDown.map( thisChoice => {
         if ( ddIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; } 
@@ -465,7 +466,13 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     });
 
     let selectedDropdowns = this.state.selectedDropdowns;
-    if ( dropdownColumnIndex !== null ) { selectedDropdowns[ dropdownColumnIndex ] = item; }
+
+    selectedDropdowns.map( (dd, index ) => {
+      if ( dropdownColumnIndex !== null ) {  //This should never be null but just in case... 
+          selectedDropdowns[ dropdownColumnIndex ] = dropdownColumnIndex === index ? item : ''; 
+      }
+    });
+
 
     let searchItems : IGridItemInfo[] = [];
     let newFilteredItems: IGridItemInfo[]  = [];
@@ -579,8 +586,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     this.props.dropDownColumns.map( ( col, colIndex ) => {
 
-      let actualColName = col.replace('>', '' );
+      let actualColName = col.replace('>', '' ).replace('+', '' ).replace('-', '' );
       let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? this.props.dropDownColumns[colIndex - 1] : null;
+      parentColName = parentColName !== null ? parentColName.replace('>', '' ).replace('+', '' ).replace('-', '' ) : null;
 
       let thisColumnChoices : IDropdownOption[] = [];
       let foundChoices : string[] = [];
