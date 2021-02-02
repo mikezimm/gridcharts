@@ -110,7 +110,8 @@ export function updateGridListColumns( list: IGridList ) {
  *                                                                                                                                          
  */
 
-export function createGridList(webURL: string, parentListURL: string, title: string, name: string, isLibrary: boolean, performance: any, pageContext: any, staticColumns: string[] , searchColumns: string[], metaColumns: string[], expandDates: string[] ) {
+export function createGridList(webURL: string, parentListURL: string, title: string, name: string, isLibrary: boolean, performance: any, pageContext: any, 
+    staticColumns: string[] , searchColumns: string[], metaColumns: string[], expandDates: string[] , dropDownColumns: string[], dropDownSort: string[] ) {
 
     let list: IGridList = {
         title: title,
@@ -141,6 +142,8 @@ export function createGridList(webURL: string, parentListURL: string, title: str
         expandDates: expandDates,
         selectColumns: [],
         expandColumns: [],
+        dropdownColumns: dropDownColumns,
+        dropDownSort: dropDownSort,
         staticColumnsStr: '',
         selectColumnsStr: '',
         expandColumnsStr: '',
@@ -198,8 +201,8 @@ export interface IZBasicList extends Partial<IPickedList> {
 
 
 export interface IGridList extends IZBasicList {
-
-
+    dropdownColumns: string[];
+    dropDownSort: string[],
   }
 
 
@@ -300,6 +303,18 @@ function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
             meta = addItemToArrayIfItDoesNotExist( meta, theItem[ c ] ) ;
         }
         
+    });
+
+    gridList.dropdownColumns.map( ( col , colIndex ) => {
+
+        let actualColName = col.replace('>', '' );
+        let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? gridList.dropdownColumns[colIndex - 1] : null;
+  
+        let thisItemsChoices = theItem[ actualColName ];
+        if ( parentColName !== null ) { thisItemsChoices = theItem[ parentColName ] + ' > ' + theItem[ actualColName ] ; }
+
+        meta = addItemToArrayIfItDoesNotExist( meta, thisItemsChoices ) ;
+
     });
 
     return meta;

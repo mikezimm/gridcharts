@@ -171,11 +171,12 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         searchColumns.map( c => { allColumns.push( c ) ; });
         metaColumns.map( c => { allColumns.push( c ) ; });
 
-        dropDownColumns.map( c => { searchColumns.push( c ) ; metaColumns.push( c ) ; allColumns.push( c ); });
+        let dropDownSort : string[] = dropDownColumns.map( c => { let c1 = c.replace('>','') ; if ( c1.indexOf('-') === 0 ) { return 'dec' ; } else if ( c1.indexOf('+') === 0 ) { return 'asc' ; } else { return ''; } });
 
-        let gridList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates );
+        dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); });
+
+        let gridList = createGridList( this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
         let errMessage = null;
-
 
         let dataPoints : IGridchartsDataPoint[] = this.createSampleGridData();
 
@@ -315,9 +316,11 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         searchColumns.map( c => { allColumns.push( c ) ; });
         metaColumns.map( c => { allColumns.push( c ) ; });
 
-        dropDownColumns.map( c => { searchColumns.push( c ) ; metaColumns.push( c ) ; allColumns.push( c ); });
+        let dropDownSort : string[] = dropDownColumns.map( c => { let c1 = c.replace('>','') ; if ( c1.indexOf('-') === 0 ) { return 'dec' ; } else if ( c1.indexOf('+') === 0 ) { return 'asc' ; } else { return ''; } });
 
-        let gridList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates );
+        dropDownColumns.map( c => { let c1 = c.replace('>','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); });
+
+        let gridList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
 
         getAllItems( gridList, this.addTheseItemsToState.bind(this), null, null );
       }
@@ -365,10 +368,14 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       if ( this.state.dropDownItems.length > 0 ) {
 
         let searchElements = this.state.dropDownItems.map( ( dropDownChoices, index ) => {
+
+            let dropDownSort = this.state.gridList.dropDownSort[ index ];
+            let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
+
             return <Dropdown
                 placeholder={ 'DDPlaceholder' }
                 label={'DDSLabel'}
-                options={dropDownChoices}
+                options={dropDownChoicesSorted}
                 selectedKey={ this.state.selectedDropdowns [index ] }
                 onChange={(ev: any, value: IDropdownOption) => {
                   this.searchForItems(value.key.toString());
@@ -570,12 +577,16 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let dropDownItems : IDropdownOption[][] = [];
 
-    this.props.dropDownColumns.map( col => {
+    this.props.dropDownColumns.map( ( col, colIndex ) => {
+
+      let actualColName = col.replace('>', '' );
+      let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? this.props.dropDownColumns[colIndex - 1] : null;
 
       let thisColumnChoices : IDropdownOption[] = [];
       let foundChoices : string[] = [];
       allItems.map( item => {
-        let thisItemsChoices = item[ col ];
+        let thisItemsChoices = item[ actualColName ];
+        if ( parentColName !== null ) { thisItemsChoices = item[ parentColName ] + ' > ' + item[ actualColName ] ; }
         if ( thisItemsChoices && thisItemsChoices.length > 0 ) {
           if ( foundChoices.indexOf( thisItemsChoices ) < 0 ) {
             if ( thisColumnChoices.length === 0 ) { thisColumnChoices.push( { key: '', text: '- all -' } ) ; }
