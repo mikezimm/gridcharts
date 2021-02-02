@@ -5,6 +5,21 @@ import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IGridItemInfo 
 import { escape } from '@microsoft/sp-lodash-subset';
 
 import { Spinner, SpinnerSize, SpinnerLabelPosition } from 'office-ui-fabric-react/lib/Spinner';
+import { Stack, IStackStyles, IStackTokens } from 'office-ui-fabric-react/lib/Stack';
+
+import {
+  MessageBar,
+  MessageBarType,
+  SearchBox,
+  Icon,
+  Label,
+  Pivot,
+  PivotItem,
+  PivotLinkFormat,
+  PivotLinkSize,
+  Dropdown,
+  IDropdownOption,
+} from "office-ui-fabric-react";
 
 import InfoPage from '../HelpInfo/infoPages';
 
@@ -195,7 +210,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
           selectedYear: null,
           selectedUser: null,
-          
+          selectedDropdowns: [],
+          dropDownItems: [],
+
           gridData: gridData,
 
           gridList: gridList,
@@ -223,6 +240,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           
           pivotCats: [],
 
+          lastStateChange: 'Loading',
+          stateChanges: [],
 //          style: this.props.style ? this.props.style : 'commandBar',
 
         };  
@@ -326,11 +345,14 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
   public render(): React.ReactElement<IGridchartsProps> {
 
+    const wrapStackTokens: IStackTokens = { childrenGap: 30 };
+
 //    const squares = document.querySelector(styles.squares);
 //    const squares = document.querySelector(styles.squares);
 
     const squares : any[] = [];
     let gridElement = null;
+    let searchStack = null;
 
     if ( this.state.allLoaded === true ) {
       this.state.gridData.dataPoints.map( ( d ) => {
@@ -339,6 +361,29 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       gridElement = <ul className={styles.squares} style={{ listStyleType: 'none' }}>
                       { squares }
                     </ul>;
+
+      if ( this.state.dropDownItems.length > 0 ) {
+
+        let searchElements = this.state.dropDownItems.map( ( dropDownChoices, index ) => {
+            return <Dropdown
+                placeholder={ 'DDPlaceholder' }
+                label={'DDSLabel'}
+                options={dropDownChoices}
+                selectedKey={ this.state.selectedDropdowns [index ] }
+                onChange={(ev: any, value: IDropdownOption) => {
+                  this.searchForItems(value.key.toString());
+                }}
+                styles={{ dropdown: { width: 200 } }}
+            />;
+        });
+        searchStack = <div>
+              <Stack horizontal horizontalAlign="center" wrap tokens={wrapStackTokens}>
+                { searchElements }
+              </Stack>
+          </div>;
+
+      } 
+
 
     } else {
 
@@ -360,8 +405,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     return (
       <div className={ styles.gridcharts }>
         <div className={ styles.container }>
-
+          { searchStack }
           <div className={styles.graph} style={{ width: '900px' }}>
+
             <ul className={styles.months} style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns }}>
               { months.map( m=> { return <li> { m } </li> ; }) }
             </ul>
@@ -378,6 +424,92 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
 
   /***
+ *    .d8888. d88888b  .d8b.  d8888b.  .o88b. db   db      d88888b  .d88b.  d8888b.      d888888b d888888b d88888b .88b  d88. .d8888. 
+ *    88'  YP 88'     d8' `8b 88  `8D d8P  Y8 88   88      88'     .8P  Y8. 88  `8D        `88'   `~~88~~' 88'     88'YbdP`88 88'  YP 
+ *    `8bo.   88ooooo 88ooo88 88oobY' 8P      88ooo88      88ooo   88    88 88oobY'         88       88    88ooooo 88  88  88 `8bo.   
+ *      `Y8b. 88~~~~~ 88~~~88 88`8b   8b      88~~~88      88~~~   88    88 88`8b           88       88    88~~~~~ 88  88  88   `Y8b. 
+ *    db   8D 88.     88   88 88 `88. Y8b  d8 88   88      88      `8b  d8' 88 `88.        .88.      88    88.     88  88  88 db   8D 
+ *    `8888Y' Y88888P YP   YP 88   YD  `Y88P' YP   YP      YP       `Y88P'  88   YD      Y888888P    YP    Y88888P YP  YP  YP `8888Y' 
+ *                                                                                                                                    
+ *                                                                                                                                    
+ */
+
+ /**
+  * Based on PivotTiles.tsx
+  * @param item
+  */
+  public searchForItems = (item): void => {
+
+    //This sends back the correct pivot category which matches the category on the tile.
+    let e: any = event;
+
+    console.log('searchForItems: e',e);
+
+    console.log('searchForItems: item', item);
+    console.log('searchForItems: this', this);
+          /*
+    */
+
+    let dropdownColumnIndex = null;
+    this.state.dropDownItems.map ( ( thisDropDown, ddIndex ) => {
+      thisDropDown.map( thisChoice => {
+        if ( ddIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; } 
+      });
+    });
+
+    let selectedDropdowns = this.state.selectedDropdowns;
+    if ( dropdownColumnIndex !== null ) { selectedDropdowns[ dropdownColumnIndex ] = item; }
+
+    let searchItems : IGridItemInfo[] = [];
+    let newFilteredItems: IGridItemInfo[]  = [];
+
+    searchItems =this.state.allItems;
+
+    let searchCount = searchItems.length;
+
+    if ( item === '' ) {
+      newFilteredItems = searchItems;
+    } else {
+      for (let thisItem of searchItems) {
+        let searchChoices = thisItem.meta ;
+        if(searchChoices.indexOf( item ) > -1) {
+          //console.log('fileName', fileName);
+          newFilteredItems.push(thisItem);
+        }
+      }
+    }
+
+
+    searchCount = newFilteredItems.length;
+
+    let gridData : IGridchartsData = this.buildGridData (this.state.gridList, newFilteredItems);
+    
+    const s1 = gridData.gridStart.getMonth();
+    const s2 = s1 + 12;
+
+    const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
+    const monthScales = [ 4,4,4,5,4,4,5,4,4,5,4,5   ,   4,4,4,5,4,4,5,4,4,5,4,5 ].slice(s1,s2) ;
+
+    this.setState({
+      /*          */
+        searchedItems: newFilteredItems, //newFilteredItems,  //Replaced with theseItems to update when props change.
+        searchCount: newFilteredItems.length,
+        searchText: '',
+        searchMeta: [],
+        selectedDropdowns: selectedDropdowns,
+        gridData: gridData,
+        allLoaded: true,
+        monthLables: monthLables,
+        monthScales: monthScales,
+        lastStateChange: 'searchForItems: ' + item,
+
+    });
+
+    return ;
+    
+  }
+
+  /***
  *     .d8b.  d8888b. d8888b.      d888888b d888888b d88888b .88b  d88. .d8888.      d888888b  .d88b.       .d8888. d888888b  .d8b.  d888888b d88888b 
  *    d8' `8b 88  `8D 88  `8D        `88'   `~~88~~' 88'     88'YbdP`88 88'  YP      `~~88~~' .8P  Y8.      88'  YP `~~88~~' d8' `8b `~~88~~' 88'     
  *    88ooo88 88   88 88   88         88       88    88ooooo 88  88  88 `8bo.           88    88    88      `8bo.      88    88ooo88    88    88ooooo 
@@ -389,16 +521,19 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
  */
 
 
-  private addTheseItemsToState( gridList: IGridList, allItems , errMessage : string ) {
+  private addTheseItemsToState( gridList: IGridList, theseItems , errMessage : string, allNewData : boolean = true ) {
 
-      if ( allItems.length < 300 ) {
-          console.log('addTheseItemsToState allItems: ', allItems);
+      if ( theseItems.length < 300 ) {
+          console.log('addTheseItemsToState theseItems: ', theseItems);
       } {
-          console.log('addTheseItemsToState allItems: QTY: ', allItems.length );
+          console.log('addTheseItemsToState theseItems: QTY: ', theseItems.length );
       }
 
-      let gridData : IGridchartsData = this.buildGridData (gridList, allItems);
+      let allItems = allNewData === false ? this.state.allItems : theseItems;
 
+      let gridData : IGridchartsData = this.buildGridData (gridList, theseItems);
+
+      let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( gridList, allItems ) : this.state.dropDownItems ;
       
       const s1 = gridData.gridStart.getMonth();
       const s2 = s1 + 12;
@@ -409,8 +544,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       this.setState({
         /*          */
           allItems: allItems,
-          searchedItems: allItems, //newFilteredItems,  //Replaced with allItems to update when props change.
-          searchCount: allItems.length,
+          searchedItems: theseItems, //newFilteredItems,  //Replaced with theseItems to update when props change.
+          searchCount: theseItems.length,
+          dropDownItems: dropDownItems,
           errMessage: errMessage,
           searchText: '',
           searchMeta: [],
@@ -429,6 +565,35 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
       return true;
   }
+
+  private buildDataDropdownItems( gridList: IGridList, allItems : IGridItemInfo[] ) {
+
+    let dropDownItems : IDropdownOption[][] = [];
+
+    this.props.dropDownColumns.map( col => {
+
+      let thisColumnChoices : IDropdownOption[] = [];
+      let foundChoices : string[] = [];
+      allItems.map( item => {
+        let thisItemsChoices = item[ col ];
+        if ( thisItemsChoices && thisItemsChoices.length > 0 ) {
+          if ( foundChoices.indexOf( thisItemsChoices ) < 0 ) {
+            if ( thisColumnChoices.length === 0 ) { thisColumnChoices.push( { key: '', text: '- all -' } ) ; }
+            thisColumnChoices.push( { key: thisItemsChoices, text: thisItemsChoices } ) ;
+            foundChoices.push( thisItemsChoices ) ;
+          }
+        }
+      });
+
+      dropDownItems.push( thisColumnChoices ) ;
+
+    });
+
+    return dropDownItems;
+
+  }
+
+
 
 /***
  *    d8888b. db    db d888888b db      d8888b.       d888b  d8888b. d888888b d8888b.      d8888b.  .d8b.  d888888b  .d8b.  

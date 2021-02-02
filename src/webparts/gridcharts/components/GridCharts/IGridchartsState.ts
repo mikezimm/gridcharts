@@ -1,4 +1,5 @@
 
+import {    IDropdownOption,  } from "office-ui-fabric-react";
 
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
     getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime, } from '@mikezimm/npmfunctions/dist/dateServices';
@@ -60,10 +61,15 @@ export interface IStat {
     result?: string;
 }
 
+
+
 export interface IGridchartsState {
 
     selectedYear: number; //Used to determine selected Year Pivot
     selectedUser: any; //Used to determine filter of items ( current user or everyone )
+
+    selectedDropdowns: string[]; //array of selected choices for dropdowns
+    dropDownItems: IDropdownOption[][]; //array of array of options for selected dropdown fields
 
     gridData: IGridchartsData; //One IGridchartsDataPoint per date between lowest and highest date range for input data
 
@@ -105,7 +111,8 @@ export interface IGridchartsState {
 
     pivotCats: IMyPivCat[][];
  
-
+    lastStateChange: string;
+    stateChanges: string[]; //Log of state changes into array
   }
 
   

@@ -108,6 +108,24 @@ export class IntroPage {
             label: 'Value Column'
           }),
 
+          PropertyPaneDropdown('valueType', <IPropertyPaneDropdownProps>{
+            label: 'Value type',
+            options: gridChartsOptionsGroup.valueTypeChoices,
+          }),
+
+          PropertyPaneDropdown('valueOperator', <IPropertyPaneDropdownProps>{
+            label: 'Value operator',
+            options: gridChartsOptionsGroup.valueOperatorChoices,
+          }),
+
+        ]}, // this group
+/* */
+
+        // 2 - Source and destination list information    
+        { groupName: 'Search settings',
+        isCollapsed: true ,
+        groupFields: [
+ 
           PropertyPaneTextField('dropDownColumns', {
             label: 'Dropdown Columns',
             description: 'comma separated column names'
@@ -123,20 +141,15 @@ export class IntroPage {
             description: 'comma separated column names'
           }),
 
-          PropertyPaneDropdown('valueType', <IPropertyPaneDropdownProps>{
-            label: 'Value type',
-            options: gridChartsOptionsGroup.valueTypeChoices,
+          PropertyPaneToggle('enableSearch', {
+            label: 'Allow for text searching',
+            offText: 'Off',
+            onText: 'On',
           }),
 
-          PropertyPaneDropdown('valueOperator', <IPropertyPaneDropdownProps>{
-            label: 'Value operator',
-            options: gridChartsOptionsGroup.valueOperatorChoices,
-          }),
 
         ]}, // this group
 /* */
-
-
 
         { groupName: 'Performance Properties',
         isCollapsed: true ,

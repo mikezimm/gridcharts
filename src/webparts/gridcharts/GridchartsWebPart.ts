@@ -16,6 +16,9 @@ import * as strings from 'GridchartsWebPartStrings';
 import Gridcharts from './components/GridCharts/Gridcharts';
 import { IGridchartsProps } from './components/GridCharts/IGridchartsProps';
 
+//require('@mikezimm/npmfunctions/dist/GrayPropPaneAccordions.css');
+require('../../services/propPane/GrayPropPaneAccordions.css');
+
 export interface IGridchartsWebPartProps {
   description: string;
     // 0 - Context
@@ -40,6 +43,7 @@ export interface IGridchartsWebPartProps {
     dropDownColumns: string;
     searchColumns: string;
     metaColumns: string;
+    enableSearch: boolean;
 
     webPartScenario: string; //Choice used to create mutiple versions of the webpart.
 
@@ -148,6 +152,8 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         dropDownColumns: this.properties.dropDownColumns ? this.properties.dropDownColumns.split(',') : [],
         searchColumns: this.properties.searchColumns ? this.properties.searchColumns.split(',') : [], 
         metaColumns: this.properties.metaColumns ? this.properties.metaColumns.split(',') : [], 
+        enableSearch: this.properties.enableSearch,
+        
         style: null,
 
         //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/

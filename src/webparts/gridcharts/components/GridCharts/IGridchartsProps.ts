@@ -40,6 +40,7 @@ export interface IGridchartsProps {
       valueOperator: string;
       dropDownColumns: string[];
       metaColumns: string[];
+      enableSearch: boolean;
 
       allLoaded: boolean;
   
