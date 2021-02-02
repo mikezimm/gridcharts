@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from '../Gridcharts.module.scss';
+import styles from './Gridcharts.module.scss';
 import { IGridchartsProps } from './IGridchartsProps';
 import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IGridItemInfo } from './IGridchartsState';
 import { escape } from '@microsoft/sp-lodash-subset';
@@ -179,11 +179,16 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); });
 
         let gridList = createGridList( this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
+        /**
+         * Add this at this point to be able to search on specific odata types
+         * gridList.odataSearch = ['odata.type'];
+        */
+
         let errMessage = null;
 
         let dataPoints : IGridchartsDataPoint[] = this.createSampleGridData();
 
-        console.log('gridData', dataPoints );
+        //console.log('gridData', dataPoints );
 
         const s1 = dataPoints[0].date.getMonth();
         const s2 = s1 + 12;
@@ -286,7 +291,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
       let refreshOnThese = [
         'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
-        'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', '',
+        'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'gridStyles',
 
       ];
 
@@ -327,7 +332,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         getAllItems( gridList, this.addTheseItemsToState.bind(this), null, null );
         
-      }
+      } else if ( refreshMe === true ) {  this.setState({ }) ; }
 
 
       //if (this.props.defaultProjectPicker !== prevProps.defaultProjectPicker) {  rebuildTiles = true ; }
@@ -354,9 +359,6 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     const wrapStackTokens: IStackTokens = { childrenGap: 30 };
 
-//    const squares = document.querySelector(styles.squares);
-//    const squares = document.querySelector(styles.squares);
-
     const squares : any[] = [];
     let gridElement = null;
     let searchStack = null;
@@ -366,35 +368,59 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
       });
       gridElement = <ul className={styles.squares} style={{ listStyleType: 'none' }}>
-                      { squares }
+                        { squares }
                     </ul>;
 
-      if ( this.state.dropDownItems.length > 0 ) {
 
-        let searchElements = this.state.dropDownItems.map( ( dropDownChoices, index ) => {
+      let searchElements = [];
 
-            let dropDownSort = this.state.gridList.dropDownSort[ index ];
-            let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
-            let DDLabel = this.state.gridList.dropdownColumns[ index ].replace('>','').replace('+','').replace('-','');
-            return <Dropdown
-                placeholder={ `Select a ${ DDLabel }` }
-                label={ DDLabel }
-                options={dropDownChoicesSorted}
-                selectedKey={ this.state.selectedDropdowns [index ] }
-                onChange={(ev: any, value: IDropdownOption) => {
-                  this.searchForItems(value.key.toString());
-                }}
-                styles={{ dropdown: { width: 200 } }}
-            />;
-        });
-        searchStack = <div>
-              <Stack horizontal horizontalAlign="center" wrap tokens={wrapStackTokens}>
-                { searchElements }
-              </Stack>
+      /**
+       * Add Dropdown search
+       */
+        if ( this.state.dropDownItems.length > 0 ) {
+
+          searchElements = this.state.dropDownItems.map( ( dropDownChoices, index ) => {
+
+              let dropDownSort = this.state.gridList.dropDownSort[ index ];
+              let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
+              let DDLabel = this.state.gridList.dropdownColumns[ index ].replace('>','').replace('+','').replace('-','');
+              return <Dropdown
+                  placeholder={ `Select a ${ DDLabel }` }
+                  label={ DDLabel }
+                  options={dropDownChoicesSorted}
+                  selectedKey={ this.state.selectedDropdowns [index ] }
+                  onChange={(ev: any, value: IDropdownOption) => {
+                    this.searchForItems(value.key.toString());
+                  }}
+                  styles={{ dropdown: { width: 200 } }}
+              />;
+          });
+        } 
+
+        /**
+         * Add Text search box
+         */
+        if ( this.props.enableSearch === true ) {
+
+          let searchBox = <div>
+          <div style={{ paddingTop: '20px' }}></div>
+          <SearchBox className={ styles.searchBox }
+              placeholder= { 'Search items' }
+              iconProps={{ iconName : 'Search'}}
+              onSearch={ this.textSearch.bind(this) }
+              value={this.state.searchText}
+              onChange={ this.textSearch.bind(this) } />
           </div>;
 
-      } 
+          searchElements.push( searchBox ) ;
 
+        }
+
+        searchStack = <div style={{marginLeft: '38px'}}>
+                <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
+                  { searchElements }
+                </Stack>
+            </div>;
 
     } else {
 
@@ -413,55 +439,65 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     const gridTemplateColumns : string = this.state.monthScales.map( v => 20*v*.9 + 'px').join( ' ');
 
-
-
     /**
      * Add early access bar
      */
-    let messages : any[] = [];
-    if ( this.state.WebpartWidth > 800 ) { 
-        messages.push( <div><span><b>{ 'Welcome to ALV Webpart Early Access!!!' }</b></span></div> ) ;
-        messages.push( <div><span><b>{ 'Get more info here -->' }</b></span></div> ) ;
-    }
-    else if ( this.state.WebpartWidth > 700 ) {
-        messages.push( <div><span><b>{ 'Webpart Early Access!' }</b></span></div> ) ;
-        messages.push( <div><span><b>{ 'More info ->' }</b></span></div> ) ;
-    } else if ( this.state.WebpartWidth > 600 ) {
-        messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
+    let earlyAccess = null;
 
-    } else if ( this.state.WebpartWidth > 400 ) {
-        messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
+    if ( this.props.showEarlyAccess === true ) {
+      let messages : any[] = [];
+      if ( this.state.WebpartWidth > 800 ) { 
+          messages.push( <div><span><b>{ 'Welcome to ALV Webpart Early Access!!!' }</b></span></div> ) ;
+          messages.push( <div><span><b>{ 'Get more info here -->' }</b></span></div> ) ;
+      }
+      else if ( this.state.WebpartWidth > 700 ) {
+          messages.push( <div><span><b>{ 'Webpart Early Access!' }</b></span></div> ) ;
+          messages.push( <div><span><b>{ 'More info ->' }</b></span></div> ) ;
+      } else if ( this.state.WebpartWidth > 600 ) {
+          messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
+  
+      } else if ( this.state.WebpartWidth > 400 ) {
+          messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
+      }
+  
+      earlyAccess = 
+      <div style={{ paddingBottom: 10 }}>
+        <EarlyAccess 
+            image = { "https://autoliv.sharepoint.com/sites/crs/PublishingImages/Early%20Access%20Image.png" }
+            messages = { messages }
+            links = { [ this.state.WebpartWidth > 450 ? links.gitRepoGridCharts.wiki : null, 
+                this.state.WebpartWidth > 600 ? links.gitRepoGridCharts.issues : null,
+                this.state.WebpartWidth > 800 ? links.gitRepoGridCharts.projects : null ]}
+            email = { 'mailto:General - WebPart Dev <0313a49d.Autoliv.onmicrosoft.com@amer.teams.ms>?subject=Drilldown Webpart Feedback&body=Enter your message here :)  \nScreenshots help!' }
+            farRightIcons = { [ ] }
+        ></EarlyAccess>
+      </div>;
+
     }
 
-    let earlyAccess = 
-    <div style={{ paddingBottom: 10 }}>
-      <EarlyAccess 
-          image = { "https://autoliv.sharepoint.com/sites/crs/PublishingImages/Early%20Access%20Image.png" }
-          messages = { messages }
-          links = { [ this.state.WebpartWidth > 450 ? links.gitRepoGridCharts.wiki : null, 
-              this.state.WebpartWidth > 600 ? links.gitRepoGridCharts.issues : null,
-              this.state.WebpartWidth > 800 ? links.gitRepoGridCharts.projects : null ]}
-          email = { 'mailto:General - WebPart Dev <0313a49d.Autoliv.onmicrosoft.com@amer.teams.ms>?subject=Drilldown Webpart Feedback&body=Enter your message here :)  \nScreenshots help!' }
-          farRightIcons = { [ ] }
-      ></EarlyAccess>
-    </div>
-    ;
+    let theGraph = <div className={styles.graph} style={{ width: '900px' }}>
+        <ul className={styles.months} style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns }}>
+          { months.map( m=> { return <li> { m } </li> ; }) }
+        </ul>
+        <ul className={styles.days} style={{ listStyleType: 'none' }}>
+            { days.map( d=> { return <li> { d } </li> ; }) }
+        </ul>
+        { gridElement }
+      </div>;
+
+    if ( this.state.allLoaded === true && this.state.searchedItems && this.state.searchedItems.length === 0 ) {
+      theGraph = <div style={{ textAlign: 'center', margin: '50px', height: '100px', width: '100%'}}>
+                    <span style={{ fontSize: 'larger', fontWeight: 600, paddingTop: '40px'}}>
+                      Sorry but there were no items found meeting your search criteria!
+                    </span></div> ;
+    }
 
     return (
       <div className={ styles.gridcharts }>
         <div className={ styles.container }>
           { earlyAccess }
           { searchStack }
-          <div className={styles.graph} style={{ width: '900px' }}>
-
-            <ul className={styles.months} style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns }}>
-              { months.map( m=> { return <li> { m } </li> ; }) }
-            </ul>
-            <ul className={styles.days} style={{ listStyleType: 'none' }}>
-                { days.map( d=> { return <li> { d } </li> ; }) }
-            </ul>
-            { gridElement }
-          </div>
+          { theGraph }
 
         </div>
       </div>
@@ -484,33 +520,28 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
   * Based on PivotTiles.tsx
   * @param item
   */
+  private textSearch = ( searchText: string ): void => {
+
+    this.fullSearch( null, searchText );
+
+  }
+
   public searchForItems = (item): void => {
+
+    this.fullSearch( item, null );
+
+  }
+
+  public fullSearch = (item: any, searchText: string ): void => {
 
     //This sends back the correct pivot category which matches the category on the tile.
     let e: any = event;
 
+    /*
     console.log('searchForItems: e',e);
-
     console.log('searchForItems: item', item);
     console.log('searchForItems: this', this);
-          /*
     */
-
-    let dropdownColumnIndex = null; //Index of dropdown column that was picked
-    this.state.dropDownItems.map ( ( thisDropDown, ddIndex ) => {
-      thisDropDown.map( thisChoice => {
-        if ( ddIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; } 
-      });
-    });
-
-    let selectedDropdowns = this.state.selectedDropdowns;
-
-    selectedDropdowns.map( (dd, index ) => {
-      if ( dropdownColumnIndex !== null ) {  //This should never be null but just in case... 
-          selectedDropdowns[ dropdownColumnIndex ] = dropdownColumnIndex === index ? item : ''; 
-      }
-    });
-
 
     let searchItems : IGridItemInfo[] = [];
     let newFilteredItems: IGridItemInfo[]  = [];
@@ -519,18 +550,48 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let searchCount = searchItems.length;
 
-    if ( item === '' ) {
-      newFilteredItems = searchItems;
-    } else {
-      for (let thisItem of searchItems) {
-        let searchChoices = thisItem.meta ;
-        if(searchChoices.indexOf( item ) > -1) {
-          //console.log('fileName', fileName);
-          newFilteredItems.push(thisItem);
+    let selectedDropdowns = this.state.selectedDropdowns;
+
+    if ( searchText === null ) { //Then this is a choice dropdown filter
+      
+      let dropdownColumnIndex = null; //Index of dropdown column that was picked
+      this.state.dropDownItems.map ( ( thisDropDown, ddIndex ) => {
+        thisDropDown.map( thisChoice => {
+          if ( ddIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; } 
+        });
+      });
+
+
+      selectedDropdowns.map( (dd, index ) => {
+        if ( dropdownColumnIndex !== null ) {  //This should never be null but just in case... 
+            selectedDropdowns[ dropdownColumnIndex ] = dropdownColumnIndex === index ? item : ''; 
+        }
+      });
+
+
+      if ( item === '' ) {
+        newFilteredItems = searchItems;
+      } else {
+        for (let thisItem of searchItems) {
+          let searchChoices = thisItem.meta ;
+          if(searchChoices.indexOf( item ) > -1) {
+            //console.log('fileName', fileName);
+            newFilteredItems.push(thisItem);
+          }
+        }
+      }
+    } else { //This is a text box filter
+      if ( searchText == null || searchText === '' ) {
+        newFilteredItems = searchItems;
+      } else {
+        let searchTextLC = searchText.toLowerCase();
+        for (let thisItem of searchItems) {
+          if(thisItem.searchString.indexOf( searchTextLC ) > -1) {
+            newFilteredItems.push(thisItem);
+          }
         }
       }
     }
-
 
     searchCount = newFilteredItems.length;
 
@@ -546,7 +607,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       /*          */
         searchedItems: newFilteredItems, //newFilteredItems,  //Replaced with theseItems to update when props change.
         searchCount: newFilteredItems.length,
-        searchText: '',
+        searchText: searchText,
         searchMeta: [],
         selectedDropdowns: selectedDropdowns,
         gridData: gridData,

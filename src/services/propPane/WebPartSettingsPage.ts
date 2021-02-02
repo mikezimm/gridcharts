@@ -72,6 +72,12 @@ import {
 
 
     public getPropertyPanePage(webPartProps): IPropertyPanePage {
+
+      let disableEarlyAccess = false;
+      if ( window.location.origin.toLowerCase().indexOf('clickster.share') > -1 || window.location.origin.toLowerCase().indexOf('/autoliv/') > -1 ) {
+        disableEarlyAccess = true;
+      }
+
       return <IPropertyPanePage>        { // <page2>
         header: {
 
@@ -85,65 +91,15 @@ import {
             forceCurrentUser: boolean; //false allows you to put in data for someone else
             confirmPrompt: boolean;  //Make user press confirm
           */
-          { groupName: strings.PropPaneGroupLabel_Accuracy,
+          { groupName: 'Advanced options',
             isCollapsed: true ,
           groupFields: [
             
-            PropertyPaneSlider('stressMultiplierTime', {
-              label: 'TESTING ONLY - Compound Time Entry count',
-              min: 1,
-              max: 10,
-              value: 1,
-              step: 1,
-            }),
-
-            PropertyPaneSlider('stressMultiplierProject', {
-              label: 'TESTING ONLY - Compound Project Entry count',
-              min: 1,
-              max: 30,
-              value: 1,
-              step: 1,
-            }),
-
-          ]}, // this group
-       
-          /** 4 -Project options
-            allowUserProjects: boolean; //Will build list of ProjectsUser based on existing data from TrackMyTime list
-            projectMasterPriority: string; //Use to determine what projects float to top.... your most recent?  last day?
-            projectUserPriority: string; //Use to determine what projects float to top.... your most recent?  last day?
-          */
-
-         { groupName: strings.PropPaneGroupLabel_SliderOptions,
-          isCollapsed: true ,
-         groupFields: [
-
-          PropertyPaneToggle('showTimeSlider', {
-            label: strings.FieldLabel_ShowTimeSlider,
-            offText: 'Locked',
-            onText: 'Unlock',
-          }),
-
-          PropertyPaneDropdown('timeSliderInc', <IPropertyPaneDropdownProps>{
-            disabled: webPartProps.showTimeSlider === true ? false : true,
-            label: strings.FieldLabel_TimeSliderInc,
-            options: gridChartsOptionsGroup.timeSliderIncChoices,
-          }),    
-/*
-          PropertyPaneSlider('timeSliderInc', {
-            disabled: webPartProps.showTimeSlider === true ? false : true,
-            label: strings.FieldLabel_TimeSliderInc,
-            min: 5,
-            max: 60,
-            step: 5,
-          }),
-*/
-          PropertyPaneSlider('timeSliderMax', {
-            disabled: webPartProps.showTimeSlider === true ? false : true,
-            label: strings.FieldLabel_TimeSliderMax,
-            min: 1,
-            max: 10,
-            value: 5,
-            step: 1,
+          PropertyPaneToggle('showEarlyAccess', {
+            label: 'Show Early Access Banner',
+            offText: 'Off',
+            onText: 'On',
+            disabled: disableEarlyAccess,
           }),
             
          ]}, // this group

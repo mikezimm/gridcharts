@@ -29,8 +29,8 @@
       "valueColumn": "Hours",
       "valueType": "Number",
       "valueOperator": "Sum",
-      "minDataDownload": true
-
+      "minDataDownload": true,
+      "showEarlyAccess": true
     }
   }]
 }

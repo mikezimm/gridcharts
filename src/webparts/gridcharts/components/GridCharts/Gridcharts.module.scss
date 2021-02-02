@@ -77,10 +77,18 @@
   }
 
 
+/**
+  :global css was copied from TrackMyTime7v2021
+*/
+  :global {
+    [class^=ms-Dropdown-container] > .ms-Label {
+      font-weight: 700
+    }
 
-
-
-
+    [class^=ms-Toggle] > .ms-Label {
+      font-weight: 700
+    }
+  }
 
 
 

@@ -95,7 +95,7 @@ export interface IGridchartsProps {
         cellStyles: string;
         cellhoverInfoColor: string;
         other: string;
-      },
+      };
   
       //For DD
       handleSwitch: any;
@@ -103,6 +103,6 @@ export interface IGridchartsProps {
 
       // 9 - Other web part options
       webPartScenario: string; //Choice used to create mutiple versions of the webpart. 
-
+      showEarlyAccess: boolean;
 
 }

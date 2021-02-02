@@ -11,7 +11,7 @@ import { IUser, ILink, IChartSeries, ICharNote,  } from '../../../../services/IR
 import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
 import * as strings from 'GridchartsWebPartStrings';
 
-import styles from '../Gridcharts.module.scss';
+import styles from '../GridCharts/Gridcharts.module.scss';
 
 import { IFieldDef } from './fieldDefinitions';
 

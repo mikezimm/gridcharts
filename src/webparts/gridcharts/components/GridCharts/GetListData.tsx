@@ -130,6 +130,7 @@ export function createGridList(webURL: string, parentListURL: string, title: str
         fetchCountMobile: performance.fetchCountMobile,
         restFilter: !performance.restFilter ? ' ' : performance.restFilter,
         minDataDownload: performance.minDataDownload === true ? true : false,
+        odataSearch: [],
 
         isLibrary: isLibrary,
         hasAttach: false,
@@ -188,6 +189,7 @@ export interface IZBasicList extends Partial<IPickedList> {
     metaColumns: string[];
     searchColumns: string[];
     expandDates: string[];
+    odataSearch?: string[];  //Used optionally in search text... but can cause issues if the list name/content type are the same text as you may want to search
 
     staticColumns: string[];
     selectColumns: string[];
@@ -352,7 +354,14 @@ function buildSearchStringFromItem ( theItem: IGridItemInfo, gridList: IGridList
 
     });
 
-    if ( theItem['odata.type'] ) { result += theItem['odata.type'] + delim ; }
+    /**
+     * Had this odata search from prior code:
+     * if ( theItem['odata.type'] ) { result += theItem['odata.type'] + delim ; }
+     * 
+     */
+    gridList.odataSearch.map( odata => {
+        if ( theItem[ odata ] ) { result += theItem[ odata ] + delim ; }
+    });
 
     if ( theItem.meta.length > 0 ) { result += 'Meta=' + theItem.meta.join(',') + delim ; }
 

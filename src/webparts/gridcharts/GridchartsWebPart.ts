@@ -46,6 +46,7 @@ export interface IGridchartsWebPartProps {
     enableSearch: boolean;
 
     webPartScenario: string; //Choice used to create mutiple versions of the webpart.
+    showEarlyAccess: boolean;
 
     cellColor: string;
     yearStyles: string;
@@ -132,6 +133,16 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
 // ^^^ 2021-01-05 Copied to this point
 
   public render(): void {
+
+    let showEarlyAccess : boolean = false;
+    
+    if ( window.location.origin.toLowerCase().indexOf('clickster.share') > -1 || window.location.origin.toLowerCase().indexOf('/autoliv/') > -1 ) {
+      showEarlyAccess = true;
+      this.properties.showEarlyAccess = true;
+    } else {
+      showEarlyAccess = this.properties.showEarlyAccess;
+    }
+
     const element: React.ReactElement<IGridchartsProps> = React.createElement(
       Gridcharts,
       {
@@ -187,6 +198,7 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         
         // 9 - Other web part options
         webPartScenario: this.properties.webPartScenario, //Choice used to create mutiple versions of the webpart.
+        showEarlyAccess: showEarlyAccess,
 
         pivotSize: this.properties.pivotSize,
         pivotFormat: this.properties.pivotFormat,

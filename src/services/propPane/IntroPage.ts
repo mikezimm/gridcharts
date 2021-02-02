@@ -256,7 +256,6 @@ export class IntroPage {
             }),
           ]}, // this group
 
-
         ]}; // Groups
   } // getPropertyPanePage()
 }
