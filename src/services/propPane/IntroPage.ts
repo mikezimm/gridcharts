@@ -78,14 +78,21 @@ export class IntroPage {
           isCollapsed: true ,
           groupFields: [
             PropertyPaneLabel('About Text', {
-              text: 'This webpart gets helps track your time using SharePoint :).'
+              text: 'This webpart displays summary of list/library items in date grid format.'
             }),
 
             PropertyPaneLink('About Link' , {
-              text: 'Github Repo:  ' + links.gitRepoTrackMyTime.desc ,
-              href: links.gitRepoTrackMyTime.href,
-              target: links.gitRepoTrackMyTime.target,
+              text: 'Github Repo:  ' + links.gitRepoGridCharts.desc ,
+              href: links.gitRepoGridCharts.href,
+              target: links.gitRepoGridCharts.target,
             }),
+
+            PropertyPaneLink('Issues Link' , {
+              text: 'Report Issues:  ' + links.gitRepoGridCharts.desc ,
+              href: links.gitRepoGridCharts.href  + '/issues',
+              target: links.gitRepoGridCharts.target,
+            }),
+
           ]
         },
 
@@ -189,18 +196,54 @@ export class IntroPage {
 
         ]}, // this group
 
+        // 2 - Source and destination list information    
+        { groupName: 'Styling and colors',
+        isCollapsed: true ,
+        groupFields: [
+
+          PropertyPaneDropdown('cellColor', <IPropertyPaneDropdownProps>{
+            label: 'Cell color',
+            options: gridChartsOptionsGroup.cellColorChoices,
+          }),
+
+          PropertyPaneTextField('yearStyles', {
+            label: 'css for Year headings'
+          }),
+
+          PropertyPaneTextField('monthStyles', {
+            label: 'css for Month headings'
+          }),
+
+          PropertyPaneTextField('cellStyles', {
+            label: 'css for Cell headings'
+          }),
+                      
+          PropertyPaneTextField('otherStyles', {
+            label: 'Other styles',
+            disabled: true,
+          }),
+
+          PropertyPaneTextField('hoverInfo', {
+            label: 'Hover settings',
+            disabled: true,
+          }),
+
+        ]}, // this group
+          /* */
 
         // 9 - Other web part options
-        { groupName: 'Pivot Styles (headings)',
+        { groupName: 'Pivot Styles (headings) - future use',
           isCollapsed: true ,
           groupFields: [
             PropertyPaneDropdown('pivotSize', <IPropertyPaneDropdownProps>{
               label: strings.FieldLabel_PivSize,
               options: pivotOptionsGroup.pivSizeChoices,
+              disabled: true,
             }),
             PropertyPaneDropdown('pivotFormat', <IPropertyPaneDropdownProps>{
               label: strings.FieldLabel_PivFormat,
               options: pivotOptionsGroup.pivFormatChoices,
+              disabled: true,
             }),
             PropertyPaneDropdown('pivotOptions', <IPropertyPaneDropdownProps>{
               label: strings.FieldLabel_PivOptions,
@@ -208,6 +251,7 @@ export class IntroPage {
               disabled: true,
             }),
           ]}, // this group
+
 
         ]}; // Groups
   } // getPropertyPanePage()

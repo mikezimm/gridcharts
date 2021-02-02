@@ -87,7 +87,14 @@ export interface IGridchartsProps {
        */
       onRefiner0Selected?: any;
   
-      style: any; //RefinerStyle
+      gridStyles: {
+        cellColor: string;
+        yearStyles: string;
+        monthStyles: string;
+        cellStyles: string;
+        cellhoverInfoColor: string;
+        other: string;
+      },
   
       //For DD
       handleSwitch: any;

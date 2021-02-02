@@ -52,6 +52,13 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
         {   index: 3,   key: "max", text: "Max"  },
     ];
 
+    public cellColorChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
+        {   index: 0,   key: "dark", text: "Dark Theme"  },
+        {   index: 1,   key: "blue", text: "Blue"  },
+        {   index: 2,   key: "green", text: "Green"  },
+        {   index: 3,   key: "red", text: "Red"  },
+    ];
+
   }
 
   export let gridChartsOptionsGroup = new GridChartsOptionsGroup();

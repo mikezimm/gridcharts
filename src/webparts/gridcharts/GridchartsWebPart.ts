@@ -47,6 +47,13 @@ export interface IGridchartsWebPartProps {
 
     webPartScenario: string; //Choice used to create mutiple versions of the webpart.
 
+    cellColor: string;
+    yearStyles: string;
+    monthStyles: string;
+    cellStyles: string;
+    cellhoverInfoColor: string;
+    otherStyles: string;
+
     advancedPivotStyles: boolean;
     pivotSize: string;
     pivotFormat: string;
@@ -153,8 +160,15 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         searchColumns: this.properties.searchColumns ? this.properties.searchColumns.split(',') : [], 
         metaColumns: this.properties.metaColumns ? this.properties.metaColumns.split(',') : [], 
         enableSearch: this.properties.enableSearch,
-        
-        style: null,
+
+        gridStyles: {
+          cellColor: this.properties.cellColor ? this.properties.cellColor : '',
+          yearStyles: this.properties.yearStyles ? this.properties.yearStyles : '',
+          monthStyles: this.properties.monthStyles ? this.properties.monthStyles : '',
+          cellStyles: this.properties.cellStyles ? this.properties.cellStyles : '',
+          cellhoverInfoColor: this.properties.cellhoverInfoColor ? this.properties.cellhoverInfoColor : '',
+          other: this.properties.otherStyles ? this.properties.otherStyles : '',
+        },
 
         //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
         WebpartElement:this.domElement,
