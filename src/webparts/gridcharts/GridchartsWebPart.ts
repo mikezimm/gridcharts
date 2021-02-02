@@ -50,6 +50,7 @@ export interface IGridchartsWebPartProps {
     cellColor: string;
     yearStyles: string;
     monthStyles: string;
+    dayStyles: string;
     cellStyles: string;
     cellhoverInfoColor: string;
     otherStyles: string;
@@ -165,9 +166,11 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
           cellColor: this.properties.cellColor ? this.properties.cellColor : '',
           yearStyles: this.properties.yearStyles ? this.properties.yearStyles : '',
           monthStyles: this.properties.monthStyles ? this.properties.monthStyles : '',
+          dayStyles: this.properties.dayStyles ? this.properties.dayStyles : '',
           cellStyles: this.properties.cellStyles ? this.properties.cellStyles : '',
           cellhoverInfoColor: this.properties.cellhoverInfoColor ? this.properties.cellhoverInfoColor : '',
           other: this.properties.otherStyles ? this.properties.otherStyles : '',
+
         },
 
         //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/

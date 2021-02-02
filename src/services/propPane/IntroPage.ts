@@ -214,6 +214,10 @@ export class IntroPage {
             label: 'css for Month headings'
           }),
 
+          PropertyPaneTextField('dayStyles', {
+            label: 'css for Day headings'
+          }),
+          
           PropertyPaneTextField('cellStyles', {
             label: 'css for Cell headings'
           }),

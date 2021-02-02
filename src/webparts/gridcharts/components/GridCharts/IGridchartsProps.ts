@@ -91,6 +91,7 @@ export interface IGridchartsProps {
         cellColor: string;
         yearStyles: string;
         monthStyles: string;
+        dayStyles: string;
         cellStyles: string;
         cellhoverInfoColor: string;
         other: string;
