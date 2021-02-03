@@ -46,6 +46,15 @@ export interface IGridchartsWebPartProps {
     enableSearch: boolean;
 
     webPartScenario: string; //Choice used to create mutiple versions of the webpart.
+    showEarlyAccess: boolean;
+
+    cellColor: string;
+    yearStyles: string;
+    monthStyles: string;
+    dayStyles: string;
+    cellStyles: string;
+    cellhoverInfoColor: string;
+    otherStyles: string;
 
     advancedPivotStyles: boolean;
     pivotSize: string;
@@ -124,6 +133,16 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
 // ^^^ 2021-01-05 Copied to this point
 
   public render(): void {
+
+    let showEarlyAccess : boolean = false;
+    
+    if ( window.location.origin.toLowerCase().indexOf('clickster.share') > -1 || window.location.origin.toLowerCase().indexOf('/autoliv/') > -1 ) {
+      showEarlyAccess = true;
+      this.properties.showEarlyAccess = true;
+    } else {
+      showEarlyAccess = this.properties.showEarlyAccess;
+    }
+
     const element: React.ReactElement<IGridchartsProps> = React.createElement(
       Gridcharts,
       {
@@ -153,8 +172,17 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         searchColumns: this.properties.searchColumns ? this.properties.searchColumns.split(',') : [], 
         metaColumns: this.properties.metaColumns ? this.properties.metaColumns.split(',') : [], 
         enableSearch: this.properties.enableSearch,
-        
-        style: null,
+
+        gridStyles: {
+          cellColor: this.properties.cellColor ? this.properties.cellColor : '',
+          yearStyles: this.properties.yearStyles ? this.properties.yearStyles : '',
+          monthStyles: this.properties.monthStyles ? this.properties.monthStyles : '',
+          dayStyles: this.properties.dayStyles ? this.properties.dayStyles : '',
+          cellStyles: this.properties.cellStyles ? this.properties.cellStyles : '',
+          cellhoverInfoColor: this.properties.cellhoverInfoColor ? this.properties.cellhoverInfoColor : '',
+          other: this.properties.otherStyles ? this.properties.otherStyles : '',
+
+        },
 
         //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
         WebpartElement:this.domElement,
@@ -170,6 +198,7 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         
         // 9 - Other web part options
         webPartScenario: this.properties.webPartScenario, //Choice used to create mutiple versions of the webpart.
+        showEarlyAccess: showEarlyAccess,
 
         pivotSize: this.properties.pivotSize,
         pivotFormat: this.properties.pivotFormat,

@@ -87,7 +87,15 @@ export interface IGridchartsProps {
        */
       onRefiner0Selected?: any;
   
-      style: any; //RefinerStyle
+      gridStyles: {
+        cellColor: string;
+        yearStyles: string;
+        monthStyles: string;
+        dayStyles: string;
+        cellStyles: string;
+        cellhoverInfoColor: string;
+        other: string;
+      };
   
       //For DD
       handleSwitch: any;
@@ -95,6 +103,6 @@ export interface IGridchartsProps {
 
       // 9 - Other web part options
       webPartScenario: string; //Choice used to create mutiple versions of the webpart. 
-
+      showEarlyAccess: boolean;
 
 }
