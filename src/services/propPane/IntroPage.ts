@@ -148,17 +148,16 @@ export class IntroPage {
             description: 'comma separated column names'
           }),
 
-          PropertyPaneToggle('enableSearch', {
-            label: 'Allow for text searching',
-            offText: 'Off',
-            onText: 'On',
-          }),
-
           PropertyPaneDropdown('scaleMethod', <IPropertyPaneDropdownProps>{
             label: 'Time scale method',
             options: gridChartsOptionsGroup.scaleMethodChoices,
           }),
           
+          PropertyPaneToggle('enableSearch', {
+            label: 'Allow for text searching',
+            offText: 'Off',
+            onText: 'On',
+          }),
 
 
         ]}, // this group

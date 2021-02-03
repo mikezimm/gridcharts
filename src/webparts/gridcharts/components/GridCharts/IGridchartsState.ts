@@ -20,6 +20,8 @@ export interface IGridchartsData {
     entireDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
     entireDateStringArray: string[];
     dataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
+    count: number;
+    total: number;
 
 }
 

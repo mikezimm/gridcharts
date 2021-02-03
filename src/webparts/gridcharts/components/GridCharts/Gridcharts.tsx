@@ -208,6 +208,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           dataPoints: dataPoints,
           entireDateArray: entireDateArray,
           entireDateStringArray: [],
+          total: null,
+          count: 0,
         };
 
         this.state = { 
@@ -437,12 +439,14 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         </div> ;
     }
 
+    let metrics = this.state.gridData.count > 0 ? `${ this.state.gridData.count } items with ${ this.props.valueOperator} of ${ this.props.valueColumn } = ${ this.state.gridData.total.toFixed(0) }` : 'TBD' ;
     let timeSlider = this.props.scaleMethod !== 'slider' ? null : 
+          <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ metrics }</div>
           <Stack horizontal horizontalAlign='center' >
             <div style={{ width: '50%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
               { createSlider(this.state.timeSliderValue , 100, 1 , this._updateTimeSlider.bind(this)) }
             </div>
-          </Stack>;
+          </Stack></div>;
 
     const months : any[] = this.state.monthLables;
     const days : any[] = weekday3['en-us'];
@@ -764,6 +768,9 @@ private _updateTimeSlider(newValue: number){
  */
 
   private buildGridData ( gridList: IGridList, allItems : IGridItemInfo[] ) {
+    
+    let count = allItems.length;
+
     let entireDateArray : any[] = [];
     let entireDateStringArray : string[] = [];
     let dataPoints : IGridchartsDataPoint[] = [];
@@ -835,6 +842,8 @@ private _updateTimeSlider(newValue: number){
 
     let minValue = 951212732100099;
     let maxValue = -951212732100099;
+    let gridDataTotal = 0;
+    let valueOperator = this.props.valueOperator.toLowerCase() ;
 
     allItems.map( item => {
       let itemDateProp = item['time' + this.props.dateColumn ];
@@ -861,11 +870,18 @@ private _updateTimeSlider(newValue: number){
       if ( dataPoints[dateIndex].min === null || dataPoints[dateIndex].min > valueColumn ) { dataPoints[dateIndex].min = valueColumn; }  
       if ( dataPoints[dateIndex].max === null || dataPoints[dateIndex].max < valueColumn ) { dataPoints[dateIndex].max = valueColumn; }  
 
-      let compareValue = dataPoints[dateIndex][ this.props.valueOperator.toLowerCase() ] ;
+      let compareValue = dataPoints[dateIndex][ valueOperator ] ;
       if ( compareValue < minValue ) { minValue = compareValue; }
-      if ( compareValue > maxValue ) { maxValue = compareValue; }      
+      if ( compareValue > maxValue ) { maxValue = compareValue; } 
+
+      if ( valueOperator === 'sum' || valueOperator === 'avg' ) { gridDataTotal += valueColumn ; } 
+      else if ( valueOperator === 'count' ) { gridDataTotal ++ ; } 
+      else if ( valueOperator === 'max' && valueColumn > gridDataTotal ) { gridDataTotal = valueColumn ; } 
+      else if ( valueOperator === 'min' && valueColumn < gridDataTotal ) { gridDataTotal = valueColumn ; } 
 
     });
+
+    if ( valueOperator === 'avg' ) { gridDataTotal = count != 0 ? gridDataTotal / count : null ; } 
 
     /**
      * Update datalevel based on min/max
@@ -886,8 +902,10 @@ private _updateTimeSlider(newValue: number){
       data.label = data.count === 0 ? `${data.dateString} : No data available` : `${data.dateString} : ${this.props.valueOperator} = ${data.value.toFixed(this.props.valueOperator === 'count' ? 0 : 2 )}  ( ${data.valuesString.join(', ') } )`;
     });
 
-    let gridData: IGridchartsData = {
 
+    let gridData: IGridchartsData = {
+      total: gridDataTotal,
+      count: count,
       gridStart: gridStart,
       gridEnd: gridEnd,
       startDate: startDate,

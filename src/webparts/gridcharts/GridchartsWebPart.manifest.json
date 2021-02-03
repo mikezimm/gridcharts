@@ -33,7 +33,8 @@
       "showEarlyAccess": true,
       "scaleMethod": "slider",
       "fetchCount": 2000,
-      "enableSearch": true
+      "enableSearch": true,
+      "dropDownColumns": "Editor/Title"
     }
   }]
 }
