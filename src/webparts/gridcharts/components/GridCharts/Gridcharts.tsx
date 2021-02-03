@@ -373,6 +373,12 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       this.state.gridData.dataPoints.map( ( d ) => {
         squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
       });
+      /**
+       * Adding overflow hidden on Squares limits visible squares to the width of the element.
+       * BUT the entire year slides and is not trimmed by parent element size location... so the 1 year can slide over dates and off the screen.
+       * Need to have something else mask it when it goes out of the visible area.
+       * That would also mean having it not transparent so you have to fix the background color which may not match another color.
+       */
       gridElement = <ul className={styles.squares} style={{ listStyleType: 'none', transform: 'translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)' }}>
                         { squares }
                     </ul>;
