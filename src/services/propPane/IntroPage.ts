@@ -154,6 +154,12 @@ export class IntroPage {
             onText: 'On',
           }),
 
+          PropertyPaneDropdown('scaleMethod', <IPropertyPaneDropdownProps>{
+            label: 'Time scale method',
+            options: gridChartsOptionsGroup.scaleMethodChoices,
+          }),
+          
+
 
         ]}, // this group
 /* */

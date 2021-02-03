@@ -59,6 +59,11 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
         {   index: 3,   key: "red", text: "Red"  },
     ];
 
+    public scaleMethodChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
+        {   index: 0,   key: "slider", text: "Slider"  },
+        {   index: 1,   key: "tbd", text: "TBD"  },
+    ];
+
   }
 
   export let gridChartsOptionsGroup = new GridChartsOptionsGroup();

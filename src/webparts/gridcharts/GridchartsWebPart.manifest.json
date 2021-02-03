@@ -30,7 +30,10 @@
       "valueType": "Number",
       "valueOperator": "Sum",
       "minDataDownload": true,
-      "showEarlyAccess": true
+      "showEarlyAccess": true,
+      "scaleMethod": "slider",
+      "fetchCount": 2000,
+      "enableSearch": true
     }
   }]
 }

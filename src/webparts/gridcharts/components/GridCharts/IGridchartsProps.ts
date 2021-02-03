@@ -7,6 +7,8 @@ import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeS
 
 import { ICSSChartSeries,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
 
+export type IScaleMethod = 'slider' | 'pivot' | 'other' | 'na' | 'TBD';
+
 export interface IGridchartsProps {
 
       // 0 - Context
@@ -44,7 +46,7 @@ export interface IGridchartsProps {
 
       allLoaded: boolean;
   
-      scaleMethod: 'slider' | 'pivot' | 'other' | 'na';
+      scaleMethod: IScaleMethod;
 
       performance: {
           fetchCount: number;
