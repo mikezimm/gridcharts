@@ -17,9 +17,14 @@ export interface IGridchartsData {
     startDate: any;
     endDate: any;
     gridEnd: any;
-    entireDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
-    entireDateStringArray: string[];
-    dataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
+    allDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
+    allDateStringArray: string[];
+    allDataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
+
+    visibleDataPoints: IGridchartsDataPoint[];
+    visibleDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
+    visibleDateStringArray: string[];
+
     count: number;
     total: number;
 

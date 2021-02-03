@@ -111,7 +111,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       endDate.setDate(endDate.getDate() + 365 - 2 );
 
       arrDates = this.getDates( startDate, endDate);
-      let dataPoints : IGridchartsDataPoint[] = [];
+      let allDataPoints : IGridchartsDataPoint[] = [];
 
       for (var i = 1; i < 365; i++) {
 
@@ -134,10 +134,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let thisDate : Date = arrDates[ i- 1];
         data.label = thisDate.toLocaleDateString();
         data.date = thisDate;
-        dataPoints.push( data ); 
+        allDataPoints.push( data ); 
 
       }
-      return dataPoints;
+      return allDataPoints;
     }
 
 /***
@@ -188,28 +188,35 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         let errMessage = null;
 
-        let dataPoints : IGridchartsDataPoint[] = this.createSampleGridData();
+        let allDataPoints : IGridchartsDataPoint[] = this.createSampleGridData();
 
-        //console.log('gridData', dataPoints );
+        //console.log('gridData', allDataPoints );
 
-        const s1 = dataPoints[0].date.getMonth();
+        const s1 = allDataPoints[0].date.getMonth();
         const s2 = s1 + 12;
 
         const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
         const monthScales = [ 4,4,4,5,4,4,5,4,4,5,4,5   ,   4,4,4,5,4,4,5,4,4,5,4,5 ].slice(s1,s2) ;
 
-        let entireDateArray = [];
+        let allDateArray = [];
 
         let gridData: IGridchartsData = {
           startDate: null,
           endDate: null,
           gridEnd: null,
           gridStart: null,
-          dataPoints: dataPoints,
-          entireDateArray: entireDateArray,
-          entireDateStringArray: [],
+
+          allDataPoints: allDataPoints,
+          allDateArray: allDateArray,
+          allDateStringArray: [],
+          
+          visibleDataPoints: [],
+          visibleDateArray: [],
+          visibleDateStringArray: [],
+          
           total: null,
           count: 0,
+
         };
 
         this.state = { 
@@ -368,9 +375,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     const squares : any[] = [];
     let gridElement = null;
     let searchStack = null;
+    let sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)'" : null;
 
     if ( this.state.allLoaded === true ) {
-      this.state.gridData.dataPoints.map( ( d ) => {
+      this.state.gridData.allDataPoints.map( ( d ) => {
         squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
       });
       /**
@@ -378,8 +386,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
        * BUT the entire year slides and is not trimmed by parent element size location... so the 1 year can slide over dates and off the screen.
        * Need to have something else mask it when it goes out of the visible area.
        * That would also mean having it not transparent so you have to fix the background color which may not match another color.
-       */
-      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none', transform: 'translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)', transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
+      */
+
+
+      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none', transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
                         { squares }
                     </ul>;
 
@@ -495,8 +505,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     }
 
+
     let theGraph = <div className={styles.graph} style={{ width: '900px' }}>
-        <ul className={styles.months} style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns, transform: 'translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)', transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
+        <ul className={ styles.months } style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns, transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
           { months.map( m=> { return <li> { m } </li> ; }) }
         </ul>
         <ul className={styles.days} style={{ listStyleType: 'none' }}>
@@ -544,10 +555,20 @@ private _updateTimeSlider(newValue: number){
   let then = new Date();
   then.setMinutes(then.getMinutes() + newValue);
 
+  if ( this.props.scaleMethod === 'slider' ) {
+    //Just update slider, render method does transition with css
+    this.setState({
+      timeSliderValue: newValue,
+    });
+  } else if ( this.props.scaleMethod === 'blink' ) { //Update grid selected elements and date range
 
-  this.setState({
-    timeSliderValue: newValue,
-  });
+
+
+    
+
+  }
+
+
 }
 
   /***
@@ -777,9 +798,9 @@ private _updateTimeSlider(newValue: number){
     
     let count = allItems.length;
 
-    let entireDateArray : any[] = [];
-    let entireDateStringArray : string[] = [];
-    let dataPoints : IGridchartsDataPoint[] = [];
+    let allDateArray : any[] = [];
+    let allDateStringArray : string[] = [];
+    let allDataPoints : IGridchartsDataPoint[] = [];
 
     /**
      * Get entire date range
@@ -817,15 +838,15 @@ private _updateTimeSlider(newValue: number){
     //https://stackoverflow.com/a/222439
     let gridEnd  = new Date( endDate.getFullYear(), endDate.getMonth() + 1, 0 );
     //let gridEnd = new Date( tempEnd.toLocaleString() );
-    entireDateArray = this.getDates( gridStart, gridEnd);
-    entireDateArray.map ( d => { entireDateStringArray.push( d.toLocaleDateString() ) ; });
+    allDateArray = this.getDates( gridStart, gridEnd);
+    allDateArray.map ( d => { allDateStringArray.push( d.toLocaleDateString() ) ; });
 
     /**
      * Build the IGridchartsDataPoint[] array
      */
 
-    entireDateArray.map( theDate => {
-      dataPoints.push( {
+    allDateArray.map( theDate => {
+      allDataPoints.push( {
         date: theDate,
         dateString: theDate.toLocaleDateString(),
         label: '',
@@ -843,7 +864,7 @@ private _updateTimeSlider(newValue: number){
     });
 
     /**
-     * Go through items and add to dataPoints
+     * Go through items and add to allDataPoints
      */
 
     let minValue = 951212732100099;
@@ -854,7 +875,7 @@ private _updateTimeSlider(newValue: number){
     allItems.map( item => {
       let itemDateProp = item['time' + this.props.dateColumn ];
       let itemDate = new Date( itemDateProp.theTime ).toLocaleDateString();
-      let dateIndex = entireDateStringArray.indexOf( itemDate ) ;
+      let dateIndex = allDateStringArray.indexOf( itemDate ) ;
       item.dateIndex = dateIndex;
 
       let valueColumn = item[ this.props.valueColumn ];
@@ -867,16 +888,16 @@ private _updateTimeSlider(newValue: number){
       else if ( valueType === 'undefined' ) { valueColumn = 0 ; }
       else if ( valueType === 'function' ) { valueColumn = 0 ; }
 
-      dataPoints[dateIndex].items.push( item );
-      dataPoints[dateIndex].values.push( valueColumn );
-      dataPoints[dateIndex].valuesString.push( valueColumn.toFixed(2) );
+      allDataPoints[dateIndex].items.push( item );
+      allDataPoints[dateIndex].values.push( valueColumn );
+      allDataPoints[dateIndex].valuesString.push( valueColumn.toFixed(2) );
 
-      dataPoints[dateIndex].count ++;
-      dataPoints[dateIndex].sum += valueColumn;      
-      if ( dataPoints[dateIndex].min === null || dataPoints[dateIndex].min > valueColumn ) { dataPoints[dateIndex].min = valueColumn; }  
-      if ( dataPoints[dateIndex].max === null || dataPoints[dateIndex].max < valueColumn ) { dataPoints[dateIndex].max = valueColumn; }  
+      allDataPoints[dateIndex].count ++;
+      allDataPoints[dateIndex].sum += valueColumn;      
+      if ( allDataPoints[dateIndex].min === null || allDataPoints[dateIndex].min > valueColumn ) { allDataPoints[dateIndex].min = valueColumn; }  
+      if ( allDataPoints[dateIndex].max === null || allDataPoints[dateIndex].max < valueColumn ) { allDataPoints[dateIndex].max = valueColumn; }  
 
-      let compareValue = dataPoints[dateIndex][ valueOperator ] ;
+      let compareValue = allDataPoints[dateIndex][ valueOperator ] ;
       if ( compareValue < minValue ) { minValue = compareValue; }
       if ( compareValue > maxValue ) { maxValue = compareValue; } 
 
@@ -895,7 +916,7 @@ private _updateTimeSlider(newValue: number){
     
     let dataLevelIncriment = ( maxValue - minValue ) / 3;
 
-    dataPoints.map( data => {
+    allDataPoints.map( data => {
       data.avg = data.count !== null && data.count !== undefined && data.count !== 0 ? data.sum / data.count : null;
       data.value = data[ this.props.valueOperator.toLowerCase() ] ;
 
@@ -916,9 +937,14 @@ private _updateTimeSlider(newValue: number){
       gridEnd: gridEnd,
       startDate: startDate,
       endDate: endDate,
-      entireDateArray: entireDateArray,
-      entireDateStringArray: entireDateStringArray,
-      dataPoints: dataPoints,
+
+      allDateArray: allDateArray,
+      allDateStringArray: allDateStringArray,
+      allDataPoints: allDataPoints,
+                
+      visibleDataPoints: [],
+      visibleDateArray: [],
+      visibleDateStringArray: [],
 
     };
 

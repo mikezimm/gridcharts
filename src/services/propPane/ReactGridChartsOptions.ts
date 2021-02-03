@@ -61,6 +61,7 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
 
     public scaleMethodChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
         {   index: 0,   key: "slider", text: "Slider"  },
+        {   index: 0,   key: "blink", text: "Blink"  },
         {   index: 1,   key: "tbd", text: "TBD"  },
     ];
 
