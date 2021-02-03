@@ -693,6 +693,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       let foundChoices : string[] = [];
       allItems.map( item => {
         let thisItemsChoices = item[ actualColName ];
+        if ( actualColName.indexOf( '/') > -1 ) {
+          let parts = actualColName.split('/');
+          thisItemsChoices = item[ parts[0] ][parts[1]];
+        }
         if ( parentColName !== null ) { thisItemsChoices = item[ parentColName ] + ' > ' + item[ actualColName ] ; }
         if ( thisItemsChoices && thisItemsChoices.length > 0 ) {
           if ( foundChoices.indexOf( thisItemsChoices ) < 0 ) {
