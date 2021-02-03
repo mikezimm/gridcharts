@@ -26,6 +26,8 @@ import InfoPage from '../HelpInfo/infoPages';
 import  EarlyAccess from '../HelpInfo/EarlyAccess';
 import * as links from '../HelpInfo/AllLinks';
 
+import { createSlider } from '../fields/sliderFieldBuilder';
+
 import { saveTheTime, saveAnalytics, getTheCurrentTime } from '../../../../services/createAnalytics';
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
           getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3} from '@mikezimm/npmfunctions/dist/dateServices';
@@ -216,6 +218,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
           monthLables: monthLables,
           monthScales: monthScales,
+
+          timeSliderValue: 0,
 
           selectedYear: null,
           selectedUser: null,
@@ -433,6 +437,12 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         </div> ;
     }
 
+    let timeSlider = this.props.scaleMethod !== 'slider' ? null : 
+          <Stack horizontal horizontalAlign='center' >
+            <div style={{ width: '50%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
+              { createSlider(this.state.timeSliderValue , 100, 1 , this._updateTimeSlider.bind(this)) }
+            </div>
+          </Stack>;
 
     const months : any[] = this.state.monthLables;
     const days : any[] = weekday3['en-us'];
@@ -498,12 +508,37 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           { earlyAccess }
           { searchStack }
           { theGraph }
-
+          { timeSlider }
         </div>
       </div>
     );
   }
 
+
+
+
+/***
+ *         db    db d8888b.      .d8888. db      d888888b d8888b. d88888b d8888b. 
+ *         88    88 88  `8D      88'  YP 88        `88'   88  `8D 88'     88  `8D 
+ *         88    88 88oodD'      `8bo.   88         88    88   88 88ooooo 88oobY' 
+ *         88    88 88~~~          `Y8b. 88         88    88   88 88~~~~~ 88`8b   
+ *         88b  d88 88           db   8D 88booo.   .88.   88  .8D 88.     88 `88. 
+ *         ~Y8888P' 88           `8888Y' Y88888P Y888888P Y8888D' Y88888P 88   YD 
+ *                                                                                
+ *                                                                                
+ */
+  
+private _updateTimeSlider(newValue: number){
+
+  let now = new Date();
+  let then = new Date();
+  then.setMinutes(then.getMinutes() + newValue);
+
+
+  this.setState({
+    timeSliderValue: newValue,
+  });
+}
 
   /***
  *    .d8888. d88888b  .d8b.  d8888b.  .o88b. db   db      d88888b  .d88b.  d8888b.      d888888b d888888b d88888b .88b  d88. .d8888. 

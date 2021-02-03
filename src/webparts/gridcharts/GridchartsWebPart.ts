@@ -173,6 +173,8 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         metaColumns: this.properties.metaColumns ? this.properties.metaColumns.split(',') : [], 
         enableSearch: this.properties.enableSearch,
 
+        scaleMethod: 'slider',
+
         gridStyles: {
           cellColor: this.properties.cellColor ? this.properties.cellColor : '',
           yearStyles: this.properties.yearStyles ? this.properties.yearStyles : '',

@@ -44,6 +44,8 @@ export interface IGridchartsProps {
 
       allLoaded: boolean;
   
+      scaleMethod: 'slider' | 'pivot' | 'other' | 'na';
+
       performance: {
           fetchCount: number;
           fetchCountMobile: number;
