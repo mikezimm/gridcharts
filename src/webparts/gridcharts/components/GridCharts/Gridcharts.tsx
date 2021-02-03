@@ -373,7 +373,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       this.state.gridData.dataPoints.map( ( d ) => {
         squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
       });
-      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none' }}>
+      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none', transform: 'translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)' }}>
                         { squares }
                     </ul>;
 
@@ -490,7 +490,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     }
 
     let theGraph = <div className={styles.graph} style={{ width: '900px' }}>
-        <ul className={styles.months} style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns }}>
+        <ul className={styles.months} style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns, transform: 'translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)' }}>
           { months.map( m=> { return <li> { m } </li> ; }) }
         </ul>
         <ul className={styles.days} style={{ listStyleType: 'none' }}>
