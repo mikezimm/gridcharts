@@ -379,7 +379,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
        * Need to have something else mask it when it goes out of the visible area.
        * That would also mean having it not transparent so you have to fix the background color which may not match another color.
        */
-      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none', transform: 'translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)' }}>
+      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none', transform: 'translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)', transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
                         { squares }
                     </ul>;
 
@@ -496,7 +496,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     }
 
     let theGraph = <div className={styles.graph} style={{ width: '900px' }}>
-        <ul className={styles.months} style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns, transform: 'translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)' }}>
+        <ul className={styles.months} style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns, transform: 'translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)', transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
           { months.map( m=> { return <li> { m } </li> ; }) }
         </ul>
         <ul className={styles.days} style={{ listStyleType: 'none' }}>
