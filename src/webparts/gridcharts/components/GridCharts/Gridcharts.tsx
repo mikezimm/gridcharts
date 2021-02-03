@@ -30,7 +30,7 @@ import { createSlider } from '../fields/sliderFieldBuilder';
 
 import { saveTheTime, saveAnalytics, getTheCurrentTime } from '../../../../services/createAnalytics';
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-          getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3} from '@mikezimm/npmfunctions/dist/dateServices';
+          getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, msPerDay} from '@mikezimm/npmfunctions/dist/dateServices';
 
 
 import { sortObjectArrayByStringKey, doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
@@ -201,6 +201,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let allDateArray = [];
 
         let gridData: IGridchartsData = {
+
           startDate: null,
           endDate: null,
           gridEnd: null,
@@ -209,10 +210,12 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           allDataPoints: allDataPoints,
           allDateArray: allDateArray,
           allDateStringArray: [],
-          
+          allWeeks: 0,
+
           visibleDataPoints: [],
           visibleDateArray: [],
           visibleDateStringArray: [],
+          visibleWeeks: 0,
           
           total: null,
           count: 0,
@@ -375,7 +378,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     const squares : any[] = [];
     let gridElement = null;
     let searchStack = null;
-    let sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(' + this.state.timeSliderValue + 'vw, 0, 0)'" : null;
+    let sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(" + this.state.timeSliderValue + "vw, 0, 0)" : null;
 
     if ( this.state.allLoaded === true ) {
       this.state.gridData.allDataPoints.map( ( d ) => {
@@ -712,6 +715,8 @@ private _updateTimeSlider(newValue: number){
 
       let gridData : IGridchartsData = this.buildGridData (gridList, theseItems);
 
+      gridData= this.buildVisibleItems ( gridData, gridList );
+
       let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( gridList, allItems ) : this.state.dropDownItems ;
       
       const s1 = gridData.gridStart.getMonth();
@@ -744,6 +749,15 @@ private _updateTimeSlider(newValue: number){
       //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
       return true;
   }
+
+  private buildVisibleItems( gridData : IGridchartsData , gridList : IGridList ) {
+
+
+
+
+    return gridData;
+  }
+
 
   private buildDataDropdownItems( gridList: IGridList, allItems : IGridItemInfo[] ) {
 
@@ -794,6 +808,35 @@ private _updateTimeSlider(newValue: number){
  *                                                                                                                          
  */
 
+/**
+ * Based on this post:  https://stackoverflow.com/a/4156516
+ * @param d
+ */
+
+  private getPriorSundayOriginal ( d ) {
+
+      d = new Date(d);
+      var day = d.getDay(),
+  //        diff = d.getDate() - day + (day == 0 ? -6:1); // When Monday is first day of week
+          diff = d.getDate() - day; //When Sunday is first day of week
+          d.setHours(0);	d.setMinutes(0); d.setSeconds(0); //This sets the date to the actual date without time.
+      return new Date(d.setDate(diff));
+
+  }
+
+    //This will be in npmfunctions in v.0.0.5
+    private getOffSetDayOfWeek ( d : string, day: number, which: 'prior' | 'next' ) {
+      //First get current day number of week
+      let theDate = new Date( d );
+      let dayOfWeek = theDate.getDay();
+      let deltaDays = which === 'prior' ? 7 - dayOfWeek + 1 :  dayOfWeek - 7 ;
+      let deltaMS = deltaDays * msPerDay;
+      let adjustedTime = theDate.getTime() - deltaMS;
+      let adjustedDate = new Date( adjustedTime );
+
+      return adjustedDate;
+  } 
+
   private buildGridData ( gridList: IGridList, allItems : IGridItemInfo[] ) {
     
     let count = allItems.length;
@@ -829,10 +872,13 @@ private _updateTimeSlider(newValue: number){
 
     });
 
-    let startDate = new Date( firstDate );
+    //let startDate = new Date( firstDate );
+    let startDate = this.getOffSetDayOfWeek( firstDate, 7, 'prior' );
     startDate.setHours(0,0,0,0);
     let gridStart = new Date( startDate.setDate(0) ) ;
-    let endDate = new Date( lastDate );
+    //let endDate = new Date( lastDate );
+    let endDate = this.getOffSetDayOfWeek( lastDate, 7, 'next' );
+
     endDate.setHours(0,0,0,0);
 
     //https://stackoverflow.com/a/222439
@@ -938,6 +984,7 @@ private _updateTimeSlider(newValue: number){
       startDate: startDate,
       endDate: endDate,
 
+      allWeeks: 0,
       allDateArray: allDateArray,
       allDateStringArray: allDateStringArray,
       allDataPoints: allDataPoints,
@@ -945,6 +992,7 @@ private _updateTimeSlider(newValue: number){
       visibleDataPoints: [],
       visibleDateArray: [],
       visibleDateStringArray: [],
+      visibleWeeks: 0,
 
     };
 

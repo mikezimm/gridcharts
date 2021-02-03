@@ -17,13 +17,16 @@ export interface IGridchartsData {
     startDate: any;
     endDate: any;
     gridEnd: any;
+
     allDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
     allDateStringArray: string[];
     allDataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
+    allWeeks: number;
 
     visibleDataPoints: IGridchartsDataPoint[];
     visibleDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
     visibleDateStringArray: string[];
+    visibleWeeks: number;
 
     count: number;
     total: number;
