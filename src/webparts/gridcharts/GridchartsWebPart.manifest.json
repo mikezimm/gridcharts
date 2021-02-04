@@ -34,7 +34,7 @@
       "scaleMethod": "blink",
       "fetchCount": 2000,
       "enableSearch": true,
-      "dropDownColumns": "Editor/Title"
+      "dropDownColumns": "+Story,+>Chapter,User/Title"
     }
   },
   {
@@ -57,7 +57,7 @@
       "scaleMethod": "blink",
       "fetchCount": 2000,
       "enableSearch": true,
-      "dropDownColumns": "Editor/Title,Author/Title"
+      "dropDownColumns": "+Author/Title,+Editor/Title"
     }
   }]
 }
