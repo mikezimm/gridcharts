@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "gridcharts-client-side-solution",
+    "name": "Gridcharts-heat-map",
     "id": "e6cb75f9-8ba8-44c9-b445-e35be83fbe34",
     "version": "1.0.0.0",
     "includeClientSideAssets": true,

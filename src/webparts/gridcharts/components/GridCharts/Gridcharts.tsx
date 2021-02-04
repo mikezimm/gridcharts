@@ -26,9 +26,11 @@ import InfoPage from '../HelpInfo/infoPages';
 import  EarlyAccess from '../HelpInfo/EarlyAccess';
 import * as links from '../HelpInfo/AllLinks';
 
+import { createSlider } from '../fields/sliderFieldBuilder';
+
 import { saveTheTime, saveAnalytics, getTheCurrentTime } from '../../../../services/createAnalytics';
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-          getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3} from '@mikezimm/npmfunctions/dist/dateServices';
+          getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, msPerDay} from '@mikezimm/npmfunctions/dist/dateServices';
 
 
 import { sortObjectArrayByStringKey, doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
@@ -109,7 +111,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       endDate.setDate(endDate.getDate() + 365 - 2 );
 
       arrDates = this.getDates( startDate, endDate);
-      let dataPoints : IGridchartsDataPoint[] = [];
+      let allDataPoints : IGridchartsDataPoint[] = [];
 
       for (var i = 1; i < 365; i++) {
 
@@ -132,10 +134,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let thisDate : Date = arrDates[ i- 1];
         data.label = thisDate.toLocaleDateString();
         data.date = thisDate;
-        dataPoints.push( data ); 
+        allDataPoints.push( data ); 
 
       }
-      return dataPoints;
+      return allDataPoints;
     }
 
 /***
@@ -186,26 +188,39 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         let errMessage = null;
 
-        let dataPoints : IGridchartsDataPoint[] = this.createSampleGridData();
+        let allDataPoints : IGridchartsDataPoint[] = this.createSampleGridData();
 
-        //console.log('gridData', dataPoints );
+        //console.log('gridData', allDataPoints );
 
-        const s1 = dataPoints[0].date.getMonth();
+        const s1 = allDataPoints[0].date.getMonth();
         const s2 = s1 + 12;
 
         const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
         const monthScales = [ 4,4,4,5,4,4,5,4,4,5,4,5   ,   4,4,4,5,4,4,5,4,4,5,4,5 ].slice(s1,s2) ;
 
-        let entireDateArray = [];
+        let allDateArray = [];
 
         let gridData: IGridchartsData = {
+
           startDate: null,
           endDate: null,
           gridEnd: null,
           gridStart: null,
-          dataPoints: dataPoints,
-          entireDateArray: entireDateArray,
-          entireDateStringArray: [],
+
+          allDataPoints: allDataPoints,
+          allDateArray: allDateArray,
+          allDateStringArray: [],
+          allWeeks: 0,
+
+          visibleDataPoints: [],
+          visibleDateArray: [],
+          visibleDateStringArray: [],
+          visibleWeeks: 0,
+          
+          total: null,
+          count: 0,
+          leadingBlanks: 0,
+
         };
 
         this.state = { 
@@ -216,6 +231,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
           monthLables: monthLables,
           monthScales: monthScales,
+
+          timeSliderValue: 0,
 
           selectedYear: null,
           selectedUser: null,
@@ -359,15 +376,55 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     const wrapStackTokens: IStackTokens = { childrenGap: 30 };
 
-    const squares : any[] = [];
     let gridElement = null;
     let searchStack = null;
+    let sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(" + ( -this.state.timeSliderValue ) + "vw, 0, 0)" : null;
+
+    const squares : any[] = [];
 
     if ( this.state.allLoaded === true ) {
-      this.state.gridData.dataPoints.map( ( d ) => {
-        squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
+
+      /**
+       * These loops add leading squares and must be before pushing actual data
+       */
+      if ( this.props.scaleMethod === 'slider') {
+        //Do nothing special at this time
+
+      } else if ( this.props.scaleMethod === 'blink' && this.state.timeSliderValue < 0 ) {
+          for (let lb = 1; lb < this.state.timeSliderValue * 7; lb++) { //This just tests sliding grid animation
+            squares.push(<li data-level={ -1 }></li>);
+          }
+          sliderTransform = '';
+      }
+
+      if ( this.state.gridData.leadingBlanks > 0 ) {
+        for (let lb = 1; lb < this.state.gridData.leadingBlanks; lb++) { //this works for regular leading blanks
+            squares.push(<li data-level={ -1 }></li>);
+          }
+      }
+
+      /**
+       * This loop adds all the real squares to the mix
+       */
+      this.state.gridData.allDataPoints.map( ( d, index ) => {
+        if ( this.props.scaleMethod === 'blink' && this.state.timeSliderValue > 0 &&
+            index < this.state.timeSliderValue * 7 ) {
+          //Skip drawing these squares (this week is to left of grid )
+        } else if ( squares.length < 370 ) { //Only push 1 year's worth of items
+          squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
+        }
       });
-      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none' }}>
+        
+
+      /**
+       * Adding overflow hidden on Squares limits visible squares to the width of the element.
+       * BUT the entire year slides and is not trimmed by parent element size location... so the 1 year can slide over dates and off the screen.
+       * Need to have something else mask it when it goes out of the visible area.
+       * That would also mean having it not transparent so you have to fix the background color which may not match another color.
+      */
+
+
+      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none', transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
                         { squares }
                     </ul>;
 
@@ -433,6 +490,14 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         </div> ;
     }
 
+    let metrics = this.state.gridData.count > 0 ? `${ this.state.gridData.count } items with ${ this.props.valueOperator} of ${ this.props.valueColumn } = ${ this.state.gridData.total.toFixed(0) }` : 'TBD' ;
+    let timeSlider = this.props.scaleMethod !== 'slider' &&  this.props.scaleMethod !== 'blink'? null : 
+          <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ metrics }</div>
+          <Stack horizontal horizontalAlign='center' >
+            <div style={{ width: '50%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
+              { createSlider(this.state.timeSliderValue , 200, 1 , this._updateTimeSlider.bind(this)) }
+            </div>
+          </Stack></div>;
 
     const months : any[] = this.state.monthLables;
     const days : any[] = weekday3['en-us'];
@@ -475,8 +540,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     }
 
+
     let theGraph = <div className={styles.graph} style={{ width: '900px' }}>
-        <ul className={styles.months} style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns }}>
+        <ul className={ styles.months } style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns, transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
           { months.map( m=> { return <li> { m } </li> ; }) }
         </ul>
         <ul className={styles.days} style={{ listStyleType: 'none' }}>
@@ -485,8 +551,13 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         { gridElement }
       </div>;
 
-    if ( this.state.allLoaded === true && this.state.searchedItems && this.state.searchedItems.length === 0 ) {
-      theGraph = <div style={{ textAlign: 'center', margin: '50px', height: '100px', width: '100%'}}>
+    if ( this.state.errMessage !== '' && this.state.errMessage != null ) {
+      theGraph = <div style={{ textAlign: 'center', margin: '50px', height: '100px', width: '80%%'}}>
+                    <span style={{ fontSize: 'larger', fontWeight: 600, paddingTop: '40px'}}>
+                      <mark>{ this.state.errMessage }</mark>
+                    </span></div> ;
+    } else if ( this.state.allLoaded === true && this.state.searchedItems && this.state.searchedItems.length === 0 ) {
+          theGraph = <div style={{ textAlign: 'center', margin: '50px', height: '100px', width: '80%'}}>
                     <span style={{ fontSize: 'larger', fontWeight: 600, paddingTop: '40px'}}>
                       Sorry but there were no items found meeting your search criteria!
                     </span></div> ;
@@ -498,12 +569,43 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           { earlyAccess }
           { searchStack }
           { theGraph }
-
+          { timeSlider }
         </div>
       </div>
     );
   }
 
+
+
+
+/***
+ *         db    db d8888b.      .d8888. db      d888888b d8888b. d88888b d8888b. 
+ *         88    88 88  `8D      88'  YP 88        `88'   88  `8D 88'     88  `8D 
+ *         88    88 88oodD'      `8bo.   88         88    88   88 88ooooo 88oobY' 
+ *         88    88 88~~~          `Y8b. 88         88    88   88 88~~~~~ 88`8b   
+ *         88b  d88 88           db   8D 88booo.   .88.   88  .8D 88.     88 `88. 
+ *         ~Y8888P' 88           `8888Y' Y88888P Y888888P Y8888D' Y88888P 88   YD 
+ *                                                                                
+ *                                                                                
+ */
+  
+private _updateTimeSlider(newValue: number){
+
+  let now = new Date();
+  let then = new Date();
+  then.setMinutes(then.getMinutes() + newValue);
+
+  if ( this.props.scaleMethod === 'slider' || this.props.scaleMethod === 'blink' ) {
+    //Just update slider, render method does transition with css
+    this.setState({
+      timeSliderValue: newValue,
+    });
+  } else if ( this.props.scaleMethod === 'TBD' ) { //Update grid selected elements and date range
+
+  }
+
+
+}
 
   /***
  *    .d8888. d88888b  .d8b.  d8888b.  .o88b. db   db      d88888b  .d88b.  d8888b.      d888888b d888888b d88888b .88b  d88. .d8888. 
@@ -597,7 +699,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let gridData : IGridchartsData = this.buildGridData (this.state.gridList, newFilteredItems);
     
-    const s1 = gridData.gridStart.getMonth();
+    const s1 = gridData.startDate.getMonth();
     const s2 = s1 + 12;
 
     const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
@@ -646,9 +748,11 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
       let gridData : IGridchartsData = this.buildGridData (gridList, theseItems);
 
+      gridData= this.buildVisibleItems ( gridData, gridList );
+
       let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( gridList, allItems ) : this.state.dropDownItems ;
       
-      const s1 = gridData.gridStart.getMonth();
+      const s1 = gridData.startDate.getMonth();
       const s2 = s1 + 12;
 
       const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
@@ -679,6 +783,15 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       return true;
   }
 
+  private buildVisibleItems( gridData : IGridchartsData , gridList : IGridList ) {
+
+
+
+
+    return gridData;
+  }
+
+
   private buildDataDropdownItems( gridList: IGridList, allItems : IGridItemInfo[] ) {
 
     let dropDownItems : IDropdownOption[][] = [];
@@ -695,7 +808,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let thisItemsChoices = item[ actualColName ];
         if ( actualColName.indexOf( '/') > -1 ) {
           let parts = actualColName.split('/');
-          thisItemsChoices = item[ parts[0] ][parts[1]];
+          thisItemsChoices = item[ parts[0] ] ? item[ parts[0] ] [parts[1]] :  `. missing ${ parts[0] }`;
         }
         if ( parentColName !== null ) { thisItemsChoices = item[ parentColName ] + ' > ' + item[ actualColName ] ; }
         if ( thisItemsChoices && thisItemsChoices.length > 0 ) {
@@ -728,10 +841,34 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
  *                                                                                                                          
  */
 
+    //This will be in npmfunctions in v.0.0.5
+    private getOffSetDayOfWeek ( d : string, day: number, which: 'prior' | 'next' ) {
+      //First get current day number of week
+      let theDate = new Date( d );
+      let dayOfWeek = theDate.getDay();
+      if ( dayOfWeek === day ) {
+        return theDate; 
+
+      } else {
+        let deltaDays = which === 'prior' ? -dayOfWeek :  7 - dayOfWeek ;
+        let deltaMS = deltaDays * msPerDay;
+        let adjustedTime = theDate.getTime() + deltaMS;
+        let adjustedDate = new Date( adjustedTime );
+
+        return adjustedDate;
+
+      }
+
+
+  } 
+
   private buildGridData ( gridList: IGridList, allItems : IGridItemInfo[] ) {
-    let entireDateArray : any[] = [];
-    let entireDateStringArray : string[] = [];
-    let dataPoints : IGridchartsDataPoint[] = [];
+    
+    let count = allItems.length;
+
+    let allDateArray : any[] = [];
+    let allDateStringArray : string[] = [];
+    let allDataPoints : IGridchartsDataPoint[] = [];
 
     /**
      * Get entire date range
@@ -761,23 +898,29 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     });
 
     let startDate = new Date( firstDate );
-    startDate.setHours(0,0,0,0);
-    let gridStart = new Date( startDate.setDate(0) ) ;
-    let endDate = new Date( lastDate );
+    // let gridStart = this.getOffSetDayOfWeek( firstDate, 7, 'prior' ); //This gets prior sunday
+    let gridStart  = new Date( startDate.getFullYear(), startDate.getMonth() , 1 ); //First day of this month
+
+    let priorSundayStart = this.getOffSetDayOfWeek( gridStart.toDateString(), 7, 'prior' ); //This gets prior sunday
+    
+    let leadingBlanks = getTimeDelta( priorSundayStart, gridStart, 'days' ) + 1; //Days gives full days but not difference between dates so I'm taking away 1 day.
+
+    gridStart.setHours(0,0,0,0);
+    let endDate = this.getOffSetDayOfWeek( lastDate, 7, 'next' );
     endDate.setHours(0,0,0,0);
 
-    //https://stackoverflow.com/a/222439
+    // Last day of current month: https://stackoverflow.com/a/222439
     let gridEnd  = new Date( endDate.getFullYear(), endDate.getMonth() + 1, 0 );
     //let gridEnd = new Date( tempEnd.toLocaleString() );
-    entireDateArray = this.getDates( gridStart, gridEnd);
-    entireDateArray.map ( d => { entireDateStringArray.push( d.toLocaleDateString() ) ; });
+    allDateArray = this.getDates( gridStart, gridEnd);
+    allDateArray.map ( d => { allDateStringArray.push( d.toLocaleDateString() ) ; });
 
     /**
      * Build the IGridchartsDataPoint[] array
      */
 
-    entireDateArray.map( theDate => {
-      dataPoints.push( {
+    allDateArray.map( theDate => {
+      allDataPoints.push( {
         date: theDate,
         dateString: theDate.toLocaleDateString(),
         label: '',
@@ -795,16 +938,18 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     });
 
     /**
-     * Go through items and add to dataPoints
+     * Go through items and add to allDataPoints
      */
 
     let minValue = 951212732100099;
     let maxValue = -951212732100099;
+    let gridDataTotal = 0;
+    let valueOperator = this.props.valueOperator.toLowerCase() ;
 
     allItems.map( item => {
       let itemDateProp = item['time' + this.props.dateColumn ];
       let itemDate = new Date( itemDateProp.theTime ).toLocaleDateString();
-      let dateIndex = entireDateStringArray.indexOf( itemDate ) ;
+      let dateIndex = allDateStringArray.indexOf( itemDate ) ;
       item.dateIndex = dateIndex;
 
       let valueColumn = item[ this.props.valueColumn ];
@@ -817,20 +962,27 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       else if ( valueType === 'undefined' ) { valueColumn = 0 ; }
       else if ( valueType === 'function' ) { valueColumn = 0 ; }
 
-      dataPoints[dateIndex].items.push( item );
-      dataPoints[dateIndex].values.push( valueColumn );
-      dataPoints[dateIndex].valuesString.push( valueColumn.toFixed(2) );
+      allDataPoints[dateIndex].items.push( item );
+      allDataPoints[dateIndex].values.push( valueColumn );
+      allDataPoints[dateIndex].valuesString.push( valueColumn.toFixed(2) );
 
-      dataPoints[dateIndex].count ++;
-      dataPoints[dateIndex].sum += valueColumn;      
-      if ( dataPoints[dateIndex].min === null || dataPoints[dateIndex].min > valueColumn ) { dataPoints[dateIndex].min = valueColumn; }  
-      if ( dataPoints[dateIndex].max === null || dataPoints[dateIndex].max < valueColumn ) { dataPoints[dateIndex].max = valueColumn; }  
+      allDataPoints[dateIndex].count ++;
+      allDataPoints[dateIndex].sum += valueColumn;      
+      if ( allDataPoints[dateIndex].min === null || allDataPoints[dateIndex].min > valueColumn ) { allDataPoints[dateIndex].min = valueColumn; }  
+      if ( allDataPoints[dateIndex].max === null || allDataPoints[dateIndex].max < valueColumn ) { allDataPoints[dateIndex].max = valueColumn; }  
 
-      let compareValue = dataPoints[dateIndex][ this.props.valueOperator.toLowerCase() ] ;
+      let compareValue = allDataPoints[dateIndex][ valueOperator ] ;
       if ( compareValue < minValue ) { minValue = compareValue; }
-      if ( compareValue > maxValue ) { maxValue = compareValue; }      
+      if ( compareValue > maxValue ) { maxValue = compareValue; } 
+
+      if ( valueOperator === 'sum' || valueOperator === 'avg' ) { gridDataTotal += valueColumn ; } 
+      else if ( valueOperator === 'count' ) { gridDataTotal ++ ; } 
+      else if ( valueOperator === 'max' && valueColumn > gridDataTotal ) { gridDataTotal = valueColumn ; } 
+      else if ( valueOperator === 'min' && valueColumn < gridDataTotal ) { gridDataTotal = valueColumn ; } 
 
     });
+
+    if ( valueOperator === 'avg' ) { gridDataTotal = count != 0 ? gridDataTotal / count : null ; } 
 
     /**
      * Update datalevel based on min/max
@@ -838,28 +990,38 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     
     let dataLevelIncriment = ( maxValue - minValue ) / 3;
 
-    dataPoints.map( data => {
+    allDataPoints.map( data => {
       data.avg = data.count !== null && data.count !== undefined && data.count !== 0 ? data.sum / data.count : null;
       data.value = data[ this.props.valueOperator.toLowerCase() ] ;
 
       if ( data.count === 0 ) { data.dataLevel = 0 ; }
       else if ( data.value > ( maxValue - 1 * dataLevelIncriment ) ) { data.dataLevel = 3 ; }
       else if ( data.value > ( maxValue - 2 * dataLevelIncriment ) ) { data.dataLevel = 2 ; }
-      else if ( data.value > ( maxValue - 3 * dataLevelIncriment ) ) { data.dataLevel = 1 ; }
+      else if ( data.value >= minValue ) { data.dataLevel = 1 ; }
       else { data.dataLevel = 0 ; }
 
       data.label = data.count === 0 ? `${data.dateString} : No data available` : `${data.dateString} : ${this.props.valueOperator} = ${data.value.toFixed(this.props.valueOperator === 'count' ? 0 : 2 )}  ( ${data.valuesString.join(', ') } )`;
     });
 
-    let gridData: IGridchartsData = {
 
-      gridStart: gridStart,
+    let gridData: IGridchartsData = {
+      total: gridDataTotal,
+      count: count,
+      leadingBlanks: leadingBlanks,
+      gridStart: startDate,
       gridEnd: gridEnd,
       startDate: startDate,
       endDate: endDate,
-      entireDateArray: entireDateArray,
-      entireDateStringArray: entireDateStringArray,
-      dataPoints: dataPoints,
+
+      allWeeks: 0,
+      allDateArray: allDateArray,
+      allDateStringArray: allDateStringArray,
+      allDataPoints: allDataPoints,
+                
+      visibleDataPoints: [],
+      visibleDateArray: [],
+      visibleDateStringArray: [],
+      visibleWeeks: 0,
 
     };
 

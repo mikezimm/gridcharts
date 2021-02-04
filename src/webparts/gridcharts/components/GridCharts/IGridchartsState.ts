@@ -17,9 +17,20 @@ export interface IGridchartsData {
     startDate: any;
     endDate: any;
     gridEnd: any;
-    entireDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
-    entireDateStringArray: string[];
-    dataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
+
+    allDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
+    allDateStringArray: string[];
+    allDataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
+    allWeeks: number;
+
+    visibleDataPoints: IGridchartsDataPoint[];
+    visibleDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
+    visibleDateStringArray: string[];
+    visibleWeeks: number;
+
+    count: number;
+    leadingBlanks: number; //Number of empty squares... basically prior month's squares that are not visible
+    total: number;
 
 }
 
@@ -76,6 +87,7 @@ export interface IGridchartsState {
     monthLables: string[];  //Used to build the month labels on top of the gridChart
     monthScales: number[];  //Used to space the month labels on top of the gridChart
 
+    timeSliderValue: number;
 
     WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
     WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/

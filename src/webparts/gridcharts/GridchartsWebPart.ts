@@ -14,7 +14,7 @@ import { propertyPaneBuilder } from '../../services/propPane/PropPaneBuilder';
 
 import * as strings from 'GridchartsWebPartStrings';
 import Gridcharts from './components/GridCharts/Gridcharts';
-import { IGridchartsProps } from './components/GridCharts/IGridchartsProps';
+import { IGridchartsProps, IScaleMethod } from './components/GridCharts/IGridchartsProps';
 
 //require('@mikezimm/npmfunctions/dist/GrayPropPaneAccordions.css');
 require('../../services/propPane/GrayPropPaneAccordions.css');
@@ -55,6 +55,7 @@ export interface IGridchartsWebPartProps {
     cellStyles: string;
     cellhoverInfoColor: string;
     otherStyles: string;
+    scaleMethod: IScaleMethod;
 
     advancedPivotStyles: boolean;
     pivotSize: string;
@@ -133,7 +134,7 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
 // ^^^ 2021-01-05 Copied to this point
 
   public render(): void {
-
+    if ( this.properties.fetchCount == null ) { this.properties.fetchCount = 1000 ;}
     let showEarlyAccess : boolean = false;
     
     if ( window.location.origin.toLowerCase().indexOf('clickster.share') > -1 || window.location.origin.toLowerCase().indexOf('/autoliv/') > -1 ) {
@@ -172,6 +173,8 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         searchColumns: this.properties.searchColumns ? this.properties.searchColumns.split(',') : [], 
         metaColumns: this.properties.metaColumns ? this.properties.metaColumns.split(',') : [], 
         enableSearch: this.properties.enableSearch,
+
+        scaleMethod: this.properties.scaleMethod ,
 
         gridStyles: {
           cellColor: this.properties.cellColor ? this.properties.cellColor : '',
@@ -303,7 +306,7 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
       'stressMultiplierTime', 'webPartScenario', '', '', '',
       'parentListTitle', 'parentListName', 'parentListWeb', '', '',
       'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns','searchColumns', 'metaColumns',
-      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', '',
+      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'scaleMethod',
       'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',
       'centerPaneFields','centerPaneStyles',
     ];
