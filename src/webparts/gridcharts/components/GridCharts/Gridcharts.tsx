@@ -169,7 +169,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let searchColumns : string[] = this.props.searchColumns;
         let metaColumns : string[] = this.props.metaColumns;
         let expandDates : string[] = [this.props.dateColumn, 'Created', 'Modified'];
-        
+        let selectedDropdowns: string[] = [];
         allColumns.push( this.props.dateColumn );
         allColumns.push( this.props.valueColumn );
 
@@ -178,7 +178,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         let dropDownSort : string[] = dropDownColumns.map( c => { let c1 = c.replace('>','') ; if ( c1.indexOf('-') === 0 ) { return 'dec' ; } else if ( c1.indexOf('+') === 0 ) { return 'asc' ; } else { return ''; } });
 
-        dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); });
+        dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); selectedDropdowns.push('') ; });
+
 
         let gridList = createGridList( this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
         /**
@@ -236,7 +237,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
           selectedYear: null,
           selectedUser: null,
-          selectedDropdowns: [],
+          selectedDropdowns: selectedDropdowns,
           dropDownItems: [],
 
           gridData: gridData,
@@ -381,7 +382,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     let timeSliderValue = this.state.timeSliderValue;
     let sliderTransform = null;
     let sliderMax = ( this.state.gridData.allDateArray.length -365 ) / 7 + 1;
-    if ( sliderMax < 2 ) { sliderMax = 2 }
+    if ( sliderMax < 2 ) { sliderMax = 2 ; }
 
     const squares : any[] = [];
 
@@ -449,7 +450,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
                   placeholder={ `Select a ${ DDLabel }` }
                   label={ DDLabel }
                   options={dropDownChoicesSorted}
-                  selectedKey={ this.state.selectedDropdowns [index ] }
+                  selectedKey={ this.state.selectedDropdowns [index ] === '' ? null : this.state.selectedDropdowns [index ] }
                   onChange={(ev: any, value: IDropdownOption) => {
                     this.searchForItems(value.key.toString());
                   }}
@@ -658,23 +659,21 @@ private _updateTimeSlider(newValue: number){
     let searchCount = searchItems.length;
 
     let selectedDropdowns = this.state.selectedDropdowns;
+    let dropDownItems = this.state.dropDownItems;
 
     if ( searchText === null ) { //Then this is a choice dropdown filter
-      
       let dropdownColumnIndex = null; //Index of dropdown column that was picked
-      this.state.dropDownItems.map ( ( thisDropDown, ddIndex ) => {
+      dropDownItems.map ( ( thisDropDown, ddIndex ) => {
         thisDropDown.map( thisChoice => {
-          if ( ddIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; } 
+          if ( dropdownColumnIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; thisChoice.isSelected = true }  else { thisChoice.isSelected = false;} 
         });
       });
 
-
       selectedDropdowns.map( (dd, index ) => {
         if ( dropdownColumnIndex !== null ) {  //This should never be null but just in case... 
-            selectedDropdowns[ dropdownColumnIndex ] = dropdownColumnIndex === index ? item : ''; 
+          selectedDropdowns[index] = dropdownColumnIndex === index ? item : ''; 
         }
       });
-
 
       if ( item === '' ) {
         newFilteredItems = searchItems;
@@ -688,6 +687,19 @@ private _updateTimeSlider(newValue: number){
         }
       }
     } else { //This is a text box filter
+
+      //Clears the selectedDropdowns array
+      selectedDropdowns.map( (dd, index ) => {
+          selectedDropdowns[index] = ''; 
+      });
+
+      //Sets isSelected on all dropdown options to false
+      dropDownItems.map ( ( thisDropDown ) => {
+        thisDropDown.map( thisChoice => {
+         thisChoice.isSelected = false;
+        });
+      });
+
       if ( searchText == null || searchText === '' ) {
         newFilteredItems = searchItems;
       } else {
@@ -716,6 +728,7 @@ private _updateTimeSlider(newValue: number){
         searchCount: newFilteredItems.length,
         searchText: searchText,
         searchMeta: [],
+        dropDownItems: dropDownItems,
         selectedDropdowns: selectedDropdowns,
         gridData: gridData,
         allLoaded: true,
@@ -852,7 +865,6 @@ private _updateTimeSlider(newValue: number){
       let theDate = new Date( d );
       let dayOfWeek = theDate.getDay();
       if ( dayOfWeek === day ) {
-        
         return theDate; 
 
       } else {
