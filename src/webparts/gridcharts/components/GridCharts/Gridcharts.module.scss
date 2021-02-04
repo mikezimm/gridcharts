@@ -64,6 +64,10 @@
     background-color: #ebedf0;
   }
 
+  .squares li[data-level="-1"] {
+    background-color: transparent;
+  }
+
   .squares li[data-level="1"] {
     background-color: #c6e48b;
   }

@@ -221,14 +221,22 @@ export interface IGridList extends IZBasicList {
 // This is what it was before I split off the other part
 export async function getAllItems( gridList: IGridList, addTheseItemsToState: any, setProgress: any, markComplete: any ): Promise<void>{
 
-    let sourceUserInfo: any = await ensureUserInfo( gridList.webURL, gridList.contextUserInfo.email );
+    let allItems : IGridItemInfo[] = [];
+    let errMessage = '';
+    
+    let sourceUserInfo: any = null;
+    try {
+        sourceUserInfo = await ensureUserInfo( gridList.webURL, gridList.contextUserInfo.email );
+    } catch (e) {
+        errMessage = getHelpfullError(e, true, true);
+    }
+
 
     gridList.sourceUserInfo = sourceUserInfo;
     //lists.getById(listGUID).webs.orderBy("Title", true).get().then(function(result) {
     //let allItems : IGridItemInfo[] = await sp.web.webs.get();
 
-    let allItems : IGridItemInfo[] = [];
-    let errMessage = '';
+
 
     let thisListWeb = Web(gridList.webURL);
     let selColumns = gridList.selectColumnsStr;

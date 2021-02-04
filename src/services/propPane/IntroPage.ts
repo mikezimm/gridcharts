@@ -178,8 +178,8 @@ export class IntroPage {
           PropertyPaneSlider('fetchCount', {
             label: 'Load this many items from PC',
             min: 100,
-            max: 2000,
-            step: 100,
+            max: 5000,
+            step: 500,
             value: webPartProps.fetchCount,
           }),
 

@@ -219,6 +219,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           
           total: null,
           count: 0,
+          leadingBlanks: 0,
 
         };
 
@@ -376,9 +377,15 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     const wrapStackTokens: IStackTokens = { childrenGap: 30 };
 
     const squares : any[] = [];
+    if ( this.state.gridData.leadingBlanks > 0 ) {
+      for (let lb = 1; lb < this.state.gridData.leadingBlanks; lb++) {
+        squares.push(<li data-level={ -1 }></li>);
+      }
+
+    }
     let gridElement = null;
     let searchStack = null;
-    let sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(" + this.state.timeSliderValue + "vw, 0, 0)" : null;
+    let sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(" + ( -this.state.timeSliderValue ) + "vw, 0, 0)" : null;
 
     if ( this.state.allLoaded === true ) {
       this.state.gridData.allDataPoints.map( ( d ) => {
@@ -519,8 +526,13 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         { gridElement }
       </div>;
 
-    if ( this.state.allLoaded === true && this.state.searchedItems && this.state.searchedItems.length === 0 ) {
-      theGraph = <div style={{ textAlign: 'center', margin: '50px', height: '100px', width: '100%'}}>
+    if ( this.state.errMessage !== '' && this.state.errMessage != null ) {
+      theGraph = <div style={{ textAlign: 'center', margin: '50px', height: '100px', width: '80%%'}}>
+                    <span style={{ fontSize: 'larger', fontWeight: 600, paddingTop: '40px'}}>
+                      <mark>{ this.state.errMessage }</mark>
+                    </span></div> ;
+    } else if ( this.state.allLoaded === true && this.state.searchedItems && this.state.searchedItems.length === 0 ) {
+          theGraph = <div style={{ textAlign: 'center', margin: '50px', height: '100px', width: '80%'}}>
                     <span style={{ fontSize: 'larger', fontWeight: 600, paddingTop: '40px'}}>
                       Sorry but there were no items found meeting your search criteria!
                     </span></div> ;
@@ -666,7 +678,7 @@ private _updateTimeSlider(newValue: number){
 
     let gridData : IGridchartsData = this.buildGridData (this.state.gridList, newFilteredItems);
     
-    const s1 = gridData.gridStart.getMonth();
+    const s1 = gridData.startDate.getMonth();
     const s2 = s1 + 12;
 
     const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
@@ -719,7 +731,7 @@ private _updateTimeSlider(newValue: number){
 
       let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( gridList, allItems ) : this.state.dropDownItems ;
       
-      const s1 = gridData.gridStart.getMonth();
+      const s1 = gridData.startDate.getMonth();
       const s2 = s1 + 12;
 
       const monthLables = monthStr3["en-us"].concat( ... monthStr3["en-us"] ).slice(s1,s2) ;
@@ -808,33 +820,25 @@ private _updateTimeSlider(newValue: number){
  *                                                                                                                          
  */
 
-/**
- * Based on this post:  https://stackoverflow.com/a/4156516
- * @param d
- */
-
-  private getPriorSundayOriginal ( d ) {
-
-      d = new Date(d);
-      var day = d.getDay(),
-  //        diff = d.getDate() - day + (day == 0 ? -6:1); // When Monday is first day of week
-          diff = d.getDate() - day; //When Sunday is first day of week
-          d.setHours(0);	d.setMinutes(0); d.setSeconds(0); //This sets the date to the actual date without time.
-      return new Date(d.setDate(diff));
-
-  }
-
     //This will be in npmfunctions in v.0.0.5
     private getOffSetDayOfWeek ( d : string, day: number, which: 'prior' | 'next' ) {
       //First get current day number of week
       let theDate = new Date( d );
       let dayOfWeek = theDate.getDay();
-      let deltaDays = which === 'prior' ? 7 - dayOfWeek + 1 :  dayOfWeek - 7 ;
-      let deltaMS = deltaDays * msPerDay;
-      let adjustedTime = theDate.getTime() - deltaMS;
-      let adjustedDate = new Date( adjustedTime );
+      if ( dayOfWeek === day ) {
+        return theDate; 
 
-      return adjustedDate;
+      } else {
+        let deltaDays = which === 'prior' ? -dayOfWeek :  7 - dayOfWeek ;
+        let deltaMS = deltaDays * msPerDay;
+        let adjustedTime = theDate.getTime() + deltaMS;
+        let adjustedDate = new Date( adjustedTime );
+
+        return adjustedDate;
+
+      }
+
+
   } 
 
   private buildGridData ( gridList: IGridList, allItems : IGridItemInfo[] ) {
@@ -872,16 +876,19 @@ private _updateTimeSlider(newValue: number){
 
     });
 
-    //let startDate = new Date( firstDate );
-    let startDate = this.getOffSetDayOfWeek( firstDate, 7, 'prior' );
-    startDate.setHours(0,0,0,0);
-    let gridStart = new Date( startDate.setDate(0) ) ;
-    //let endDate = new Date( lastDate );
-    let endDate = this.getOffSetDayOfWeek( lastDate, 7, 'next' );
+    let startDate = new Date( firstDate );
+    // let gridStart = this.getOffSetDayOfWeek( firstDate, 7, 'prior' ); //This gets prior sunday
+    let gridStart  = new Date( startDate.getFullYear(), startDate.getMonth() , 1 ); //First day of this month
 
+    let priorSundayStart = this.getOffSetDayOfWeek( gridStart.toDateString(), 7, 'prior' ); //This gets prior sunday
+    
+    let leadingBlanks = getTimeDelta( priorSundayStart, gridStart, 'days' ) + 1; //Days gives full days but not difference between dates so I'm taking away 1 day.
+
+    gridStart.setHours(0,0,0,0);
+    let endDate = this.getOffSetDayOfWeek( lastDate, 7, 'next' );
     endDate.setHours(0,0,0,0);
 
-    //https://stackoverflow.com/a/222439
+    // Last day of current month: https://stackoverflow.com/a/222439
     let gridEnd  = new Date( endDate.getFullYear(), endDate.getMonth() + 1, 0 );
     //let gridEnd = new Date( tempEnd.toLocaleString() );
     allDateArray = this.getDates( gridStart, gridEnd);
@@ -979,7 +986,8 @@ private _updateTimeSlider(newValue: number){
     let gridData: IGridchartsData = {
       total: gridDataTotal,
       count: count,
-      gridStart: gridStart,
+      leadingBlanks: leadingBlanks,
+      gridStart: startDate,
       gridEnd: gridEnd,
       startDate: startDate,
       endDate: endDate,
