@@ -31,7 +31,7 @@
       "valueOperator": "Sum",
       "minDataDownload": true,
       "showEarlyAccess": true,
-      "scaleMethod": "slider",
+      "scaleMethod": "blink",
       "fetchCount": 2000,
       "enableSearch": true,
       "dropDownColumns": "Editor/Title"
