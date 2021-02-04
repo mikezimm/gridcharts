@@ -491,11 +491,14 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     }
 
     let metrics = this.state.gridData.count > 0 ? `${ this.state.gridData.count } items with ${ this.props.valueOperator} of ${ this.props.valueColumn } = ${ this.state.gridData.total.toFixed(0) }` : 'TBD' ;
+
+    let sliderMax = ( this.state.gridData.allDateArray.length -365 ) / 7 + 1;
+    if ( sliderMax < 3 ) { sliderMax = 3 }
     let timeSlider = this.props.scaleMethod !== 'slider' &&  this.props.scaleMethod !== 'blink'? null : 
           <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ metrics }</div>
           <Stack horizontal horizontalAlign='center' >
-            <div style={{ width: '50%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
-              { createSlider(this.state.timeSliderValue , 200, 1 , this._updateTimeSlider.bind(this)) }
+            <div style={{ width: '30%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
+              { createSlider(this.state.timeSliderValue , sliderMax, 1 , this._updateTimeSlider.bind(this)) }
             </div>
           </Stack></div>;
 

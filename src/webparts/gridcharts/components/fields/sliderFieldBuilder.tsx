@@ -17,7 +17,7 @@ import styles from '../GridCharts/Gridcharts.module.scss';
 export function createSlider( timeSliderValue , timeSliderMax, timeSliderInc, _onChange){
 
   return (
-    <div style={{minWidth: 400, }}>
+    <div style={{minWidth: 250, }}>
       <Slider 
   //      label={ ((timeSliderValue < 0)  ? "Start time is in the past" : "End time is Back to the future" ) }  //This is the label to left of slider
         label = { 'Slide to adjust date range' }
