@@ -17,11 +17,11 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "GridCharts" },
-    "description": { "default": "Show list data as HeatMap by day of week.  Mimics Github Contributor chart" },
-    "officeFabricIconFontName": "Page",
+    "title": { "default": "GridCharts-TMT" },
+    "description": { "default": "Show list data as HeatMap of TMT by day of week.  Mimics Github Contributor chart" },
+    "officeFabricIconFontName": "ScatterChart",
     "properties": {
-      "description": "GridCharts",
+      "description": "GridCharts-TMT",
       "parentListWeb": "https://mcclickster.sharepoint.com/sites/Templates/Tmt/",
       "parentListTitle": "TrackMyTime",
 
@@ -35,6 +35,29 @@
       "fetchCount": 2000,
       "enableSearch": true,
       "dropDownColumns": "Editor/Title"
+    }
+  },
+  {
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
+    "group": { "default": "Other" },
+    "title": { "default": "GridCharts-Documents" },
+    "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart" },
+    "officeFabricIconFontName": "ScatterChart",
+    "properties": {
+      "description": "GridCharts-Documents",
+      "parentListWeb": "",
+      "parentListTitle": "Documents",
+
+      "dateColumn": "Modified",
+      "valueColumn": "Id",
+      "valueType": "Number",
+      "valueOperator": "Count",
+      "minDataDownload": true,
+      "showEarlyAccess": true,
+      "scaleMethod": "blink",
+      "fetchCount": 2000,
+      "enableSearch": true,
+      "dropDownColumns": "Editor/Title,Author/Title"
     }
   }]
 }
