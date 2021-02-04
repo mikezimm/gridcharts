@@ -378,10 +378,16 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     const squares : any[] = [];
     if ( this.state.gridData.leadingBlanks > 0 ) {
-      for (let lb = 1; lb < this.state.gridData.leadingBlanks; lb++) {
+      for (let lb = 1; lb < this.state.gridData.leadingBlanks; lb++) { //this works for regular leading blanks
+      //for (let lb = 1; lb < this.state.timeSliderValue; lb++) { //This just tests sliding grid animation
         squares.push(<li data-level={ -1 }></li>);
+        //squares.push(<li data-level={ -1 }></li>);
+        //squares.push(<li data-level={ -1 }></li>);
+        //squares.push(<li data-level={ -1 }></li>);
+        //squares.push(<li data-level={ -1 }></li>);
+        //squares.push(<li data-level={ -1 }></li>);
+        //squares.push(<li data-level={ -1 }></li>);
       }
-
     }
     let gridElement = null;
     let searchStack = null;
