@@ -1,5 +1,7 @@
 @import '~office-ui-fabric-react/dist/sass/References.scss';
 
+
+
 .gridcharts {
   /* Article - https://bitsofco.de/github-contribution-graph-css-grid/ */
 
@@ -60,29 +62,31 @@
     visibility: hidden;
   }
 
+  $squareTransition: .2s;
+
   .squares li {
     background-color: #ebedf0;
-    transition: all, .25s ease;
+    transition: all, $squareTransition ease;
   }
 
   .squares li[data-level="-1"] {
     background-color: transparent;
-    transition: all, .25s ease;
+    transition: all, $squareTransition ease;
   }
 
   .squares li[data-level="1"] {
     background-color: #c6e48b;
-    transition: all, .25s ease;
+    transition: all, $squareTransition ease;
   }
 
   .squares li[data-level="2"] {
     background-color: #7bc96f;
-    transition: all, .25s ease;
+    transition: all, $squareTransition ease;
   }
 
   .squares li[data-level="3"] {
     background-color: #196127;
-    transition: all, .25s ease;
+    transition: all, $squareTransition ease;
   }
 
 

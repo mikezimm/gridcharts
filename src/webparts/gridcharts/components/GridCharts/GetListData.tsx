@@ -223,7 +223,7 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
 
     let allItems : IGridItemInfo[] = [];
     let errMessage = '';
-    
+
     let sourceUserInfo: any = null;
     try {
         sourceUserInfo = await ensureUserInfo( gridList.webURL, gridList.contextUserInfo.email );
@@ -305,10 +305,15 @@ function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
     gridList.metaColumns.map( c=> {
         if ( c.indexOf('/') > -1 ) { 
             let cols = c.split('/');
-            meta = addItemToArrayIfItDoesNotExist( meta, theItem[ cols[0] ][ cols[1] ] ) ;
+            //console.log( 'theItem', theItem);
+            if ( theItem[ cols[0] ]) {
+                meta = addItemToArrayIfItDoesNotExist( meta, theItem[ cols[0] ][ cols[1] ] ) ;
+            } else { meta = addItemToArrayIfItDoesNotExist( meta, `. missing ${ c }` ) ; }
         } else if ( c.indexOf('.') > -1 ) { 
             let cols = c.split('.');
-            meta = addItemToArrayIfItDoesNotExist( meta, theItem[ cols[0] ][ cols[1]]  ) ;
+            if ( theItem[ cols[0] ]) {
+                meta = addItemToArrayIfItDoesNotExist( meta, theItem[ cols[0] ][ cols[1]]  ) ;
+            } else { meta = addItemToArrayIfItDoesNotExist( meta, `. missing ${ c }` ) ; }
         } else {
             meta = addItemToArrayIfItDoesNotExist( meta, theItem[ c ] ) ;
         }
@@ -352,10 +357,10 @@ function buildSearchStringFromItem ( theItem: IGridItemInfo, gridList: IGridList
         let thisCol = c.replace('/','');
         if ( c.indexOf('/') > -1 ) { 
             let cols = c.split('/');
-            if ( theItem[ cols[0] ][ cols[1] ] ) { result += thisCol + '=' + theItem[ cols[0] ][ cols[1] ] + delim ; }
+            if ( theItem[ cols[0] ] && theItem[ cols[0] ][ cols[1] ] ) { result += thisCol + '=' + theItem[ cols[0] ][ cols[1] ] + delim ; }
         } else if ( c.indexOf('.') > -1 ) { 
             let cols = c.split('.');
-            if ( theItem[ cols[0] ][ cols[1] ] ) { result += thisCol + '=' + theItem[ cols[0] ][ cols[1] ] + delim ; }
+            if ( theItem[ cols[0] ] && theItem[ cols[0] ][ cols[1] ] ) { result += thisCol + '=' + theItem[ cols[0] ][ cols[1] ] + delim ; }
         } else {
             if ( theItem[thisCol] ) { result += thisCol + '=' + theItem[thisCol] + delim ; }
         }  

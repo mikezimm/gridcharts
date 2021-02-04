@@ -21,7 +21,7 @@ export function createSlider( timeSliderValue , timeSliderMax, timeSliderInc, _o
       <Slider 
   //      label={ ((timeSliderValue < 0)  ? "Start time is in the past" : "End time is Back to the future" ) }  //This is the label to left of slider
         label = { 'Slide to adjust date range' }
-        min={ -1 * timeSliderMax } 
+        min={ 0 } 
         max={ timeSliderMax } 
         step={ timeSliderInc } 
         defaultValue={ 0 } 

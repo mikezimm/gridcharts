@@ -376,27 +376,48 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     const wrapStackTokens: IStackTokens = { childrenGap: 30 };
 
-    const squares : any[] = [];
-    if ( this.state.gridData.leadingBlanks > 0 ) {
-      for (let lb = 1; lb < this.state.gridData.leadingBlanks; lb++) { //this works for regular leading blanks
-      //for (let lb = 1; lb < this.state.timeSliderValue; lb++) { //This just tests sliding grid animation
-        squares.push(<li data-level={ -1 }></li>);
-        //squares.push(<li data-level={ -1 }></li>);
-        //squares.push(<li data-level={ -1 }></li>);
-        //squares.push(<li data-level={ -1 }></li>);
-        //squares.push(<li data-level={ -1 }></li>);
-        //squares.push(<li data-level={ -1 }></li>);
-        //squares.push(<li data-level={ -1 }></li>);
-      }
-    }
     let gridElement = null;
     let searchStack = null;
     let sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(" + ( -this.state.timeSliderValue ) + "vw, 0, 0)" : null;
 
+    const squares : any[] = [];
+
     if ( this.state.allLoaded === true ) {
-      this.state.gridData.allDataPoints.map( ( d ) => {
-        squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
+
+      /**
+       * These loops add leading squares and must be before pushing actual data
+       */
+      if ( this.props.scaleMethod === 'slider') {
+        //Do nothing special at this time
+
+      } else if ( this.props.scaleMethod === 'blink' && this.state.timeSliderValue < 0 ) {
+          for (let lb = 1; lb < this.state.timeSliderValue * 7; lb++) { //This just tests sliding grid animation
+            squares.push(<li data-level={ -1 }></li>);
+          }
+          sliderTransform = '';
+      }
+
+      if ( this.state.gridData.leadingBlanks > 0 ) {
+        for (let lb = 1; lb < this.state.gridData.leadingBlanks; lb++) { //this works for regular leading blanks
+            squares.push(<li data-level={ -1 }></li>);
+          }
+      }
+
+      /**
+       * This loop adds all the real squares to the mix
+       */
+      this.state.gridData.allDataPoints.map( ( d, index ) => {
+        if ( this.props.scaleMethod === 'blink' && this.state.timeSliderValue > 0 &&
+            index < this.state.timeSliderValue * 7 ) {
+          //Skip drawing these squares (this week is to left of grid )
+        } else {
+          squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
+        }
+
+
       });
+        
+
       /**
        * Adding overflow hidden on Squares limits visible squares to the width of the element.
        * BUT the entire year slides and is not trimmed by parent element size location... so the 1 year can slide over dates and off the screen.
@@ -472,11 +493,11 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     }
 
     let metrics = this.state.gridData.count > 0 ? `${ this.state.gridData.count } items with ${ this.props.valueOperator} of ${ this.props.valueColumn } = ${ this.state.gridData.total.toFixed(0) }` : 'TBD' ;
-    let timeSlider = this.props.scaleMethod !== 'slider' ? null : 
+    let timeSlider = this.props.scaleMethod !== 'slider' &&  this.props.scaleMethod !== 'blink'? null : 
           <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ metrics }</div>
           <Stack horizontal horizontalAlign='center' >
             <div style={{ width: '50%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
-              { createSlider(this.state.timeSliderValue , 100, 1 , this._updateTimeSlider.bind(this)) }
+              { createSlider(this.state.timeSliderValue , 200, 1 , this._updateTimeSlider.bind(this)) }
             </div>
           </Stack></div>;
 
@@ -576,16 +597,12 @@ private _updateTimeSlider(newValue: number){
   let then = new Date();
   then.setMinutes(then.getMinutes() + newValue);
 
-  if ( this.props.scaleMethod === 'slider' ) {
+  if ( this.props.scaleMethod === 'slider' || this.props.scaleMethod === 'blink' ) {
     //Just update slider, render method does transition with css
     this.setState({
       timeSliderValue: newValue,
     });
-  } else if ( this.props.scaleMethod === 'blink' ) { //Update grid selected elements and date range
-
-
-
-    
+  } else if ( this.props.scaleMethod === 'TBD' ) { //Update grid selected elements and date range
 
   }
 
@@ -793,7 +810,7 @@ private _updateTimeSlider(newValue: number){
         let thisItemsChoices = item[ actualColName ];
         if ( actualColName.indexOf( '/') > -1 ) {
           let parts = actualColName.split('/');
-          thisItemsChoices = item[ parts[0] ][parts[1]];
+          thisItemsChoices = item[ parts[0] ] ? item[ parts[0] ] [parts[1]] :  `. missing ${ parts[0] }`;
         }
         if ( parentColName !== null ) { thisItemsChoices = item[ parentColName ] + ' > ' + item[ actualColName ] ; }
         if ( thisItemsChoices && thisItemsChoices.length > 0 ) {
