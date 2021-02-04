@@ -665,7 +665,7 @@ private _updateTimeSlider(newValue: number){
       let dropdownColumnIndex = null; //Index of dropdown column that was picked
       dropDownItems.map ( ( thisDropDown, ddIndex ) => {
         thisDropDown.map( thisChoice => {
-          if ( dropdownColumnIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; thisChoice.isSelected = true }  else { thisChoice.isSelected = false;} 
+          if ( dropdownColumnIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; thisChoice.isSelected = true ; }  else { thisChoice.isSelected = false;} 
         });
       });
 
