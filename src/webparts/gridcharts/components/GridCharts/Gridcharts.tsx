@@ -378,7 +378,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let gridElement = null;
     let searchStack = null;
-    let sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(" + ( -this.state.timeSliderValue ) + "vw, 0, 0)" : null;
+    let timeSliderValue = this.state.timeSliderValue;
+    let sliderTransform = null;
+    let sliderMax = ( this.state.gridData.allDateArray.length -365 ) / 7 + 1;
+    if ( sliderMax < 2 ) { sliderMax = 2 }
 
     const squares : any[] = [];
 
@@ -389,9 +392,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
        */
       if ( this.props.scaleMethod === 'slider') {
         //Do nothing special at this time
+        sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(" + ( -timeSliderValue ) + "vw, 0, 0)" : null;
 
-      } else if ( this.props.scaleMethod === 'blink' && this.state.timeSliderValue < 0 ) {
-          for (let lb = 1; lb < this.state.timeSliderValue * 7; lb++) { //This just tests sliding grid animation
+      } else if ( this.props.scaleMethod === 'blink' && timeSliderValue < 0 ) {
+          for (let i = 1; i < timeSliderValue * 7; i++) { //This just tests sliding grid animation
             squares.push(<li data-level={ -1 }></li>);
           }
           sliderTransform = '';
@@ -407,8 +411,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
        * This loop adds all the real squares to the mix
        */
       this.state.gridData.allDataPoints.map( ( d, index ) => {
-        if ( this.props.scaleMethod === 'blink' && this.state.timeSliderValue > 0 &&
-            index < this.state.timeSliderValue * 7 ) {
+        if ( this.props.scaleMethod === 'blink' && timeSliderValue > 0 &&
+            index < timeSliderValue * 7 ) {
           //Skip drawing these squares (this week is to left of grid )
         } else if ( squares.length < 370 ) { //Only push 1 year's worth of items
           squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
@@ -492,13 +496,11 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let metrics = this.state.gridData.count > 0 ? `${ this.state.gridData.count } items with ${ this.props.valueOperator} of ${ this.props.valueColumn } = ${ this.state.gridData.total.toFixed(0) }` : 'TBD' ;
 
-    let sliderMax = ( this.state.gridData.allDateArray.length -365 ) / 7 + 1;
-    if ( sliderMax < 3 ) { sliderMax = 3 }
     let timeSlider = this.props.scaleMethod !== 'slider' &&  this.props.scaleMethod !== 'blink'? null : 
           <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ metrics }</div>
           <Stack horizontal horizontalAlign='center' >
             <div style={{ width: '30%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
-              { createSlider(this.state.timeSliderValue , sliderMax, 1 , this._updateTimeSlider.bind(this)) }
+              { createSlider(timeSliderValue , sliderMax, 1 , this._updateTimeSlider.bind(this)) }
             </div>
           </Stack></div>;
 
@@ -850,6 +852,7 @@ private _updateTimeSlider(newValue: number){
       let theDate = new Date( d );
       let dayOfWeek = theDate.getDay();
       if ( dayOfWeek === day ) {
+        
         return theDate; 
 
       } else {
@@ -859,10 +862,7 @@ private _updateTimeSlider(newValue: number){
         let adjustedDate = new Date( adjustedTime );
 
         return adjustedDate;
-
       }
-
-
   } 
 
   private buildGridData ( gridList: IGridList, allItems : IGridItemInfo[] ) {
