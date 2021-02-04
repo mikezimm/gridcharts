@@ -34,7 +34,7 @@
       "scaleMethod": "blink",
       "fetchCount": 2000,
       "enableSearch": true,
-      "dropDownColumns": "+Story,+>Chapter,User/Title"
+      "dropDownColumns": "+Story,+>Chapter,+User/Title"
     }
   },
   {
