@@ -17,11 +17,11 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "gridcharts" },
-    "description": { "default": "gridcharts description" },
+    "title": { "default": "GridCharts" },
+    "description": { "default": "Show list data as HeatMap by day of week.  Mimics Github Contributor chart" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "gridcharts",
+      "description": "GridCharts",
       "parentListWeb": "https://mcclickster.sharepoint.com/sites/Templates/Tmt/",
       "parentListTitle": "TrackMyTime",
 
