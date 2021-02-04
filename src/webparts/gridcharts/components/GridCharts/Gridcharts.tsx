@@ -410,11 +410,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         if ( this.props.scaleMethod === 'blink' && this.state.timeSliderValue > 0 &&
             index < this.state.timeSliderValue * 7 ) {
           //Skip drawing these squares (this week is to left of grid )
-        } else {
+        } else if ( squares.length < 370 ) { //Only push 1 year's worth of items
           squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
         }
-
-
       });
         
 
@@ -999,7 +997,7 @@ private _updateTimeSlider(newValue: number){
       if ( data.count === 0 ) { data.dataLevel = 0 ; }
       else if ( data.value > ( maxValue - 1 * dataLevelIncriment ) ) { data.dataLevel = 3 ; }
       else if ( data.value > ( maxValue - 2 * dataLevelIncriment ) ) { data.dataLevel = 2 ; }
-      else if ( data.value > ( maxValue - 3 * dataLevelIncriment ) ) { data.dataLevel = 1 ; }
+      else if ( data.value >= minValue ) { data.dataLevel = 1 ; }
       else { data.dataLevel = 0 ; }
 
       data.label = data.count === 0 ? `${data.dateString} : No data available` : `${data.dateString} : ${this.props.valueOperator} = ${data.value.toFixed(this.props.valueOperator === 'count' ? 0 : 2 )}  ( ${data.valuesString.join(', ') } )`;
