@@ -803,9 +803,6 @@ private _updateTimeSlider(newValue: number){
 
   private buildVisibleItems( gridData : IGridchartsData , gridList : IGridList ) {
 
-
-
-
     return gridData;
   }
 
