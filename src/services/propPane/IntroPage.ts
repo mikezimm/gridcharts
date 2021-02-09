@@ -14,6 +14,9 @@ import * as links from '../../webparts/gridcharts/components/HelpInfo/AllLinks';
 
 import { IGridchartsWebPartProps } from '../../webparts/gridcharts/GridchartsWebPart';
 
+import { PropertyFieldSitePicker } from '@pnp/spfx-property-controls/lib/PropertyFieldSitePicker';
+import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
+
 /*
 
   // 1 - Analytics options
@@ -66,7 +69,7 @@ import { IGridchartsWebPartProps } from '../../webparts/gridcharts/GridchartsWeb
     */
 
 export class IntroPage {
-  public getPropertyPanePage(webPartProps: IGridchartsWebPartProps,  ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
+  public getPropertyPanePage(webPartProps: IGridchartsWebPartProps, context, onPropertyPaneFieldChanged ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
     return <IPropertyPanePage>
     { // <page1>
       header: {
@@ -100,6 +103,34 @@ export class IntroPage {
         { groupName: 'Your list info',
         isCollapsed: true ,
         groupFields: [
+
+          PropertyFieldSitePicker('sites', {
+            label: 'Select sites',
+            initialSites: webPartProps.sites,
+            context: context,
+            deferredValidationTime: 300,
+            multiSelect: false,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            key: 'sitesFieldId'
+          }),
+
+          PropertyFieldListPicker('lists', {
+            label: 'Select a list',
+            selectedList: webPartProps.lists,
+            includeHidden: false,
+            orderBy: PropertyFieldListPickerOrderBy.Title,
+            disabled: false,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            context: context,
+            onGetErrorMessage: null,
+            webAbsoluteUrl: webPartProps.sites.length > 0 ? webPartProps.sites[0].url : context.pageContext.web.absoluteUrl,
+            deferredValidationTime: 0,
+            includeListTitleAndUrl: true,
+            key: 'listPickerFieldId'
+          }),
+
           PropertyPaneTextField('parentListWeb', {
               label: 'Your List Web url'
           }),

@@ -18,6 +18,7 @@ import { IGridchartsProps, IScaleMethod } from './components/GridCharts/IGridcha
 
 //require('@mikezimm/npmfunctions/dist/GrayPropPaneAccordions.css');
 require('../../services/propPane/GrayPropPaneAccordions.css');
+import { IPropertyFieldSite } from "@pnp/spfx-property-controls/lib/PropertyFieldSitePicker";
 
 export interface IGridchartsWebPartProps {
   description: string;
@@ -31,6 +32,9 @@ export interface IGridchartsWebPartProps {
     stressMultiplierTime?: number;
     stressMultiplierProject?: number;
     
+    sites: IPropertyFieldSite[];
+    lists: string | string[];
+
     parentListTitle: string;
     parentListName: string;
     parentListWeb: string;
@@ -262,6 +266,8 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return propertyPaneBuilder.getPropertyPaneConfiguration(
       this.properties,
+      this.context,
+      this.onPropertyPaneFieldChanged.bind(this),
       //this.CreateTTIMTimeList.bind(this),
       //this.CreateTTIMProjectList.bind(this),
       //this.UpdateTitles.bind(this),
@@ -304,7 +310,7 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
     let updateOnThese = [
       'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
       'stressMultiplierTime', 'webPartScenario', '', '', '',
-      'parentListTitle', 'parentListName', 'parentListWeb', '', '',
+      'parentListTitle', 'parentListName', 'parentListWeb', 'sites', 'lists',
       'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns','searchColumns', 'metaColumns',
       'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'scaleMethod',
       'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',
