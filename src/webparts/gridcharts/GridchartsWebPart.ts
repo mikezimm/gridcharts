@@ -18,6 +18,7 @@ import { IGridchartsProps, IScaleMethod } from './components/GridCharts/IGridcha
 
 //require('@mikezimm/npmfunctions/dist/GrayPropPaneAccordions.css');
 require('../../services/propPane/GrayPropPaneAccordions.css');
+import { IPropertyFieldSite } from "@pnp/spfx-property-controls/lib/PropertyFieldSitePicker";
 
 export interface IGridchartsWebPartProps {
   description: string;
@@ -31,6 +32,9 @@ export interface IGridchartsWebPartProps {
     stressMultiplierTime?: number;
     stressMultiplierProject?: number;
     
+    sites: IPropertyFieldSite[];
+    lists: string | string[];
+
     parentListTitle: string;
     parentListName: string;
     parentListWeb: string;
@@ -72,6 +76,7 @@ export interface IGridchartsWebPartProps {
 
 export default class GridchartsWebPart extends BaseClientSideWebPart<IGridchartsWebPartProps> {
 
+  
 
   /***
  *          .d88b.  d8b   db d888888b d8b   db d888888b d888888b 
@@ -88,7 +93,6 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
     public onInit():Promise<void> {
       return super.onInit().then(_ => {
         // other init code may be present
-  
         //https://stackoverflow.com/questions/52010321/sharepoint-online-full-width-page
         if ( window.location.href &&  
           window.location.href.toLowerCase().indexOf("layouts/15/workbench.aspx") > 0 ) {
@@ -135,6 +139,9 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
 
   public render(): void {
     if ( this.properties.fetchCount == null ) { this.properties.fetchCount = 1000 ;}
+
+    if ( this.properties.parentListWeb && this.properties.parentListWeb.length > 0 ) {} else { this.properties.parentListWeb = this.context.pageContext.web.serverRelativeUrl ; }
+
     let showEarlyAccess : boolean = false;
     
     if ( window.location.origin.toLowerCase().indexOf('clickster.share') > -1 || window.location.origin.toLowerCase().indexOf('/autoliv/') > -1 ) {
@@ -143,6 +150,11 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
     } else {
       showEarlyAccess = this.properties.showEarlyAccess;
     }
+    if ( this.properties.parentListWeb === '' ) {
+      
+    }
+    let tenant = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,"");
+    let parentListWeb = this.properties.parentListWeb.indexOf('/sites/') === 0 ? tenant + this.properties.parentListWeb : this.properties.parentListWeb;
 
     const element: React.ReactElement<IGridchartsProps> = React.createElement(
       Gridcharts,
@@ -155,12 +167,12 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         // 0 - Context
         pageContext: this.context.pageContext,
         wpContext: this.context,
-        tenant: this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,""),
+        tenant: tenant,
         urlVars: this.getUrlVars(),
         today: makeTheTimeObject(''),
 
         // 2 - Source and destination list information
-        parentListWeb: this.properties.parentListWeb,
+        parentListWeb: parentListWeb,
         parentListTitle: this.properties.parentListTitle,
         parentListURL: null,
         listName: null,
@@ -262,6 +274,8 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return propertyPaneBuilder.getPropertyPaneConfiguration(
       this.properties,
+      this.context,
+      this.onPropertyPaneFieldChanged.bind(this),
       //this.CreateTTIMTimeList.bind(this),
       //this.CreateTTIMProjectList.bind(this),
       //this.UpdateTitles.bind(this),
@@ -304,7 +318,7 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
     let updateOnThese = [
       'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
       'stressMultiplierTime', 'webPartScenario', '', '', '',
-      'parentListTitle', 'parentListName', 'parentListWeb', '', '',
+      'parentListTitle', 'parentListName', 'parentListWeb', 'sites', 'lists',
       'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns','searchColumns', 'metaColumns',
       'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'scaleMethod',
       'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',

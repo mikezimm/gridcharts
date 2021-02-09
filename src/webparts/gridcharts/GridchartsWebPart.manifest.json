@@ -22,7 +22,7 @@
     "officeFabricIconFontName": "ScatterChart",
     "properties": {
       "description": "GridCharts-TMT",
-      "parentListWeb": "https://mcclickster.sharepoint.com/sites/Templates/Tmt/",
+      "parentListWeb": "/sites/Templates/Tmt/",
       "parentListTitle": "TrackMyTime",
 
       "dateColumn": "StartTime",

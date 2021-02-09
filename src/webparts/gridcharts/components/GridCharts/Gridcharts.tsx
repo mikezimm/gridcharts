@@ -558,10 +558,14 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       </div>;
 
     if ( this.state.errMessage !== '' && this.state.errMessage != null ) {
+      let errMessageString : any = this.state.errMessage;
+      let extraMessage1 = errMessageString.indexOf('Error making HttpClient request in queryable [404]') > -1 ? 'Verify Web URL is correct': null ;
+      let extraMessage2 = errMessageString.indexOf('Error making HttpClient request in queryable [404]') > -1 ? this.props.parentListWeb.replace( this.props.tenant, '' ) : null ;
+
       theGraph = <div style={{ textAlign: 'center', margin: '50px', height: '100px', width: '80%%'}}>
                     <span style={{ fontSize: 'larger', fontWeight: 600, paddingTop: '40px'}}>
                       <mark>{ this.state.errMessage }</mark>
-                    </span></div> ;
+                    </span><p style={{ fontSize: 'larger', fontWeight: 600 }}> { extraMessage1 } : { extraMessage2 } </p></div> ;
     } else if ( this.state.allLoaded === true && this.state.searchedItems && this.state.searchedItems.length === 0 ) {
           theGraph = <div style={{ textAlign: 'center', margin: '50px', height: '100px', width: '80%'}}>
                     <span style={{ fontSize: 'larger', fontWeight: 600, paddingTop: '40px'}}>
@@ -802,9 +806,6 @@ private _updateTimeSlider(newValue: number){
   }
 
   private buildVisibleItems( gridData : IGridchartsData , gridList : IGridList ) {
-
-
-
 
     return gridData;
   }

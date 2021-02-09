@@ -14,6 +14,9 @@ import * as links from '../../webparts/gridcharts/components/HelpInfo/AllLinks';
 
 import { IGridchartsWebPartProps } from '../../webparts/gridcharts/GridchartsWebPart';
 
+import { PropertyFieldSitePicker } from '@pnp/spfx-property-controls/lib/PropertyFieldSitePicker';
+import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
+
 /*
 
   // 1 - Analytics options
@@ -66,7 +69,13 @@ import { IGridchartsWebPartProps } from '../../webparts/gridcharts/GridchartsWeb
     */
 
 export class IntroPage {
-  public getPropertyPanePage(webPartProps: IGridchartsWebPartProps,  ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
+  public getPropertyPanePage(webPartProps: IGridchartsWebPartProps, context, onPropertyPaneFieldChanged ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
+
+    let webAbsoluteUrl = context.pageContext.web.absoluteUrl;
+
+    if ( webPartProps.sites && webPartProps.sites.length > 0 && webPartProps.sites[0].url && webPartProps.sites[0].url.length > 0 ) { webAbsoluteUrl = webPartProps.sites[0].url ; }
+    let selectedUrl = "Site Url: " + webAbsoluteUrl.slice(webAbsoluteUrl.indexOf('/sites/'));
+
     return <IPropertyPanePage>
     { // <page1>
       header: {
@@ -100,6 +109,7 @@ export class IntroPage {
         { groupName: 'Your list info',
         isCollapsed: true ,
         groupFields: [
+
           PropertyPaneTextField('parentListWeb', {
               label: 'Your List Web url'
           }),
@@ -123,6 +133,46 @@ export class IntroPage {
           PropertyPaneDropdown('valueOperator', <IPropertyPaneDropdownProps>{
             label: 'Value operator',
             options: gridChartsOptionsGroup.valueOperatorChoices,
+          }),
+
+        ]}, // this group
+/* */
+
+        // 2 - Source and destination list information    
+        { groupName: 'Prop Pane Picker examples (DEV)',
+        isCollapsed: true ,
+        groupFields: [
+
+          PropertyFieldSitePicker('sites', {
+            label: 'Select sites',
+            initialSites: webPartProps.sites,
+            context: context,
+            deferredValidationTime: 300,
+            multiSelect: false,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            key: 'sitesFieldId'
+          }),
+
+          PropertyPaneLabel('Selected Url', {
+            text: selectedUrl,
+
+          }),
+
+          PropertyFieldListPicker('lists', {
+            label: 'Select a list',
+            selectedList: webPartProps.lists,
+            includeHidden: false,
+            orderBy: PropertyFieldListPickerOrderBy.Title,
+            disabled: false,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            context: context,
+            onGetErrorMessage: null,
+            webAbsoluteUrl: webAbsoluteUrl,
+            deferredValidationTime: 0,
+            includeListTitleAndUrl: true,
+            key: 'listPickerFieldId'
           }),
 
         ]}, // this group

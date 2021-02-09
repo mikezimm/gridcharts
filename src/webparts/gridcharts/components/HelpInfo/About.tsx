@@ -131,15 +131,9 @@ public constructor(props:IInfoAboutMeProps){
                 {/* 3 files to update version number:  package-solution.json, package-lock.json, package.json*/}
                 <table className={styles.infoTable}>
                     <tr><th>Date</th><th>Version</th><th>Focus</th><th>Notes</th></tr>
-                    <tr><td>2020-08-14</td><td>{'2.2.0.0'}</td><td>SPFx v1.11 Rebuild</td><td>Story filtering, Center parent pane, improvements, bugfixes</td></tr>
-                    <tr><td>2020-08-14</td><td>{'1.1.0.1'}</td><td>Early Access Banner, others</td><td>Add Early Access banner, fix save timeTarget and optionString</td></tr>
-                    <tr><td>2020-08-14</td><td>{'1.0.0.17'}</td><td>Bug fix</td><td>Styling bug fixes.</td></tr>
-                    <tr><td>2020-06-17</td><td>{'1.0.0.15'}</td><td>parent Edit</td><td>Add parent Edit screen, parent quick actions, requires 2 ne parent List columns.</td></tr>
-                    <tr><td>2020-04-01</td><td>{'1.0.0.11'}</td><td>Activity URL</td><td>Add Activity URL based on parent Task.  ActivityType, Activity, ActivityURL^</td></tr>
-                    <tr><td>2020-03-18</td><td>{'1.0.0.10'}</td><td>Charts</td><td>Add Core Time, Revise Story charts, Add Chapter charts, Search to chart data.</td></tr>
-                    <tr><td>2020-03-11</td><td>{'1.0.0.9'}</td><td>Charts</td><td>Fix user summary Hours, Add Last Entry.  Fix Time display error.</td></tr>
-                    <tr><td></td><td>{'1.0.0.8'}</td><td>Charts</td><td>Add Story and User filters.  Add Details toggle.  Add About and Numbers page.</td></tr>
-                    <tr><td></td><td>{'1.0.0.7'}</td><td>Charts/Help</td><td>Initial addition of Charts and Help</td></tr>
+                    <tr><td>2021-02-09</td><td>{'1.0.1.1'}</td><td>Fix default WebURL</td><td>Correctly picks current site.  Allows /sites/ or entire Url</td></tr>
+                    <tr><td>2021-02-09</td><td>{'1.0.1.0'}</td><td>Dropdowns, slider work</td><td>Month scale does not slide though</td></tr>
+                    <tr><td>2021-02-03</td><td>{'1.0.0.0/1'}</td><td>Initial release for testing</td></tr>
                 </table>
             </div>;
 
