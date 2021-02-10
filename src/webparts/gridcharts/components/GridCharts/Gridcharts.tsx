@@ -26,7 +26,7 @@ import InfoPage from '../HelpInfo/infoPages';
 import  EarlyAccess from '../HelpInfo/EarlyAccess';
 import * as links from '../HelpInfo/AllLinks';
 
-import { createSlider } from '../fields/sliderFieldBuilder';
+import { createSlider, createChoiceSlider } from '../fields/sliderFieldBuilder';
 
 import { saveTheTime, saveAnalytics, getTheCurrentTime } from '../../../../services/createAnalytics';
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
@@ -117,6 +117,11 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         let data : IGridchartsDataPoint = {
           date: null,
+          dateNo: null,
+          dayNo: null,
+          week: null,
+          month: null,
+          year: null,
           label: null,
           dateString: '',
           dataLevel: Math.floor(Math.random() * 3),
@@ -234,6 +239,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           monthScales: monthScales,
 
           timeSliderValue: 0,
+          choiceSliderValue: 0,
+          breadCrumb: [],
+          choiceSliderDropdown: null,
+          dropdownColumnIndex: null,
 
           selectedYear: null,
           selectedUser: null,
@@ -380,6 +389,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     let gridElement = null;
     let searchStack = null;
     let timeSliderValue = this.state.timeSliderValue;
+
     let sliderTransform = null;
     let sliderMax = ( this.state.gridData.allDateArray.length -365 ) / 7 + 1;
     if ( sliderMax < 2 ) { sliderMax = 2 ; }
@@ -416,7 +426,16 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
             index < timeSliderValue * 7 ) {
           //Skip drawing these squares (this week is to left of grid )
         } else if ( squares.length < 370 ) { //Only push 1 year's worth of items
+
+          //This will add 7 days of white spaces between months
+          if ( index !== 0 && d.dateNo === 1 ) {
+            for (let day = 0; day < 7; day++) { //this works for regular leading blanks
+              squares.push(<li data-level={ -1 }></li>);
+            }
+          }
+          
           squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
+
         }
       });
         
@@ -433,13 +452,33 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
                         { squares }
                     </ul>;
 
-
       let searchElements = [];
-
+      let choiceSlider = null;
       /**
        * Add Dropdown search
        */
         if ( this.state.dropDownItems.length > 0 ) {
+
+          let choiceSliderDropdown = this.state.choiceSliderDropdown;
+          if ( choiceSliderDropdown !== null ) {
+            let choiceSliderValue = this.state.choiceSliderValue;
+            let choiceMax = this.state.dropDownItems[choiceSliderDropdown].length -1 ;
+  
+            if ( choiceSliderValue !== null ) {
+              console.log('choiceSliderValue, this.state.dropDownItems:', choiceSliderValue, this.state.dropDownItems);
+              console.log('choiceSliderDropdown, this.state.dropDownItems[choiceSliderDropdown]:', choiceSliderDropdown, this.state.dropDownItems[choiceSliderDropdown]);
+              let theChoice = choiceSliderValue > -1 ? `${ this.state.dropDownItems[choiceSliderDropdown][choiceSliderValue].text } ` : 'TBD' ;
+  
+              choiceSlider = this.state.dropDownItems.length === 0 ? null : 
+                <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ /* theChoice */  }</div>
+                  <Stack horizontal horizontalAlign='center' >
+                    <div style={{ width: '30%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
+                      { createChoiceSlider('Slideto adjust choice', theChoice , choiceMax, 1 , this._updateChoiceSlider.bind(this)) }
+                    </div>
+                  </Stack></div>;
+              
+            }
+          }
 
           searchElements = this.state.dropDownItems.map( ( dropDownChoices, index ) => {
 
@@ -452,7 +491,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
                   options={dropDownChoicesSorted}
                   selectedKey={ this.state.selectedDropdowns [index ] === '' ? null : this.state.selectedDropdowns [index ] }
                   onChange={(ev: any, value: IDropdownOption) => {
-                    this.searchForItems(value.key.toString());
+                    this.searchForItems(value.key.toString(), index, ev);
                   }}
                   styles={{ dropdown: { width: 200 } }}
               />;
@@ -482,6 +521,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
                 <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
                   { searchElements }
                 </Stack>
+                <div> { choiceSlider } </div>
             </div>;
 
     } else {
@@ -501,7 +541,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ metrics }</div>
           <Stack horizontal horizontalAlign='center' >
             <div style={{ width: '30%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
-              { createSlider(timeSliderValue , sliderMax, 1 , this._updateTimeSlider.bind(this)) }
+              { createSlider('Slide to adjust range', timeSliderValue , sliderMax, 1 , this._updateTimeSlider.bind(this)) }
             </div>
           </Stack></div>;
 
@@ -617,6 +657,24 @@ private _updateTimeSlider(newValue: number){
 
 }
 
+private _updateChoiceSlider(newValue: number){
+
+  let choiceSliderDropdown = this.state.choiceSliderDropdown;
+
+
+  let theChoice = newValue > -1 ? `${ this.state.dropDownItems[choiceSliderDropdown][newValue].text }` : '' ;
+  console.log('_updateChoiceSlider: choiceSliderDropdown, newValue, theChoice', choiceSliderDropdown, newValue, theChoice );
+
+  this.setState({
+    choiceSliderValue: newValue,
+  });
+
+  this.fullSearch( theChoice, null );
+
+}
+
+
+
   /***
  *    .d8888. d88888b  .d8b.  d8888b.  .o88b. db   db      d88888b  .d88b.  d8888b.      d888888b d888888b d88888b .88b  d88. .d8888. 
  *    88'  YP 88'     d8' `8b 88  `8D d8P  Y8 88   88      88'     .8P  Y8. 88  `8D        `88'   `~~88~~' 88'     88'YbdP`88 88'  YP 
@@ -638,8 +696,27 @@ private _updateTimeSlider(newValue: number){
 
   }
 
-  public searchForItems = (item): void => {
+  public searchForItems = (item, choiceSliderDropdown: number, ev: any): void => {
 
+    let choiceSliderValue = null;
+    if ( ev.ctrlKey === true ) { 
+
+      this.setState({
+        choiceSliderDropdown: choiceSliderDropdown,
+      });
+
+    } else {
+
+      this.state.dropDownItems[choiceSliderDropdown].map( ( dd, ddIndex ) => {
+        if ( dd.text === item ) { choiceSliderValue = ddIndex ; }
+      });
+
+      this.setState({
+        choiceSliderValue: choiceSliderValue,
+      });
+    }
+
+    console.log('searchForItems: ',item, choiceSliderDropdown, choiceSliderValue, ev ) ;
     this.fullSearch( item, null );
 
   }
@@ -664,9 +741,10 @@ private _updateTimeSlider(newValue: number){
 
     let selectedDropdowns = this.state.selectedDropdowns;
     let dropDownItems = this.state.dropDownItems;
+    let dropdownColumnIndex = null; //Index of dropdown column that was picked
 
     if ( searchText === null ) { //Then this is a choice dropdown filter
-      let dropdownColumnIndex = null; //Index of dropdown column that was picked
+
       dropDownItems.map ( ( thisDropDown, ddIndex ) => {
         thisDropDown.map( thisChoice => {
           if ( dropdownColumnIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; thisChoice.isSelected = true ; }  else { thisChoice.isSelected = false;} 
@@ -734,6 +812,7 @@ private _updateTimeSlider(newValue: number){
         searchMeta: [],
         dropDownItems: dropDownItems,
         selectedDropdowns: selectedDropdowns,
+        dropdownColumnIndex: dropdownColumnIndex,
         gridData: gridData,
         allLoaded: true,
         monthLables: monthLables,
@@ -938,6 +1017,13 @@ private _updateTimeSlider(newValue: number){
     allDateArray.map( theDate => {
       allDataPoints.push( {
         date: theDate,
+
+        dateNo: theDate.getDate(),
+        dayNo: theDate.getDay(),
+        week: null,
+        month: theDate.getMonth(),
+        year: theDate.getFullYear(),
+
         dateString: theDate.toLocaleDateString(),
         label: '',
         dataLevel: null,

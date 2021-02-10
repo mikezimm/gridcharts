@@ -36,6 +36,11 @@ export interface IGridchartsData {
 
 export interface IGridchartsDataPoint {
     date: any;
+    dateNo: number;
+    dayNo: number;
+    week: number;
+    month: number;
+    year: number;
     dateString: string;
     label: any;
     dataLevel: number;
@@ -88,6 +93,10 @@ export interface IGridchartsState {
     monthScales: number[];  //Used to space the month labels on top of the gridChart
 
     timeSliderValue: number;
+    choiceSliderValue: number;
+    dropdownColumnIndex: number;
+    choiceSliderDropdown: number;
+    breadCrumb: any[];
 
     WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
     WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
