@@ -698,11 +698,16 @@ private _updateChoiceSlider(newValue: number){
 
   public searchForItems = (item, choiceSliderDropdown: number, ev: any): void => {
 
-    let choiceSliderValue = null;
+    let choiceSliderValue = null;  //choiceSliderValue
     if ( ev.ctrlKey === true ) { 
-
+      
+      if ( choiceSliderDropdown !== this.state.choiceSliderDropdown && this.state.choiceSliderDropdown !== null ) { //Different CTRL-Dropdown was picked, reset the choiceSliderValue to null so it doesn't crash webpart.
+        choiceSliderValue = null;
+      } else { choiceSliderValue = this.state.choiceSliderValue }
+      
       this.setState({
-        choiceSliderDropdown: choiceSliderDropdown,
+        choiceSliderDropdown: choiceSliderDropdown, //Number of Dropdown ( ie 1 2 or 3 )
+        choiceSliderValue: choiceSliderValue, // Selected Choice of Dropdown
       });
 
     } else {
@@ -712,7 +717,7 @@ private _updateChoiceSlider(newValue: number){
       });
 
       this.setState({
-        choiceSliderValue: choiceSliderValue,
+        choiceSliderValue: choiceSliderValue, // Selected Choice of Dropdown
       });
     }
 
