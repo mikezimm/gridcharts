@@ -59,5 +59,28 @@
       "enableSearch": true,
       "dropDownColumns": "+Author/Title,+Editor/Title"
     }
+  },
+  {
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
+    "group": { "default": "Other" },
+    "title": { "default": "GridCharts-ACH Turnover" },
+    "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart" },
+    "officeFabricIconFontName": "ScatterChart",
+    "properties": {
+      "description": "GridCharts-ACH Turnover",
+      "parentListWeb": "/sites/WebpartDev",
+      "parentListTitle": "ACH Turnover",
+
+      "dateColumn": "zzzDate1",
+      "valueColumn": "zzzNumber05",
+      "valueType": "Number",
+      "valueOperator": "Sum",
+      "minDataDownload": true,
+      "showEarlyAccess": true,
+      "scaleMethod": "blink",
+      "fetchCount": 5000,
+      "enableSearch": true,
+      "dropDownColumns": "+zzzChoice1,+zzzItemCategory"
+    }
   }]
 }

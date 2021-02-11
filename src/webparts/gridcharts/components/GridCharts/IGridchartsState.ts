@@ -10,6 +10,7 @@ import { IPickedWebBasic, IPickedList, IMyProgress,
 
 import { IGridList } from './GetListData';
 
+export type ITimeScale  = 'Weeks' | 'Years' | 'Months' | "WeekNo";
 
 export interface IGridchartsData {
 
@@ -20,6 +21,11 @@ export interface IGridchartsData {
 
     allDateArray: any[];  //Used as easy date index of entire range of data... to easily find correct item in gridData
     allDateStringArray: string[];
+
+    allYearsStringArray: string[];
+    allMonthsStringArray: string[];
+    allWeekNosStringArray: string[];
+
     allDataPoints: IGridchartsDataPoint[]; //One IGridchartsDataPoint per date between lowest and highest date range for input data
     allWeeks: number;
 
@@ -40,7 +46,16 @@ export interface IGridchartsDataPoint {
     dayNo: number;
     week: number;
     month: number;
+
     year: number;
+    yearIndex: number;
+
+    yearMonth: string;
+    yearMonthIndex: number;
+
+    yearWeek: string;
+    yearWeekIndex: number;
+
     dateString: string;
     label: any;
     dataLevel: number;
@@ -92,10 +107,20 @@ export interface IGridchartsState {
     monthLables: string[];  //Used to build the month labels on top of the gridChart
     monthScales: number[];  //Used to space the month labels on top of the gridChart
 
-    timeSliderValue: number;
+    sliderValueWeek: number;
+    sliderValueYear: number;
+    sliderValueMonth: number;
+    sliderValueWeekNo: number;
+
+    timeSliderScale: ITimeScale[];
+    currentTimeScale: ITimeScale;
+
     choiceSliderValue: number;
     dropdownColumnIndex: number;
     choiceSliderDropdown: number;
+
+    showChoiceSlider: boolean;
+    
     breadCrumb: any[];
 
     WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
@@ -134,6 +159,7 @@ export interface IGridchartsState {
  
     lastStateChange: string;
     stateChanges: string[]; //Log of state changes into array
+
   }
 
   
@@ -202,5 +228,14 @@ export interface IZBasicItemInfo extends Partial<any>{
 
 export interface IGridItemInfo extends IZBasicItemInfo {
     dateIndex: number;
+
+    year: number;
+    yearIndex: number;
+
+    yearMonth: string;
+    yearMonthIndex: number;
+
+    yearWeek: string;
+    yearWeekIndex: number;
 
 }

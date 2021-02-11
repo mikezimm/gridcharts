@@ -24,7 +24,7 @@ export function createSlider( label: string , timeSliderValue , timeSliderMax, t
         max={ timeSliderMax } 
         step={ timeSliderInc } 
         defaultValue={ 0 } 
-        valueFormat={ value => `Offset ${value} px?` }  //This is the label on right of slider showing current value
+        valueFormat={ value => timeSliderValue }  //This is the label on right of slider showing current value
   //      valueFormat = { null }
         showValue 
         originFromZero
