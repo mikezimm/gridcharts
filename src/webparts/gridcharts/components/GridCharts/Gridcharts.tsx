@@ -469,7 +469,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
                 <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ /* theChoice */  }</div>
                   <Stack horizontal horizontalAlign='center' >
                     <div style={{ width: '30%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
-                      { createChoiceSlider('Slideto adjust choice', theChoice , choiceMax, 1 , this._updateChoiceSlider.bind(this)) }
+                      { createChoiceSlider('Slide to adjust choice', theChoice , choiceMax, 1 , this._updateChoiceSlider.bind(this)) }
                     </div>
                   </Stack></div>;
               
@@ -485,7 +485,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
                   placeholder={ `Select a ${ DDLabel }` }
                   label={ DDLabel }
                   options={dropDownChoicesSorted}
-                  selectedKey={ this.state.selectedDropdowns [index ] === '' ? null : this.state.selectedDropdowns [index ] }
+                  selectedKey={ this.state.selectedDropdowns [index ] === '' ? null : this.state.selectedDropdowns [ index ] }
                   onChange={(ev: any, value: IDropdownOption) => {
                     this.searchForItems(value.key.toString(), index, ev);
                   }}
