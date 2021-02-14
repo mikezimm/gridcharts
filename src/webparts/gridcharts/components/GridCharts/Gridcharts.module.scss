@@ -65,28 +65,33 @@
   $squareTransition: .15s;
 
   .squares li {
-    background-color: #ebedf0;
+    //background-color: #ebedf0;
     transition: all, $squareTransition ease;
+//    opacity: 0;
   }
 
   .squares li[data-level="-1"] {
-    background-color: transparent;
+    //background-color: transparent;
     transition: all, $squareTransition ease;
+//    opacity: 1;
   }
 
-  .squares li[data-level="1"] {
-    background-color: #c6e48b;
+  .squares li[data-level="1"] {  //transparent,#ebedf0,#c6e48b,#7bc96f,#196127   li, -1, 1, 2, 3
+    //background-color: #c6e48b;
     transition: all, $squareTransition ease;
+//    opacity: .5;
   }
 
   .squares li[data-level="2"] {
-    background-color: #7bc96f;
+    //background-color: #7bc96f;
     transition: all, $squareTransition ease;
+//    opacity: .75;
   }
 
   .squares li[data-level="3"] {
-    background-color: #196127;
+    //background-color: #196127;
     transition: all, $squareTransition ease;
+//    opacity: 1;
   }
 
 

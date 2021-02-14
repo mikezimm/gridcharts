@@ -124,6 +124,11 @@ export class IntroPage {
             label: 'Date Column'
           }),
 
+          PropertyPaneDropdown('monthGap', <IPropertyPaneDropdownProps>{
+            label: 'Month gap',
+            options: gridChartsOptionsGroup.monthGapChoices,
+          }),
+
           PropertyPaneTextField('valueColumn', {
             label: 'Value Column'
           }),
@@ -259,11 +264,6 @@ export class IntroPage {
         isCollapsed: true ,
         groupFields: [
 
-          PropertyPaneDropdown('cellColor', <IPropertyPaneDropdownProps>{
-            label: 'Cell color',
-            options: gridChartsOptionsGroup.cellColorChoices,
-          }),
-
           PropertyPaneTextField('yearStyles', {
             label: 'css for Year headings'
           }),
@@ -297,16 +297,29 @@ export class IntroPage {
         isCollapsed: true ,
         groupFields: [
 
+          
+          PropertyPaneDropdown('cellColor', <IPropertyPaneDropdownProps>{
+            label: 'Cell color',
+            options: gridChartsOptionsGroup.cellColorChoices,
+          }),
+
+          //squareCustom
+          PropertyPaneTextField('squareCustom', {
+            label: 'Must be 4 colors , separated',
+            disabled: webPartProps.cellColor === 'custom' ? false : true,
+            description: 'Empty/Gap,Level1,Level2,Level3',
+          }),
+
           PropertyFieldColorPicker('squareColor', {
             label: 'Square Color',
             selectedColor: webPartProps.squareColor,
             onPropertyChange: onPropertyPaneFieldChanged,
             properties: webPartProps,
-            disabled: false,
+            disabled: webPartProps.cellColor === 'swatch' ? false : true,
             isHidden: false,
             alphaSliderHidden: false,
             style: PropertyFieldColorPickerStyle.Inline,
-            iconName: 'Precipitation',
+            iconName: 'Color',
             key: 'squareColorFieldId'
           }),
 
@@ -315,11 +328,11 @@ export class IntroPage {
             selectedColor: webPartProps.backGroundColor,
             onPropertyChange: onPropertyPaneFieldChanged,
             properties: webPartProps,
-            disabled: false,
+            disabled: webPartProps.cellColor === 'swatch' ? false : true,
             isHidden: false,
             alphaSliderHidden: false,
             style: PropertyFieldColorPickerStyle.Inline,
-            iconName: 'Precipitation',
+            iconName: 'Color',
             key: 'backGroundColorFieldId'
           }),
 
@@ -329,11 +342,11 @@ export class IntroPage {
             selectedColor: webPartProps.emptyColor,
             onPropertyChange: onPropertyPaneFieldChanged,
             properties: webPartProps,
-            disabled: false,
+            disabled: webPartProps.cellColor === 'swatch' ? false : true,
             isHidden: false,
             alphaSliderHidden: false,
             style: PropertyFieldColorPickerStyle.Inline,
-            iconName: 'Precipitation',
+            iconName: 'Color',
             key: 'emptyColorFieldId'
           }),
 

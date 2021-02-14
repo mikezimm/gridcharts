@@ -385,6 +385,35 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     let weekNoSliderMax = ( this.state.gridData.allWeekNosStringArray.length -365 );
     let monthSliderMax = ( this.state.gridData.allMonthsStringArray.length -365 );
 
+    //transparent,#ebedf0,#c6e48b,#7bc96f,#196127   li, -1, 1, 2, 3
+
+    let cellColor = this.props.gridStyles.cellColor;
+
+
+    let dataLevelli = { backgroundColor: 'transparent' };
+    let dataLevelMinus1Style = { backgroundColor: this.props.gridStyles.emptyColor, opacity: 1, };
+    let dataLevel0Style = { backgroundColor: 'transparent', };
+    let dataLevel1Style = { backgroundColor: this.props.gridStyles.squareColor, opacity: .33, };
+    let dataLevel2Style = { backgroundColor: this.props.gridStyles.squareColor, opacity: .66, };   
+    let dataLevel3Style = { backgroundColor: this.props.gridStyles.squareColor, opacity: 1, };
+
+    if ( this.props.gridStyles.cellColor === 'green' ) {
+      //transparent,#ebedf0,#c6e48b,#7bc96f,#196127
+      dataLevel0Style = { backgroundColor: '#ebedf0' };
+      dataLevelMinus1Style = { backgroundColor: 'transparent', opacity: 1, };
+      dataLevel1Style = { backgroundColor: '#c6e48b', opacity: 1, };
+      dataLevel2Style = { backgroundColor: '#7bc96f', opacity: 1, };   
+      dataLevel3Style = { backgroundColor: '#196127', opacity: 1, };
+
+    } else if ( this.props.gridStyles.cellColor === 'custom' && this.props.gridStyles.squareCustom.length > 0 ) {
+      let squareCustom = this.props.gridStyles.squareCustom.split(',');
+      dataLevel0Style = { backgroundColor: squareCustom[0] };
+      dataLevelMinus1Style = { backgroundColor: squareCustom[1], opacity: 1, };
+      dataLevel1Style = { backgroundColor: squareCustom[2], opacity: 1, };
+      dataLevel2Style = { backgroundColor: squareCustom[3], opacity: 1, };   
+      dataLevel3Style = { backgroundColor: squareCustom[4], opacity: 1, };
+
+    }
 
     let sliderTransform = null;
     let weekSliderMax = ( this.state.gridData.allDateArray.length -365 ) / 7 + 1;
@@ -403,14 +432,14 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
       } else if ( this.props.scaleMethod === 'blink' && sliderValueWeek < 0 ) {
           for (let i = 1; i < sliderValueWeek * 7; i++) { //This just tests sliding grid animation
-            squares.push(<li data-level={ -1 }></li>);
+            squares.push(<li data-level={ -1 } style={ dataLevelMinus1Style } ></li>);
           }
           sliderTransform = '';
       }
 
       if ( this.state.gridData.leadingBlanks > 0 ) {
         for (let lb = 1; lb < this.state.gridData.leadingBlanks; lb++) { //this works for regular leading blanks
-            squares.push(<li data-level={ -1 }></li>);
+            squares.push(<li data-level={ -1 } style={ dataLevelMinus1Style }></li>);
           }
       }
 
@@ -424,17 +453,25 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         } else if ( squares.length < 370 ) { //Only push 1 year's worth of items
 
           //This will add 7 days of white spaces between months
-          if ( index !== 0 && d.dateNo === 1 ) {
-            for (let day = 0; day < 7; day++) { //this works for regular leading blanks
-              squares.push(<li data-level={ -1 }></li>);
+          let fillerDays = this.props.monthGap === "2" ? 14 : this.props.monthGap === "1" ? 7 : 0 ;
+          if ( fillerDays > 0 && index !== 0 && d.dateNo === 1 ) {
+
+            for (let day = 0; day < fillerDays; day++) { //this works for regular leading blanks
+              squares.push(<li data-level={ -1 } style={ dataLevelMinus1Style }></li>);
             }
           }
           
-          squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
+          let thisStyle = null;
+          if ( d.dataLevel === 0 ) { thisStyle = dataLevel0Style ; }
+          else if ( d.dataLevel === 1 ) { thisStyle = dataLevel1Style ; }
+          else if ( d.dataLevel === 2 ) { thisStyle = dataLevel2Style ; }
+          else if ( d.dataLevel === 3 ) { thisStyle = dataLevel3Style ; }
+          else { thisStyle = dataLevel3Style ; }
+
+          squares.push( <li style={ thisStyle } title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
 
         }
       });
-        
 
       /**
        * Adding overflow hidden on Squares limits visible squares to the width of the element.
@@ -442,9 +479,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
        * Need to have something else mask it when it goes out of the visible area.
        * That would also mean having it not transparent so you have to fix the background color which may not match another color.
       */
+      let backGroundColor = this.props.gridStyles.squareCustom.length > 0 ? this.props.gridStyles.squareCustom.split(',')[0] : this.props.gridStyles.backGroundColor;
 
-
-      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none', transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
+      gridElement = <ul className={styles.squares} style={{ backgroundColor: backGroundColor, listStyleType: 'none', transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
                         { squares }
                     </ul>;
 

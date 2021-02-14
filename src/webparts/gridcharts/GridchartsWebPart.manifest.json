@@ -26,6 +26,10 @@
       "parentListTitle": "TrackMyTime",
 
       "dateColumn": "StartTime",
+      "monthGap": "1",
+      "squareCustom": "transparent,#ebedf0,#c6e48b,#7bc96f,#196127",
+      "cellColor": "green",
+
       "valueColumn": "Hours",
       "valueType": "Number",
       "valueOperator": "Sum",
@@ -49,6 +53,10 @@
       "parentListTitle": "Documents",
 
       "dateColumn": "Modified",
+      "monthGap": "1",
+      "squareCustom": "transparent,#ebedf0,#c6e48b,#7bc96f,#196127",
+      "cellColor": "green",
+
       "valueColumn": "Id",
       "valueType": "Number",
       "valueOperator": "Count",
@@ -72,6 +80,10 @@
       "parentListTitle": "ACH Turnover",
 
       "dateColumn": "zzzDate1",
+      "monthGap": "1",
+      "squareCustom": "transparent,#ebedf0,#c6e48b,#7bc96f,#196127",
+      "cellColor": "green",
+
       "valueColumn": "zzzNumber05",
       "valueType": "Number",
       "valueOperator": "Sum",

@@ -40,6 +40,7 @@ export interface IGridchartsWebPartProps {
     parentListWeb: string;
 
     dateColumn: string;
+    monthGap: string;
     valueColumn: string;
     valueType: string;
     valueOperator: string;
@@ -61,6 +62,7 @@ export interface IGridchartsWebPartProps {
     otherStyles: string;
     scaleMethod: IScaleMethod;
 
+    squareCustom: string;
     squareColor: string;
     emptyColor: string;
     backGroundColor: string;    
@@ -182,6 +184,7 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
         listName: null,
         
         dateColumn: this.properties.dateColumn,
+        monthGap: this.properties.monthGap === null || this.properties.monthGap === undefined || this.properties.monthGap === '' ? '1' : this.properties.monthGap ,
         valueColumn: this.properties.valueColumn,
         valueType: this.properties.valueType,
         valueOperator: this.properties.valueOperator,
@@ -201,9 +204,10 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
           cellhoverInfoColor: this.properties.cellhoverInfoColor ? this.properties.cellhoverInfoColor : '',
           other: this.properties.otherStyles ? this.properties.otherStyles : '',
 
-          squareColor: this.properties.squareColor ? this.properties.squareColor : '',
-          emptyColor: this.properties.emptyColor ? this.properties.emptyColor : '',
-          backGroundColor: this.properties.backGroundColor ? this.properties.backGroundColor : '',
+          squareColor: this.properties.cellColor === 'swatch' && this.properties.squareColor ? this.properties.squareColor : '',
+          squareCustom: this.properties.cellColor === 'custom' && this.properties.squareCustom && this.properties.squareCustom.length > 0 ? this.properties.squareCustom : '',
+          emptyColor: this.properties.cellColor === 'swatch' && this.properties.emptyColor ? this.properties.emptyColor : '',
+          backGroundColor: this.properties.cellColor === 'swatch' && this.properties.backGroundColor ? this.properties.backGroundColor : '',
 
         },
 
@@ -331,7 +335,9 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
       'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'scaleMethod',
       'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',
       'centerPaneFields','centerPaneStyles',
+      'monthGap', 'squareColor', 'emptyColor', 'backGroundColor', 'squareCustom', 
     ];
+
     //alert('props updated');
     if (updateOnThese.indexOf(propertyPath) > -1 ) {
       this.properties[propertyPath] = newValue;   

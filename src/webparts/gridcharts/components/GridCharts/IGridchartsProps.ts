@@ -36,6 +36,8 @@ export interface IGridchartsProps {
       listName : string;
 
       dateColumn: string;
+      monthGap: string;
+
       valueColumn: string;
       searchColumns: string[];
       valueType: string;
@@ -99,6 +101,8 @@ export interface IGridchartsProps {
         cellStyles: string;
         cellhoverInfoColor: string;
         other: string;
+        
+        squareCustom: string;
         squareColor: string;
         emptyColor: string;
         backGroundColor: string;    
