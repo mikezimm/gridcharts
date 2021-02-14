@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styles from './Gridcharts.module.scss';
 import { IGridchartsProps } from './IGridchartsProps';
-import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IGridItemInfo } from './IGridchartsState';
+import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IGridItemInfo, ITimeScale } from './IGridchartsState';
 import { escape } from '@microsoft/sp-lodash-subset';
 
 import { Spinner, SpinnerSize, SpinnerLabelPosition } from 'office-ui-fabric-react/lib/Spinner';
@@ -26,11 +26,11 @@ import InfoPage from '../HelpInfo/infoPages';
 import  EarlyAccess from '../HelpInfo/EarlyAccess';
 import * as links from '../HelpInfo/AllLinks';
 
-import { createSlider } from '../fields/sliderFieldBuilder';
+import { createSlider, createChoiceSlider } from '../fields/sliderFieldBuilder';
 
 import { saveTheTime, saveAnalytics, getTheCurrentTime } from '../../../../services/createAnalytics';
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-          getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, msPerDay} from '@mikezimm/npmfunctions/dist/dateServices';
+          getNicks, makeTheTimeObject, makeSmallTimeObject, ISO8601_week_no, getTimeDelta, monthStr3, monthStr, weekday3, msPerDay} from '@mikezimm/npmfunctions/dist/dateServices';
 
 
 import { sortObjectArrayByStringKey, doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
@@ -45,42 +45,6 @@ import { IGrid } from 'office-ui-fabric-react';
  * Based upon example from
  * https://codepen.io/ire/pen/Legmwo
  */
-
- /**
-  * This was manually copied from import { monthStr3 } from '@mikezimm/npmfunctions/dateServices';
-  */
-export const monthStr3x = {
-  'en-us':["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  'es': ["Ene", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-
-  'de-de': ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  'fr-fr': ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-
-  'ja': ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  'ch': ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  'ko': ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  'thai': ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  'swe': ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  'ro-ro': ["Ian", "Feb", "Mar", "Apr", "Mai", "Iun", "Iul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-};
-
- /**
-  * This was manually copied from import { monthStr3 } from '@mikezimm/npmfunctions/dateServices';
-  */
-export const weekday3x = {
-  'en-us': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  'es': ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"], //Should start on Monday
-
-  'de-de': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], //Should start on Monday
-  'fr-fr': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], //Should start on Monday
-
-  'ja': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  'ch': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  'ko': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  'thai': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  'swe': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], //Should start on Monday
-  'ro-ro': ["Dum", "Lun", "Mar", "Mie", "Joi", "Vin", "Sam"], //Should start on Monday
-};
 
 export default class Gridcharts extends React.Component<IGridchartsProps, IGridchartsState> {
 
@@ -117,6 +81,18 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         let data : IGridchartsDataPoint = {
           date: null,
+          dateNo: null,
+          dayNo: null,
+          week: null,
+          month: null,
+          year: null,
+          yearMonth: null,
+          yearWeek: null,
+
+          yearIndex: null,
+          yearMonthIndex: null,
+          yearWeekIndex: null,
+
           label: null,
           dateString: '',
           dataLevel: Math.floor(Math.random() * 3),
@@ -211,6 +187,11 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           allDataPoints: allDataPoints,
           allDateArray: allDateArray,
           allDateStringArray: [],
+
+          allYearsStringArray: [],
+          allMonthsStringArray: [],
+          allWeekNosStringArray: [],
+
           allWeeks: 0,
 
           visibleDataPoints: [],
@@ -233,7 +214,21 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           monthLables: monthLables,
           monthScales: monthScales,
 
-          timeSliderValue: 0,
+          sliderValueWeek: 0,
+
+          sliderValueYear: 0,
+          sliderValueMonth: 0,
+          sliderValueWeekNo: 0,
+
+          timeSliderScale: [ 'Weeks', 'Years', 'Months', 'WeekNo'],
+          currentTimeScale: 'Weeks',
+
+          choiceSliderValue: 0,
+          breadCrumb: [],
+          choiceSliderDropdown: null,
+          showChoiceSlider: false,
+
+          dropdownColumnIndex: null,
 
           selectedYear: null,
           selectedUser: null,
@@ -379,10 +374,50 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let gridElement = null;
     let searchStack = null;
-    let timeSliderValue = this.state.timeSliderValue;
+    let showChoiceSlider = this.state.showChoiceSlider;
+    let sliderValueWeek = this.state.sliderValueWeek;
+    let sliderValueYear = this.state.sliderValueYear;
+    let sliderValueMonth = this.state.sliderValueMonth;
+    let sliderValueWeekNo = this.state.sliderValueWeekNo;
+    let currentTimeScale : ITimeScale = this.state.currentTimeScale;
+
+    let yearSliderMax = ( this.state.gridData.allYearsStringArray.length -365 );
+    let weekNoSliderMax = ( this.state.gridData.allWeekNosStringArray.length -365 );
+    let monthSliderMax = ( this.state.gridData.allMonthsStringArray.length -365 );
+
+    //transparent,#ebedf0,#c6e48b,#7bc96f,#196127   li, -1, 1, 2, 3
+
+    let cellColor = this.props.gridStyles.cellColor;
+
+
+    let dataLevelli = { backgroundColor: 'transparent' };
+    let dataLevelMinus1Style = { backgroundColor: this.props.gridStyles.emptyColor, opacity: 1, };
+    let dataLevel0Style = { backgroundColor: 'transparent', };
+    let dataLevel1Style = { backgroundColor: this.props.gridStyles.squareColor, opacity: .33, };
+    let dataLevel2Style = { backgroundColor: this.props.gridStyles.squareColor, opacity: .66, };   
+    let dataLevel3Style = { backgroundColor: this.props.gridStyles.squareColor, opacity: 1, };
+
+    if ( this.props.gridStyles.cellColor === 'green' ) {
+      //transparent,#ebedf0,#c6e48b,#7bc96f,#196127
+      dataLevel0Style = { backgroundColor: '#ebedf0' };
+      dataLevelMinus1Style = { backgroundColor: 'transparent', opacity: 1, };
+      dataLevel1Style = { backgroundColor: '#c6e48b', opacity: 1, };
+      dataLevel2Style = { backgroundColor: '#7bc96f', opacity: 1, };   
+      dataLevel3Style = { backgroundColor: '#196127', opacity: 1, };
+
+    } else if ( this.props.gridStyles.cellColor === 'custom' && this.props.gridStyles.squareCustom.length > 0 ) {
+      let squareCustom = this.props.gridStyles.squareCustom.split(',');
+      dataLevel0Style = { backgroundColor: squareCustom[0] };
+      dataLevelMinus1Style = { backgroundColor: squareCustom[1], opacity: 1, };
+      dataLevel1Style = { backgroundColor: squareCustom[2], opacity: 1, };
+      dataLevel2Style = { backgroundColor: squareCustom[3], opacity: 1, };   
+      dataLevel3Style = { backgroundColor: squareCustom[4], opacity: 1, };
+
+    }
+
     let sliderTransform = null;
-    let sliderMax = ( this.state.gridData.allDateArray.length -365 ) / 7 + 1;
-    if ( sliderMax < 2 ) { sliderMax = 2 ; }
+    let weekSliderMax = ( this.state.gridData.allDateArray.length -365 ) / 7 + 1;
+    if ( weekSliderMax < 2 ) { weekSliderMax = 2 ; }
 
     const squares : any[] = [];
 
@@ -393,18 +428,18 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
        */
       if ( this.props.scaleMethod === 'slider') {
         //Do nothing special at this time
-        sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(" + ( -timeSliderValue ) + "vw, 0, 0)" : null;
+        sliderTransform = this.props.scaleMethod === 'slider' ? "translate3d(" + ( -sliderValueWeek ) + "vw, 0, 0)" : null;
 
-      } else if ( this.props.scaleMethod === 'blink' && timeSliderValue < 0 ) {
-          for (let i = 1; i < timeSliderValue * 7; i++) { //This just tests sliding grid animation
-            squares.push(<li data-level={ -1 }></li>);
+      } else if ( this.props.scaleMethod === 'blink' && sliderValueWeek < 0 ) {
+          for (let i = 1; i < sliderValueWeek * 7; i++) { //This just tests sliding grid animation
+            squares.push(<li data-level={ -1 } style={ dataLevelMinus1Style } ></li>);
           }
           sliderTransform = '';
       }
 
       if ( this.state.gridData.leadingBlanks > 0 ) {
         for (let lb = 1; lb < this.state.gridData.leadingBlanks; lb++) { //this works for regular leading blanks
-            squares.push(<li data-level={ -1 }></li>);
+            squares.push(<li data-level={ -1 } style={ dataLevelMinus1Style }></li>);
           }
       }
 
@@ -412,14 +447,31 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
        * This loop adds all the real squares to the mix
        */
       this.state.gridData.allDataPoints.map( ( d, index ) => {
-        if ( this.props.scaleMethod === 'blink' && timeSliderValue > 0 &&
-            index < timeSliderValue * 7 ) {
+        if ( this.props.scaleMethod === 'blink' && sliderValueWeek > 0 &&
+            index < sliderValueWeek * 7 ) {
           //Skip drawing these squares (this week is to left of grid )
         } else if ( squares.length < 370 ) { //Only push 1 year's worth of items
-          squares.push( <li title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
+
+          //This will add 7 days of white spaces between months
+          let fillerDays = this.props.monthGap === "2" ? 14 : this.props.monthGap === "1" ? 7 : 0 ;
+          if ( fillerDays > 0 && index !== 0 && d.dateNo === 1 ) {
+
+            for (let day = 0; day < fillerDays; day++) { //this works for regular leading blanks
+              squares.push(<li data-level={ -1 } style={ dataLevelMinus1Style }></li>);
+            }
+          }
+          
+          let thisStyle = null;
+          if ( d.dataLevel === 0 ) { thisStyle = dataLevel0Style ; }
+          else if ( d.dataLevel === 1 ) { thisStyle = dataLevel1Style ; }
+          else if ( d.dataLevel === 2 ) { thisStyle = dataLevel2Style ; }
+          else if ( d.dataLevel === 3 ) { thisStyle = dataLevel3Style ; }
+          else { thisStyle = dataLevel3Style ; }
+
+          squares.push( <li style={ thisStyle } title={ d.label + ' : ' + d.dataLevel } data-level={ d.dataLevel }></li> ) ;
+
         }
       });
-        
 
       /**
        * Adding overflow hidden on Squares limits visible squares to the width of the element.
@@ -427,19 +479,39 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
        * Need to have something else mask it when it goes out of the visible area.
        * That would also mean having it not transparent so you have to fix the background color which may not match another color.
       */
+      let backGroundColor = this.props.gridStyles.squareCustom.length > 0 ? this.props.gridStyles.squareCustom.split(',')[0] : this.props.gridStyles.backGroundColor;
 
-
-      gridElement = <ul className={styles.squares} style={{ listStyleType: 'none', transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
+      gridElement = <ul className={styles.squares} style={{ backgroundColor: backGroundColor, listStyleType: 'none', transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
                         { squares }
                     </ul>;
 
-
       let searchElements = [];
-
+      let choiceSlider = null;
       /**
        * Add Dropdown search
        */
         if ( this.state.dropDownItems.length > 0 ) {
+
+          let choiceSliderDropdown = this.state.choiceSliderDropdown;
+          if ( showChoiceSlider === true && choiceSliderDropdown !== null ) {
+            let choiceSliderValue = this.state.choiceSliderValue;
+            let choiceMax = this.state.dropDownItems[choiceSliderDropdown].length -1 ;
+  
+            if ( choiceSliderValue !== null ) {
+              console.log('choiceSliderValue, this.state.dropDownItems:', choiceSliderValue, this.state.dropDownItems);
+              console.log('choiceSliderDropdown, this.state.dropDownItems[choiceSliderDropdown]:', choiceSliderDropdown, this.state.dropDownItems[choiceSliderDropdown]);
+              let theChoice = choiceSliderValue > -1 ? `${ this.state.dropDownItems[choiceSliderDropdown][choiceSliderValue].text } ` : 'TBD' ;
+  
+              choiceSlider = this.state.dropDownItems.length === 0 ? null : 
+                <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ /* theChoice */  }</div>
+                  <Stack horizontal horizontalAlign='center' >
+                    <div style={{ width: '30%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
+                      { createChoiceSlider('Slide to adjust choice', theChoice , choiceMax, 1 , this._updateChoiceSlider.bind(this)) }
+                    </div>
+                  </Stack></div>;
+              
+            }
+          }
 
           searchElements = this.state.dropDownItems.map( ( dropDownChoices, index ) => {
 
@@ -450,9 +522,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
                   placeholder={ `Select a ${ DDLabel }` }
                   label={ DDLabel }
                   options={dropDownChoicesSorted}
-                  selectedKey={ this.state.selectedDropdowns [index ] === '' ? null : this.state.selectedDropdowns [index ] }
+                  selectedKey={ this.state.selectedDropdowns [index ] === '' ? null : this.state.selectedDropdowns [ index ] }
                   onChange={(ev: any, value: IDropdownOption) => {
-                    this.searchForItems(value.key.toString());
+                    this.searchForItems(value.key.toString(), index, ev);
                   }}
                   styles={{ dropdown: { width: 200 } }}
               />;
@@ -482,6 +554,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
                 <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
                   { searchElements }
                 </Stack>
+                <div> { choiceSlider } </div>
             </div>;
 
     } else {
@@ -497,13 +570,41 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let metrics = this.state.gridData.count > 0 ? `${ this.state.gridData.count } items with ${ this.props.valueOperator} of ${ this.props.valueColumn } = ${ this.state.gridData.total.toFixed(0) }` : 'TBD' ;
 
-    let timeSlider = this.props.scaleMethod !== 'slider' &&  this.props.scaleMethod !== 'blink'? null : 
-          <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ metrics }</div>
-          <Stack horizontal horizontalAlign='center' >
-            <div style={{ width: '30%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }}>
-              { createSlider(timeSliderValue , sliderMax, 1 , this._updateTimeSlider.bind(this)) }
-            </div>
-          </Stack></div>;
+    let timeSlider = null;
+    if ( this.props.scaleMethod === 'slider' ||  this.props.scaleMethod === 'blink' ) {
+
+      //let yearSliderMax = ( this.state.gridData.allYearsStringArray.length -365 );
+      //let weekNoSliderMax = ( this.state.gridData.allWeekNosStringArray.length -365 );
+      //let monthSliderMax = ( this.state.gridData.allMonthsStringArray.length -365 );
+
+      let activeSlider = null;
+      if ( currentTimeScale === 'Weeks' ) {
+
+        activeSlider = createSlider('Slide to adjust ' + currentTimeScale , sliderValueWeek , weekSliderMax, 1 , this._updateTimeSliderWeeks.bind(this)) ;
+
+      } else if ( currentTimeScale === 'Years' ) {
+        let sliderValue = this.state.gridData.allYearsStringArray[sliderValueYear];
+        activeSlider = createSlider('Slide to adjust ' + currentTimeScale, sliderValue , this.state.gridData.allYearsStringArray.length -1, 1 , this._updateTimeSliderPeriods.bind(this)) ;
+
+      } else if ( currentTimeScale === 'Months' ) {
+        let sliderValue = this.state.gridData.allMonthsStringArray[sliderValueMonth];
+        activeSlider = createSlider('Slide to adjust ' + currentTimeScale, sliderValue , this.state.gridData.allMonthsStringArray.length -1, 1 , this._updateTimeSliderPeriods.bind(this)) ;
+
+      } else if ( currentTimeScale === 'WeekNo' ) {
+        let sliderValue = this.state.gridData.allWeekNosStringArray[sliderValueWeekNo];
+        activeSlider = createSlider('Slide to adjust ' + currentTimeScale, sliderValue , this.state.gridData.allWeekNosStringArray.length -1, 1 , this._updateTimeSliderPeriods.bind(this)) ;
+
+      }
+
+      timeSlider = <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ metrics }</div>
+        <Stack horizontal horizontalAlign='center' >
+          <div style={{ width: '30%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }} onClick={ this._updateCurrentTimeScale.bind(this) }>
+            { activeSlider }
+          </div>
+        </Stack></div>;
+
+    } 
+          
 
     const months : any[] = this.state.monthLables;
     const days : any[] = weekday3['en-us'];
@@ -599,7 +700,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
  *                                                                                
  */
   
-private _updateTimeSlider(newValue: number){
+private _updateTimeSliderWeeks(newValue: number){
 
   let now = new Date();
   let then = new Date();
@@ -608,14 +709,73 @@ private _updateTimeSlider(newValue: number){
   if ( this.props.scaleMethod === 'slider' || this.props.scaleMethod === 'blink' ) {
     //Just update slider, render method does transition with css
     this.setState({
-      timeSliderValue: newValue,
+      sliderValueWeek: newValue,
     });
+  } else if ( this.props.scaleMethod === 'TBD' ) { //Update grid selected elements and date range
+
+  }
+
+}
+
+private _updateCurrentTimeScale( e: any ) {
+  let currentTimeScale : ITimeScale = this.state.currentTimeScale;
+
+  if ( e.ctrlKey === true ) {
+    console.log('_updateCurrentTimeScale CTRL clicked');
+    if ( currentTimeScale === 'Weeks' ) { currentTimeScale = 'Years' ; }
+    else if ( currentTimeScale === 'Years' ) { currentTimeScale = 'Months' ; }
+    else if ( currentTimeScale === 'Months' ) { currentTimeScale = 'WeekNo' ; }
+    else if ( currentTimeScale === 'WeekNo' ) { currentTimeScale = 'Weeks' ; }
+  
+    this.setState({
+      currentTimeScale: currentTimeScale,
+    });
+
+  }
+
+
+}
+
+private _updateTimeSliderPeriods(newValue: number){
+  let currentTimeScale : ITimeScale = this.state.currentTimeScale;
+  let now = new Date();
+  let then = new Date();
+  then.setMinutes(then.getMinutes() + newValue);
+
+  if ( this.props.scaleMethod === 'slider' || this.props.scaleMethod === 'blink' ) {
+    //Just update slider, render method does transition with css
+
+    if ( currentTimeScale === 'Weeks' ) { this.setState({ sliderValueWeek: newValue, }) ; }
+    else if ( currentTimeScale === 'Years' ) { this.setState({ sliderValueYear: newValue, }) ; }
+    else if ( currentTimeScale === 'Months' ) { this.setState({ sliderValueMonth: newValue, }) ; }
+    else if ( currentTimeScale === 'WeekNo' ) { this.setState({ sliderValueWeekNo: newValue, }) ; }
+
   } else if ( this.props.scaleMethod === 'TBD' ) { //Update grid selected elements and date range
 
   }
 
 
 }
+
+
+
+private _updateChoiceSlider(newValue: number){
+
+  let choiceSliderDropdown = this.state.choiceSliderDropdown;
+
+
+  let theChoice = newValue > -1 ? `${ this.state.dropDownItems[choiceSliderDropdown][newValue].text }` : '' ;
+  console.log('_updateChoiceSlider: choiceSliderDropdown, newValue, theChoice', choiceSliderDropdown, newValue, theChoice );
+
+  this.setState({
+    choiceSliderValue: newValue,
+  });
+
+  this.fullSearch( theChoice, null, this.state.currentTimeScale );
+
+}
+
+
 
   /***
  *    .d8888. d88888b  .d8b.  d8888b.  .o88b. db   db      d88888b  .d88b.  d8888b.      d888888b d888888b d88888b .88b  d88. .d8888. 
@@ -634,17 +794,37 @@ private _updateTimeSlider(newValue: number){
   */
   private textSearch = ( searchText: string ): void => {
 
-    this.fullSearch( null, searchText );
+    this.fullSearch( null, searchText, this.state.currentTimeScale );
 
   }
 
-  public searchForItems = (item): void => {
+  public searchForItems = (item, choiceSliderDropdown: number, ev: any): void => {
 
-    this.fullSearch( item, null );
+    let choiceSliderValue = null;  //choiceSliderValue
+
+    let showChoiceSlider = this.state.showChoiceSlider;
+    if ( ev.ctrlKey === true ) { 
+      showChoiceSlider = true;
+    } else if ( ev.altKey === true ) { 
+      showChoiceSlider = false;
+    }
+
+    this.state.dropDownItems[choiceSliderDropdown].map( ( dd, ddIndex ) => {
+      if ( dd.text === item ) { choiceSliderValue = ddIndex ; }
+    });
+
+    this.setState({
+      choiceSliderDropdown: choiceSliderDropdown, //Number of Dropdown ( ie 1 2 or 3 )
+      choiceSliderValue: choiceSliderValue, // Selected Choice of Dropdown
+      showChoiceSlider: showChoiceSlider,
+    });
+
+    console.log('searchForItems: ',item, choiceSliderDropdown, choiceSliderValue, ev ) ;
+    this.fullSearch( item, null, this.state.currentTimeScale );
 
   }
 
-  public fullSearch = (item: any, searchText: string ): void => {
+  public fullSearch = (item: any, searchText: string , currentTimeScale: ITimeScale, ): void => {
 
     //This sends back the correct pivot category which matches the category on the tile.
     let e: any = event;
@@ -653,6 +833,13 @@ private _updateTimeSlider(newValue: number){
     console.log('searchForItems: e',e);
     console.log('searchForItems: item', item);
     console.log('searchForItems: this', this);
+
+
+   
+   if ( currentTimeScale === 'Weeks' ) { this.setState({ sliderValueWeek: newValue, }) ; }
+   else if ( currentTimeScale === 'Years' ) { this.setState({ sliderValueYear: newValue, }) ; }
+   else if ( currentTimeScale === 'Months' ) { this.setState({ sliderValueMonth: newValue, }) ; }
+   else if ( currentTimeScale === 'WeekNo' ) { this.setState({ sliderValueWeekNo: newValue, }) ; }
     */
 
     let searchItems : IGridItemInfo[] = [];
@@ -664,9 +851,10 @@ private _updateTimeSlider(newValue: number){
 
     let selectedDropdowns = this.state.selectedDropdowns;
     let dropDownItems = this.state.dropDownItems;
+    let dropdownColumnIndex = null; //Index of dropdown column that was picked
 
     if ( searchText === null ) { //Then this is a choice dropdown filter
-      let dropdownColumnIndex = null; //Index of dropdown column that was picked
+
       dropDownItems.map ( ( thisDropDown, ddIndex ) => {
         thisDropDown.map( thisChoice => {
           if ( dropdownColumnIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; thisChoice.isSelected = true ; }  else { thisChoice.isSelected = false;} 
@@ -734,6 +922,7 @@ private _updateTimeSlider(newValue: number){
         searchMeta: [],
         dropDownItems: dropDownItems,
         selectedDropdowns: selectedDropdowns,
+        dropdownColumnIndex: dropdownColumnIndex,
         gridData: gridData,
         allLoaded: true,
         monthLables: monthLables,
@@ -878,12 +1067,38 @@ private _updateTimeSlider(newValue: number){
       }
   } 
 
+  private getYearMonthLabel ( theDate : Date ) {
+
+    let year = theDate.getFullYear();
+    let month = theDate.getMonth();
+    let monthNo = ( month + 1 ).toString();
+    let monthLabel : any = year + ' : ' + monthNo + '-' + monthStr3["en-us"][month];
+
+    return monthLabel;
+
+  }
+
+  private getYearWeekLabel ( theDate : Date ) {
+
+    let year = theDate.getFullYear();
+    let weekNo = ISO8601_week_no(theDate).toString();
+    if ( weekNo.length === 1 ) { weekNo = "0" + weekNo; }
+    let weekLabel : any = year + ' :  w' + weekNo ;
+    return weekLabel;
+
+  }
+
   private buildGridData ( gridList: IGridList, allItems : IGridItemInfo[] ) {
     
     let count = allItems.length;
 
     let allDateArray : any[] = [];
     let allDateStringArray : string[] = [];
+
+    let allYearsStringArray: string[] = [];
+    let allMonthsStringArray: string[] = [];
+    let allWeekNosStringArray: string[] = [];
+
     let allDataPoints : IGridchartsDataPoint[] = [];
 
     /**
@@ -929,7 +1144,18 @@ private _updateTimeSlider(newValue: number){
     let gridEnd  = new Date( endDate.getFullYear(), endDate.getMonth() + 1, 0 );
     //let gridEnd = new Date( tempEnd.toLocaleString() );
     allDateArray = this.getDates( gridStart, gridEnd);
-    allDateArray.map ( d => { allDateStringArray.push( d.toLocaleDateString() ) ; });
+    allDateArray.map ( d => { 
+      allDateStringArray.push( d.toLocaleDateString() ) ;
+
+      let thisYear = d.getFullYear();
+      let yearMonth : any = this.getYearMonthLabel(d);
+      let yearWeek : any = this.getYearWeekLabel(d);
+
+      if (  allYearsStringArray.indexOf( thisYear.toString() ) < 0 ) {  allYearsStringArray.push( thisYear.toString() ) ; }
+      if (  allMonthsStringArray.indexOf( yearMonth ) < 0 ) {  allMonthsStringArray.push( yearMonth ) ; }
+      if (  allWeekNosStringArray.indexOf( yearWeek ) < 0 ) {  allWeekNosStringArray.push( yearWeek ) ; }
+
+    });
 
     /**
      * Build the IGridchartsDataPoint[] array
@@ -938,7 +1164,21 @@ private _updateTimeSlider(newValue: number){
     allDateArray.map( theDate => {
       allDataPoints.push( {
         date: theDate,
+
+        dateNo: theDate.getDate(),
+        dayNo: theDate.getDay(),
+        week: null,
+        month: theDate.getMonth(),
+        year: theDate.getFullYear(),
+        yearMonth: this.getYearMonthLabel( theDate ),
+        yearWeek: this.getYearWeekLabel( theDate ),
+
+        yearIndex: null,
+        yearMonthIndex: null,
+        yearWeekIndex: null,
+
         dateString: theDate.toLocaleDateString(),
+
         label: '',
         dataLevel: null,
         value: null,
@@ -964,9 +1204,32 @@ private _updateTimeSlider(newValue: number){
 
     allItems.map( item => {
       let itemDateProp = item['time' + this.props.dateColumn ];
-      let itemDate = new Date( itemDateProp.theTime ).toLocaleDateString();
+      let itemDateDate = new Date( itemDateProp.theTime );
+      let itemDate = itemDateDate.toLocaleDateString();
       let dateIndex = allDateStringArray.indexOf( itemDate ) ;
       item.dateIndex = dateIndex;
+
+      item.dateNo = itemDateProp.date;
+      item.dayNo = itemDateProp.day;
+      item.week = itemDateProp.week;
+      item.month = itemDateProp.month;
+      item.year = itemDateProp.year;
+      
+      let yearMonth : any =this.getYearMonthLabel( itemDateDate ) ;
+      let yearWeek : any = this.getYearWeekLabel( itemDateDate ) ;
+
+      item.yearMonth = yearMonth;
+      item.yearWeek = yearWeek;
+
+      item.yearIndex = allYearsStringArray.indexOf( item.year.toString() ) ;
+      item.yearMonthIndex = allMonthsStringArray.indexOf( yearMonth ) ;
+      item.yearWeekIndex = allWeekNosStringArray.indexOf( yearWeek ) ;
+
+      item.meta.push( item.yearMonth ) ;
+      item.meta.push( item.yearWeek ) ;
+      item.meta.push( item.year.toString() ) ;
+
+      item.searchString += 'yearMonth=' + item.yearMonth + '|||' + 'yearWeek=' + item.yearWeek + '|||' + 'year=' + item.year + '|||' + 'week=' + item.week + '|||';
 
       let valueColumn = item[ this.props.valueColumn ];
       let valueType = typeof valueColumn;
@@ -986,6 +1249,10 @@ private _updateTimeSlider(newValue: number){
       allDataPoints[dateIndex].sum += valueColumn;      
       if ( allDataPoints[dateIndex].min === null || allDataPoints[dateIndex].min > valueColumn ) { allDataPoints[dateIndex].min = valueColumn; }  
       if ( allDataPoints[dateIndex].max === null || allDataPoints[dateIndex].max < valueColumn ) { allDataPoints[dateIndex].max = valueColumn; }  
+
+      if ( allDataPoints[dateIndex].yearIndex === null ) { allDataPoints[dateIndex].yearIndex = item.yearIndex; }  
+      if ( allDataPoints[dateIndex].yearMonthIndex === null ) { allDataPoints[dateIndex].yearMonthIndex = item.yearMonthIndex; }  
+      if ( allDataPoints[dateIndex].yearWeekIndex === null ) { allDataPoints[dateIndex].yearWeekIndex = item.yearWeekIndex; }  
 
       let compareValue = allDataPoints[dateIndex][ valueOperator ] ;
       if ( compareValue < minValue ) { minValue = compareValue; }
@@ -1019,7 +1286,6 @@ private _updateTimeSlider(newValue: number){
       data.label = data.count === 0 ? `${data.dateString} : No data available` : `${data.dateString} : ${this.props.valueOperator} = ${data.value.toFixed(this.props.valueOperator === 'count' ? 0 : 2 )}  ( ${data.valuesString.join(', ') } )`;
     });
 
-
     let gridData: IGridchartsData = {
       total: gridDataTotal,
       count: count,
@@ -1032,6 +1298,11 @@ private _updateTimeSlider(newValue: number){
       allWeeks: 0,
       allDateArray: allDateArray,
       allDateStringArray: allDateStringArray,
+      
+      allYearsStringArray: allYearsStringArray,
+      allMonthsStringArray: allMonthsStringArray,
+      allWeekNosStringArray: allWeekNosStringArray,
+
       allDataPoints: allDataPoints,
                 
       visibleDataPoints: [],

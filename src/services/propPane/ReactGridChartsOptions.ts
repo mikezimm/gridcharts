@@ -39,6 +39,12 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
         
     }
 
+    public monthGapChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
+        {   index: 0,   key: "0", text: "0 Squares"  },
+        {   index: 1,   key: "1", text: "1 Square"  },
+        {   index: 2,   key: "2", text: "2 Squares"  },
+    ];
+
     public valueTypeChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
         {   index: 0,   key: "Any", text: "Any"  },
         {   index: 1,   key: "Number", text: "Number"  },
@@ -53,10 +59,11 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
     ];
 
     public cellColorChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[
-        {   index: 0,   key: "dark", text: "Dark Theme"  },
-        {   index: 1,   key: "blue", text: "Blue"  },
-        {   index: 2,   key: "green", text: "Green"  },
-        {   index: 3,   key: "red", text: "Red"  },
+        {   index: 0,   key: "green", text: "Green"  },
+        {   index: 1,   key: "custom", text: "Custom"  },
+        {   index: 2,   key: "swatch", text: "Swatch"  },
+       //{   index: 3,   key: "red", text: "Red"  },
+        {   index: 3,   key: "dark", text: "Dark Theme"  },
     ];
 
     public scaleMethodChoices: IPropertyPaneDropdownOption[] = <IPropertyPaneDropdownOption[]>[

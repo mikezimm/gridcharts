@@ -3,8 +3,9 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
   PropertyPaneHorizontalRule, PropertyPaneTextField, IPropertyPaneTextFieldProps, 
   PropertyPaneLink, IPropertyPaneLinkProps, PropertyPaneDropdown, 
   IPropertyPaneDropdownProps, IPropertyPaneDropdownOption, PropertyPaneToggle, 
-  IPropertyPaneConfiguration, PropertyPaneButton, PropertyPaneButtonType, PropertyPaneSlider
+  IPropertyPaneConfiguration, PropertyPaneButton, PropertyPaneButtonType, PropertyPaneSlider,
 } from "@microsoft/sp-property-pane";
+
 
 import * as strings from 'GridchartsWebPartStrings';
 import { pivotOptionsGroup} from './index';
@@ -16,6 +17,8 @@ import { IGridchartsWebPartProps } from '../../webparts/gridcharts/GridchartsWeb
 
 import { PropertyFieldSitePicker } from '@pnp/spfx-property-controls/lib/PropertyFieldSitePicker';
 import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
+
+import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
 
 /*
 
@@ -119,6 +122,11 @@ export class IntroPage {
 
           PropertyPaneTextField('dateColumn', {
             label: 'Date Column'
+          }),
+
+          PropertyPaneDropdown('monthGap', <IPropertyPaneDropdownProps>{
+            label: 'Month gap',
+            options: gridChartsOptionsGroup.monthGapChoices,
           }),
 
           PropertyPaneTextField('valueColumn', {
@@ -252,14 +260,9 @@ export class IntroPage {
         ]}, // this group
 
         // 2 - Source and destination list information    
-        { groupName: 'Styling and colors',
+        { groupName: 'Styling',
         isCollapsed: true ,
         groupFields: [
-
-          PropertyPaneDropdown('cellColor', <IPropertyPaneDropdownProps>{
-            label: 'Cell color',
-            options: gridChartsOptionsGroup.cellColorChoices,
-          }),
 
           PropertyPaneTextField('yearStyles', {
             label: 'css for Year headings'
@@ -288,6 +291,69 @@ export class IntroPage {
           }),
 
         ]}, // this group
+
+        // 2 - Source and destination list information    
+        { groupName: 'Squares styling',
+        isCollapsed: true ,
+        groupFields: [
+
+          
+          PropertyPaneDropdown('cellColor', <IPropertyPaneDropdownProps>{
+            label: 'Cell color',
+            options: gridChartsOptionsGroup.cellColorChoices,
+          }),
+
+          //squareCustom
+          PropertyPaneTextField('squareCustom', {
+            label: 'Must be 4 colors , separated',
+            disabled: webPartProps.cellColor === 'custom' ? false : true,
+            description: 'Empty/Gap,Level1,Level2,Level3',
+          }),
+
+          PropertyFieldColorPicker('squareColor', {
+            label: 'Square Color',
+            selectedColor: webPartProps.squareColor,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            disabled: webPartProps.cellColor === 'swatch' ? false : true,
+            isHidden: false,
+            alphaSliderHidden: false,
+            style: PropertyFieldColorPickerStyle.Inline,
+            iconName: 'Color',
+            key: 'squareColorFieldId'
+          }),
+
+          PropertyFieldColorPicker('backGroundColor', {
+            label: 'Background Color',
+            selectedColor: webPartProps.backGroundColor,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            disabled: webPartProps.cellColor === 'swatch' ? false : true,
+            isHidden: false,
+            alphaSliderHidden: false,
+            style: PropertyFieldColorPickerStyle.Inline,
+            iconName: 'Color',
+            key: 'backGroundColorFieldId'
+          }),
+
+
+          PropertyFieldColorPicker('emptyColor', {
+            label: 'Empty Color',
+            selectedColor: webPartProps.emptyColor,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            disabled: webPartProps.cellColor === 'swatch' ? false : true,
+            isHidden: false,
+            alphaSliderHidden: false,
+            style: PropertyFieldColorPickerStyle.Inline,
+            iconName: 'Color',
+            key: 'emptyColorFieldId'
+          }),
+
+
+        ]}, // this group
+
+
           /* */
 
         // 9 - Other web part options

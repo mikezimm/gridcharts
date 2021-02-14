@@ -26,6 +26,10 @@
       "parentListTitle": "TrackMyTime",
 
       "dateColumn": "StartTime",
+      "monthGap": "1",
+      "squareCustom": "transparent,#ebedf0,#c6e48b,#7bc96f,#196127",
+      "cellColor": "green",
+
       "valueColumn": "Hours",
       "valueType": "Number",
       "valueOperator": "Sum",
@@ -49,6 +53,10 @@
       "parentListTitle": "Documents",
 
       "dateColumn": "Modified",
+      "monthGap": "1",
+      "squareCustom": "transparent,#ebedf0,#c6e48b,#7bc96f,#196127",
+      "cellColor": "green",
+
       "valueColumn": "Id",
       "valueType": "Number",
       "valueOperator": "Count",
@@ -58,6 +66,33 @@
       "fetchCount": 2000,
       "enableSearch": true,
       "dropDownColumns": "+Author/Title,+Editor/Title"
+    }
+  },
+  {
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
+    "group": { "default": "Other" },
+    "title": { "default": "GridCharts-ACH Turnover" },
+    "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart" },
+    "officeFabricIconFontName": "ScatterChart",
+    "properties": {
+      "description": "GridCharts-ACH Turnover",
+      "parentListWeb": "/sites/WebpartDev",
+      "parentListTitle": "ACH Turnover",
+
+      "dateColumn": "zzzDate1",
+      "monthGap": "1",
+      "squareCustom": "transparent,#ebedf0,#c6e48b,#7bc96f,#196127",
+      "cellColor": "green",
+
+      "valueColumn": "zzzNumber05",
+      "valueType": "Number",
+      "valueOperator": "Sum",
+      "minDataDownload": true,
+      "showEarlyAccess": true,
+      "scaleMethod": "blink",
+      "fetchCount": 5000,
+      "enableSearch": true,
+      "dropDownColumns": "+zzzChoice1,+zzzItemCategory"
     }
   }]
 }
