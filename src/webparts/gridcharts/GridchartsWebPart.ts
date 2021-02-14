@@ -61,6 +61,10 @@ export interface IGridchartsWebPartProps {
     otherStyles: string;
     scaleMethod: IScaleMethod;
 
+    squareColor: string;
+    emptyColor: string;
+    backGroundColor: string;    
+
     advancedPivotStyles: boolean;
     pivotSize: string;
     pivotFormat: string;
@@ -196,6 +200,10 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
           cellStyles: this.properties.cellStyles ? this.properties.cellStyles : '',
           cellhoverInfoColor: this.properties.cellhoverInfoColor ? this.properties.cellhoverInfoColor : '',
           other: this.properties.otherStyles ? this.properties.otherStyles : '',
+
+          squareColor: this.properties.squareColor ? this.properties.squareColor : '',
+          emptyColor: this.properties.emptyColor ? this.properties.emptyColor : '',
+          backGroundColor: this.properties.backGroundColor ? this.properties.backGroundColor : '',
 
         },
 

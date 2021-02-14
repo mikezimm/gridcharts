@@ -3,8 +3,9 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
   PropertyPaneHorizontalRule, PropertyPaneTextField, IPropertyPaneTextFieldProps, 
   PropertyPaneLink, IPropertyPaneLinkProps, PropertyPaneDropdown, 
   IPropertyPaneDropdownProps, IPropertyPaneDropdownOption, PropertyPaneToggle, 
-  IPropertyPaneConfiguration, PropertyPaneButton, PropertyPaneButtonType, PropertyPaneSlider
+  IPropertyPaneConfiguration, PropertyPaneButton, PropertyPaneButtonType, PropertyPaneSlider,
 } from "@microsoft/sp-property-pane";
+
 
 import * as strings from 'GridchartsWebPartStrings';
 import { pivotOptionsGroup} from './index';
@@ -16,6 +17,8 @@ import { IGridchartsWebPartProps } from '../../webparts/gridcharts/GridchartsWeb
 
 import { PropertyFieldSitePicker } from '@pnp/spfx-property-controls/lib/PropertyFieldSitePicker';
 import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
+
+import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
 
 /*
 
@@ -252,7 +255,7 @@ export class IntroPage {
         ]}, // this group
 
         // 2 - Source and destination list information    
-        { groupName: 'Styling and colors',
+        { groupName: 'Styling',
         isCollapsed: true ,
         groupFields: [
 
@@ -288,6 +291,56 @@ export class IntroPage {
           }),
 
         ]}, // this group
+
+        // 2 - Source and destination list information    
+        { groupName: 'Squares styling',
+        isCollapsed: true ,
+        groupFields: [
+
+          PropertyFieldColorPicker('squareColor', {
+            label: 'Square Color',
+            selectedColor: webPartProps.squareColor,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            disabled: false,
+            isHidden: false,
+            alphaSliderHidden: false,
+            style: PropertyFieldColorPickerStyle.Inline,
+            iconName: 'Precipitation',
+            key: 'squareColorFieldId'
+          }),
+
+          PropertyFieldColorPicker('backGroundColor', {
+            label: 'Background Color',
+            selectedColor: webPartProps.backGroundColor,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            disabled: false,
+            isHidden: false,
+            alphaSliderHidden: false,
+            style: PropertyFieldColorPickerStyle.Inline,
+            iconName: 'Precipitation',
+            key: 'backGroundColorFieldId'
+          }),
+
+
+          PropertyFieldColorPicker('emptyColor', {
+            label: 'Empty Color',
+            selectedColor: webPartProps.emptyColor,
+            onPropertyChange: onPropertyPaneFieldChanged,
+            properties: webPartProps,
+            disabled: false,
+            isHidden: false,
+            alphaSliderHidden: false,
+            style: PropertyFieldColorPickerStyle.Inline,
+            iconName: 'Precipitation',
+            key: 'emptyColorFieldId'
+          }),
+
+
+        ]}, // this group
+
+
           /* */
 
         // 9 - Other web part options

@@ -99,6 +99,9 @@ export interface IGridchartsProps {
         cellStyles: string;
         cellhoverInfoColor: string;
         other: string;
+        squareColor: string;
+        emptyColor: string;
+        backGroundColor: string;    
       };
   
       //For DD
