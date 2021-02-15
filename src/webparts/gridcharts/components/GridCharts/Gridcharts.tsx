@@ -1,7 +1,17 @@
+
+
+
+
+/**
+ * 
+ * 
+ * Official Community Imports
+ * 
+ * 
+ */
+
 import * as React from 'react';
-import styles from './Gridcharts.module.scss';
-import { IGridchartsProps } from './IGridchartsProps';
-import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IGridItemInfo, ITimeScale } from './IGridchartsState';
+
 import { escape } from '@microsoft/sp-lodash-subset';
 
 import { Spinner, SpinnerSize, SpinnerLabelPosition } from 'office-ui-fabric-react/lib/Spinner';
@@ -21,6 +31,44 @@ import {
   IDropdownOption,
 } from "office-ui-fabric-react";
 
+import { IGrid } from 'office-ui-fabric-react';
+
+/**
+ * 
+ * 
+ * @mikezimm/npmfunctions/dist/ Imports
+ * 
+ * 
+ */
+
+import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
+  getNicks, makeTheTimeObject, makeSmallTimeObject, ISO8601_week_no, getTimeDelta, monthStr3, monthStr, weekday3, msPerDay} from '@mikezimm/npmfunctions/dist/dateServices';
+
+
+import { sortObjectArrayByStringKey, doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+
+import { IPickedWebBasic, IPickedList, IMyProgress,
+IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
+} from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+
+/**
+ * 
+ * 
+ * Services Imports
+ * 
+ * 
+ */
+
+import { saveTheTime, saveAnalytics, getTheCurrentTime } from '../../../../services/createAnalytics';
+
+/**
+ * 
+ * 
+ * Helper Imports
+ * 
+ * 
+ */
+
 import InfoPage from '../HelpInfo/infoPages';
 
 import  EarlyAccess from '../HelpInfo/EarlyAccess';
@@ -28,19 +76,22 @@ import * as links from '../HelpInfo/AllLinks';
 
 import { createSlider, createChoiceSlider } from '../fields/sliderFieldBuilder';
 
-import { saveTheTime, saveAnalytics, getTheCurrentTime } from '../../../../services/createAnalytics';
-import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-          getNicks, makeTheTimeObject, makeSmallTimeObject, ISO8601_week_no, getTimeDelta, monthStr3, monthStr, weekday3, msPerDay} from '@mikezimm/npmfunctions/dist/dateServices';
-
-
-import { sortObjectArrayByStringKey, doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
-
-import { IPickedWebBasic, IPickedList, IMyProgress,
-  IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
-} from '../../../../services/IReUsableInterfaces';
-
 import { createGridList, getAllItems, IGridList } from './GetListData';
-import { IGrid } from 'office-ui-fabric-react';
+
+
+/**
+ * 
+ * This Component Imports
+ * 
+ * 
+ */
+
+import styles from './Gridcharts.module.scss';
+import { IGridchartsProps } from './IGridchartsProps';
+import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IGridItemInfo, ITimeScale } from './IGridchartsState';
+
+
+
 /**
  * Based upon example from
  * https://codepen.io/ire/pen/Legmwo

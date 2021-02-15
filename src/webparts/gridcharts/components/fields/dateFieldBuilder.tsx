@@ -1,19 +1,61 @@
 
+/**
+ * 
+ * 
+ * Official Community Imports
+ * 
+ * 
+ */
 
 import * as React from 'react';
 
 import { DateTimePicker, DateConvention, TimeConvention, TimeDisplayControlType } from '@pnp/spfx-controls-react/lib/dateTimePicker';
 
+/**
+ * 
+ * 
+ * @mikezimm/npmfunctions/dist/ Imports
+ * 
+ * 
+ */
+
+import { IUser, ILink, IChartSeries, ICharNote,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+
+/**
+ * 
+ * 
+ * Services Imports
+ * 
+ * 
+ */
+
+
+ 
+/**
+ * 
+ * 
+ * Helper Imports
+ * 
+ * 
+ */
+
+import { IFieldDef } from './fieldDefinitions';
+
+/**
+ * 
+ * This Component Imports
+ * 
+ * 
+ */
+
 import { IGridchartsState,} from '../GridCharts/IGridchartsState';
 
-import { IUser, ILink, IChartSeries, ICharNote,  } from '../../../../services/IReUsableInterfaces';
 
 import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
 import * as strings from 'GridchartsWebPartStrings';
 
 import styles from '../GridCharts/Gridcharts.module.scss';
 
-import { IFieldDef } from './fieldDefinitions';
 
 export const dateConvention = DateConvention.DateTime;
 export const showMonthPickerAsOverlay = true;

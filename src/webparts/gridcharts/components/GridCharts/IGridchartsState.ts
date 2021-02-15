@@ -6,7 +6,7 @@ import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeS
 
 import { IPickedWebBasic, IPickedList, IMyProgress,
     IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
-    } from '../../../../services/IReUsableInterfaces';
+    } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
 
 import { IGridList } from './GetListData';
 

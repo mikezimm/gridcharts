@@ -1,19 +1,49 @@
-
+/**
+ * 
+ * Official Community Imports
+ * 
+ */
 
 import * as React from 'react';
 
-import { IGridchartsState, } from '../GridCharts/IGridchartsState';
+import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
 
-import { IUser, ILink, IChartSeries, ICharNote,  } from '../../../../services/IReUsableInterfaces';
+/**
+ * 
+ * @mikezimm/npmfunctions/dist/ Imports
+ * 
+ */
+
+import { IUser, ILink, IChartSeries, ICharNote,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+
+/**
+ * 
+ * Services Imports
+ * 
+ */
+
+ 
+/**
+ * 
+ * Helper Imports
+ * 
+ */
+import { IFieldDef } from './fieldDefinitions';
+
+
+/**
+ * 
+ * This Component Imports
+ * 
+ */
+
+import { IGridchartsState, } from '../GridCharts/IGridchartsState';
 
 import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
 import * as strings from 'GridchartsWebPartStrings';
 
-import { ChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
-
 import styles from '../GridCharts/Gridcharts.module.scss';
 
-import { IFieldDef } from './fieldDefinitions';
 
 /*
 Entry Type Choices need to match these:  \src\services\propPane\WebPartSettingsPage.ts

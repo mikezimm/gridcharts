@@ -1,3 +1,11 @@
+/**
+ * 
+ * 
+ * Official Community Imports
+ * 
+ * 
+ */
+
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
@@ -9,16 +17,51 @@ import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-bas
 
 import { PageContext } from '@microsoft/sp-page-context';
 
+import { IPropertyFieldSite } from "@pnp/spfx-property-controls/lib/PropertyFieldSitePicker";
+
+/**
+ * 
+ * 
+ * @mikezimm/npmfunctions/dist/ Imports
+ * 
+ * 
+ */
 import { makeTheTimeObject } from '@mikezimm/npmfunctions/dist/dateServices';
+
+require('@mikezimm/npmfunctions/dist/GrayPropPaneAccordions.css');
+
+/**
+ * 
+ * 
+ * Services Imports
+ * 
+ * 
+ */
+
 import { propertyPaneBuilder } from '../../services/propPane/PropPaneBuilder';
+ 
+/**
+ * 
+ * 
+ * Helper Imports
+ * 
+ * 
+ */
+import Gridcharts from './components/GridCharts/Gridcharts';
+
+
+/**
+ * 
+ * This Component Imports
+ * 
+ * 
+ */
+
 
 import * as strings from 'GridchartsWebPartStrings';
-import Gridcharts from './components/GridCharts/Gridcharts';
+
 import { IGridchartsProps, IScaleMethod } from './components/GridCharts/IGridchartsProps';
 
-//require('@mikezimm/npmfunctions/dist/GrayPropPaneAccordions.css');
-require('../../services/propPane/GrayPropPaneAccordions.css');
-import { IPropertyFieldSite } from "@pnp/spfx-property-controls/lib/PropertyFieldSitePicker";
 
 export interface IGridchartsWebPartProps {
   description: string;

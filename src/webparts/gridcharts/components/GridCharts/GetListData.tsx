@@ -16,7 +16,7 @@ import "@pnp/sp/site-users/web";
 /**
  * 
  * 
- * @mikezimm/npmfunctions Imports
+ * @mikezimm/npmfunctions/dist/ Imports
  * 
  * 
  */
@@ -27,6 +27,13 @@ import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/dateServices';
 
 import { getHelpfullError } from '@mikezimm/npmfunctions/dist/ErrorHandler';
 
+import { IPickedList, IPickedWebBasic, IMyPivots, IPivot,  ILink, IUser, IMyProgress, IMyIcons, IMyFonts, IChartSeries, 
+    ICharNote, IRefinerRules, RefineRuleValues, ICustViewDef, IRefinerStat, ICSSChartTypes, QuickCommandsTMT } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+
+import { ensureUserInfo } from '@mikezimm/npmfunctions/dist/userServices';
+
+import { getExpandColumns, getSelectColumns } from '@mikezimm/npmfunctions/dist/getFunctions';
+
 /**
  * 
  * 
@@ -35,12 +42,6 @@ import { getHelpfullError } from '@mikezimm/npmfunctions/dist/ErrorHandler';
  * 
  */
 
-import { IPickedList, IPickedWebBasic, IMyPivots, IPivot,  ILink, IUser, IMyProgress, IMyIcons, IMyFonts, IChartSeries, 
-    ICharNote, IRefinerRules, RefineRuleValues, ICustViewDef, IRefinerStat, ICSSChartTypes, QuickCommandsTMT } from '../../../../services/IReUsableInterfaces';
-
-import { ensureUserInfo } from '../../../../services/userServices';
-
-import { getExpandColumns, getSelectColumns } from '../../../../services/getFunctions';
 
 
 /**

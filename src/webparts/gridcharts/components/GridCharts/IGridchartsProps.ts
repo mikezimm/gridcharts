@@ -1,11 +1,55 @@
 
+/**
+ * 
+ * 
+ * Official Community Imports
+ * 
+ * 
+ */
+
 import { PageContext } from '@microsoft/sp-page-context';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
+
+
+/**
+ * 
+ * 
+ * @mikezimm/npmfunctions/dist/ Imports
+ * 
+ * 
+ */
 
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
   getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime} from '@mikezimm/npmfunctions/dist/dateServices';
 
 import { ICSSChartSeries,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+
+/**
+ * 
+ * 
+ * Services Imports
+ * 
+ * 
+ */
+
+
+ 
+/**
+ * 
+ * 
+ * Helper Imports
+ * 
+ * 
+ */
+
+
+/**
+ * 
+ * This Component Imports
+ * 
+ * 
+ */
+
 
 export type IScaleMethod = 'slider' | 'blink' | 'pivot' | 'other' | 'na' | 'TBD';
 
