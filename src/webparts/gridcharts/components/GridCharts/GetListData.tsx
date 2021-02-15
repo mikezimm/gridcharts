@@ -55,7 +55,7 @@ import { IGridItemInfo } from './IGridchartsState';
 
 
 export interface IGridList extends IZBasicList {
-    dropdownColumns: string[];
+    dropDownColumns: string[];
     dropDownSort: string[];
   }
 
@@ -172,10 +172,10 @@ function buildMetaFromItem( theItem: IGridItemInfo, fetchList: IGridList, ) {
         
     });
 
-    fetchList.dropdownColumns.map( ( col , colIndex ) => {
+    fetchList.dropDownColumns.map( ( col , colIndex ) => {
 
         let actualColName = col.replace('>', '' ).replace('+', '' ).replace('-', '' );
-        let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? fetchList.dropdownColumns[colIndex - 1] : null;
+        let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? fetchList.dropDownColumns[colIndex - 1] : null;
         parentColName = parentColName !== null ? parentColName.replace('>', '' ).replace('+', '' ).replace('-', '' ) : null;
 
         let thisItemsChoices = theItem[ actualColName ];

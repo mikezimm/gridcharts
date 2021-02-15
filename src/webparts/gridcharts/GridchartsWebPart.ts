@@ -28,7 +28,6 @@ import { IPropertyFieldSite } from "@pnp/spfx-property-controls/lib/PropertyFiel
  */
 import { makeTheTimeObject } from '@mikezimm/npmfunctions/dist/dateServices';
 
-require('@mikezimm/npmfunctions/dist/GrayPropPaneAccordions.css');
 
 /**
  * 
@@ -40,6 +39,8 @@ require('@mikezimm/npmfunctions/dist/GrayPropPaneAccordions.css');
 
 import { propertyPaneBuilder } from '../../services/propPane/PropPaneBuilder';
  
+require('../../services/GrayPropPaneAccordions.css');
+
 /**
  * 
  * 

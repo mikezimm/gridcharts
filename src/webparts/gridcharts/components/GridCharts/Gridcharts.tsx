@@ -213,6 +213,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         tempList.dropDownSort = dropDownSort;
         let fetchList : IGridList = tempList;
 
+        console.log('fetchList Contructor:', fetchList );
         /**
          * Add this at this point to be able to search on specific odata types
          * fetchList.odataSearch = ['odata.type'];
@@ -328,6 +329,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     public componentDidMount() {
 
+      console.log('fetchList componentDidMount:', this.state.fetchList );
       getAllItems( this.state.fetchList, this.addTheseItemsToState.bind(this), null, null );
       
     }
@@ -403,6 +405,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         tempList.dropDownSort = dropDownSort;
         let fetchList : IGridList = tempList;
 
+        console.log('fetchList componentDidUpdate:', fetchList );
         getAllItems( fetchList, this.addTheseItemsToState.bind(this), null, null );
         
       } else if ( refreshMe === true ) {  this.setState({ }) ; }
@@ -577,7 +580,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
               let dropDownSort = this.state.fetchList.dropDownSort[ index ];
               let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
-              let DDLabel = this.state.fetchList.dropdownColumns[ index ].replace('>','').replace('+','').replace('-','');
+              let DDLabel = this.state.fetchList.dropDownColumns[ index ].replace('>','').replace('+','').replace('-','');
               return <Dropdown
                   placeholder={ `Select a ${ DDLabel }` }
                   label={ DDLabel }
