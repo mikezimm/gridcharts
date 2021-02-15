@@ -17,7 +17,7 @@ import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeS
     getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime, } from '@mikezimm/npmfunctions/dist/dateServices';
 
 import { IPickedWebBasic, IPickedList, IMyProgress,
-    IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
+    IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons, IZBasicItemInfo, IMyPivCat
     } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
 
 
@@ -28,8 +28,6 @@ import { IPickedWebBasic, IPickedList, IMyProgress,
  */
 
 import { IGridList } from './GetListData';
-
-
 
 export type ITimeScale  = 'Weeks' | 'Years' | 'Months' | "WeekNo";
 
@@ -183,25 +181,7 @@ export interface IGridchartsState {
 
   }
 
-  
 
-/***
- *    d888888b      d8888b. d888888b db    db  .o88b.  .d8b.  d888888b .d8888. 
- *      `88'        88  `8D   `88'   88    88 d8P  Y8 d8' `8b `~~88~~' 88'  YP 
- *       88         88oodD'    88    Y8    8P 8P      88ooo88    88    `8bo.   
- *       88         88~~~      88    `8b  d8' 8b      88~~~88    88      `Y8b. 
- *      .88.        88        .88.    `8bd8'  Y8b  d8 88   88    88    db   8D 
- *    Y888888P      88      Y888888P    YP     `Y88P' YP   YP    YP    `8888Y' 
- *                                                                             
- *                                                                             
- */
-
-export interface IMyPivCat {
-    title: string;
-    desc: string;
-    order: number;
-    count: number;
-}
 
 
 
@@ -216,36 +196,6 @@ export interface IMyPivCat {
  *                                                                                                                                             
  */
 
-
-export interface IZBasicItemInfo extends Partial<any>{
-
-    sort: string;
-    searchString: string;
-    meta: string[];
-
-    Created: any;
-    Modified: any;
-    Author: any;
-    Editor: any;
-    timeCreated : ITheTime;
-
-//    goToItemPreview: string;
-//    goToItemLink: string;
-//    goToPropsLink: string;
-    isFile: boolean;
-
-    timeModified : ITheTime;
-    bestCreate: string;
-    bestMod: string;
-
-    author: IUser;
-    editor: IUser;
-
-//    refiners: IItemRefiners; //String of Keys representing the static name of the column used for drill downs
-
-    Id: any;
-
-}
 
 export interface IGridItemInfo extends IZBasicItemInfo {
     dateIndex: number;
