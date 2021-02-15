@@ -1,6 +1,18 @@
 
+
+
+/**
+ * 
+ * Official Community Imports
+ * 
+ */
 import {    IDropdownOption,  } from "office-ui-fabric-react";
 
+/**
+ * 
+ * @mikezimm/npmfunctions/dist/ Imports
+ * 
+ */
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
     getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime, } from '@mikezimm/npmfunctions/dist/dateServices';
 
@@ -8,7 +20,16 @@ import { IPickedWebBasic, IPickedList, IMyProgress,
     IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
     } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
 
+
+/**
+ * 
+ * This Component Imports
+ * 
+ */
+
 import { IGridList } from './GetListData';
+
+
 
 export type ITimeScale  = 'Weeks' | 'Years' | 'Months' | "WeekNo";
 
