@@ -204,10 +204,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); selectedDropdowns.push('') ; });
 
 
-        let gridList = createGridList( this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
+        let fetchList = createGridList( this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
         /**
          * Add this at this point to be able to search on specific odata types
-         * gridList.odataSearch = ['odata.type'];
+         * fetchList.odataSearch = ['odata.type'];
         */
 
         let errMessage = null;
@@ -284,7 +284,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
           gridData: gridData,
 
-          gridList: gridList,
+          fetchList: fetchList,
 
           bannerMessage: null,
           showTips: false,
@@ -320,7 +320,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     public componentDidMount() {
 
-      getAllItems( this.state.gridList, this.addTheseItemsToState.bind(this), null, null );
+      getAllItems( this.state.fetchList, this.addTheseItemsToState.bind(this), null, null );
       
     }
 
@@ -370,7 +370,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       }
 
       if (reloadData === true) {
-        //Need to first update gridList and pass it on.
+        //Need to first update fetchList and pass it on.
 
         let allColumns : string[] = [];
         let dropDownColumns: string[] = this.props.dropDownColumns;
@@ -388,9 +388,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); });
 
-        let gridList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
+        let fetchList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
 
-        getAllItems( gridList, this.addTheseItemsToState.bind(this), null, null );
+        getAllItems( fetchList, this.addTheseItemsToState.bind(this), null, null );
         
       } else if ( refreshMe === true ) {  this.setState({ }) ; }
 
@@ -562,9 +562,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
           searchElements = this.state.dropDownItems.map( ( dropDownChoices, index ) => {
 
-              let dropDownSort = this.state.gridList.dropDownSort[ index ];
+              let dropDownSort = this.state.fetchList.dropDownSort[ index ];
               let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
-              let DDLabel = this.state.gridList.dropdownColumns[ index ].replace('>','').replace('+','').replace('-','');
+              let DDLabel = this.state.fetchList.dropdownColumns[ index ].replace('>','').replace('+','').replace('-','');
               return <Dropdown
                   placeholder={ `Select a ${ DDLabel }` }
                   label={ DDLabel }
@@ -953,7 +953,7 @@ private _updateChoiceSlider(newValue: number){
 
     searchCount = newFilteredItems.length;
 
-    let gridData : IGridchartsData = this.buildGridData (this.state.gridList, newFilteredItems);
+    let gridData : IGridchartsData = this.buildGridData (this.state.fetchList, newFilteredItems);
     
     const s1 = gridData.startDate.getMonth();
     const s2 = s1 + 12;
@@ -994,7 +994,7 @@ private _updateChoiceSlider(newValue: number){
  */
 
 
-  private addTheseItemsToState( gridList: IGridList, theseItems , errMessage : string, allNewData : boolean = true ) {
+  private addTheseItemsToState( fetchList: IGridList, theseItems , errMessage : string, allNewData : boolean = true ) {
 
       if ( theseItems.length < 300 ) {
           console.log('addTheseItemsToState theseItems: ', theseItems);
@@ -1004,11 +1004,11 @@ private _updateChoiceSlider(newValue: number){
 
       let allItems = allNewData === false ? this.state.allItems : theseItems;
 
-      let gridData : IGridchartsData = this.buildGridData (gridList, theseItems);
+      let gridData : IGridchartsData = this.buildGridData (fetchList, theseItems);
 
-      gridData= this.buildVisibleItems ( gridData, gridList );
+      gridData= this.buildVisibleItems ( gridData, fetchList );
 
-      let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( gridList, allItems ) : this.state.dropDownItems ;
+      let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( fetchList, allItems ) : this.state.dropDownItems ;
       
       const s1 = gridData.startDate.getMonth();
       const s2 = s1 + 12;
@@ -1025,7 +1025,7 @@ private _updateChoiceSlider(newValue: number){
           errMessage: errMessage,
           searchText: '',
           searchMeta: [],
-          gridList: gridList,
+          fetchList: fetchList,
           gridData: gridData,
           allLoaded: true,
           monthLables: monthLables,
@@ -1041,13 +1041,13 @@ private _updateChoiceSlider(newValue: number){
       return true;
   }
 
-  private buildVisibleItems( gridData : IGridchartsData , gridList : IGridList ) {
+  private buildVisibleItems( gridData : IGridchartsData , fetchList : IGridList ) {
 
     return gridData;
   }
 
 
-  private buildDataDropdownItems( gridList: IGridList, allItems : IGridItemInfo[] ) {
+  private buildDataDropdownItems( fetchList: IGridList, allItems : IGridItemInfo[] ) {
 
     let dropDownItems : IDropdownOption[][] = [];
 
@@ -1135,7 +1135,7 @@ private _updateChoiceSlider(newValue: number){
 
   }
 
-  private buildGridData ( gridList: IGridList, allItems : IGridItemInfo[] ) {
+  private buildGridData ( fetchList: IGridList, allItems : IGridItemInfo[] ) {
     
     let count = allItems.length;
 

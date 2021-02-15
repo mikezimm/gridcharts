@@ -172,7 +172,7 @@ export interface IGridchartsState {
 
     errMessage: string | JSX.Element;
 
-    gridList: IGridList;
+    fetchList: IGridList;
 
     pivotCats: IMyPivCat[][];
  

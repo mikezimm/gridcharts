@@ -220,41 +220,41 @@ export interface IGridList extends IZBasicList {
 //        
 
 // This is what it was before I split off the other part
-export async function getAllItems( gridList: IGridList, addTheseItemsToState: any, setProgress: any, markComplete: any ): Promise<void>{
+export async function getAllItems( fetchList: IGridList, addTheseItemsToState: any, setProgress: any, markComplete: any ): Promise<void>{
 
     let allItems : IGridItemInfo[] = [];
     let errMessage = '';
 
     let sourceUserInfo: any = null;
     try {
-        sourceUserInfo = await ensureUserInfo( gridList.webURL, gridList.contextUserInfo.email );
+        sourceUserInfo = await ensureUserInfo( fetchList.webURL, fetchList.contextUserInfo.email );
     } catch (e) {
         errMessage = getHelpfullError(e, true, true);
     }
 
 
-    gridList.sourceUserInfo = sourceUserInfo;
+    fetchList.sourceUserInfo = sourceUserInfo;
     //lists.getById(listGUID).webs.orderBy("Title", true).get().then(function(result) {
     //let allItems : IGridItemInfo[] = await sp.web.webs.get();
 
 
 
-    let thisListWeb = Web(gridList.webURL);
-    let selColumns = gridList.selectColumnsStr;
-    let expandThese = gridList.expandColumnsStr;
-    let staticCols = gridList.staticColumns.length > 0 ? gridList.staticColumns.join(',') : '';
-    let selectCols = gridList.minDataDownload === true ?  staticCols :  '*,' + staticCols;
+    let thisListWeb = Web(fetchList.webURL);
+    let selColumns = fetchList.selectColumnsStr;
+    let expandThese = fetchList.expandColumnsStr;
+    let staticCols = fetchList.staticColumns.length > 0 ? fetchList.staticColumns.join(',') : '';
+    let selectCols = fetchList.minDataDownload === true ?  staticCols :  '*,' + staticCols;
 
-    let thisListObject = thisListWeb.lists.getByTitle(gridList.title);
+    let thisListObject = thisListWeb.lists.getByTitle(fetchList.title);
 
     /**
      * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
      */
 
     try {
-        let fetchCount = gridList.fetchCount > 0 ? gridList.fetchCount : 200;
-        if ( gridList.restFilter.length > 1 ) {
-            allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(fetchCount).filter(gridList.restFilter).get();
+        let fetchCount = fetchList.fetchCount > 0 ? fetchList.fetchCount : 200;
+        if ( fetchList.restFilter.length > 1 ) {
+            allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(fetchCount).filter(fetchList.restFilter).get();
         } else {
             allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(fetchCount).get();
         }
@@ -268,19 +268,19 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
      */
     allItems.map( i => {
         //Add all date field objects
-        gridList.expandDates.map( d => {
+        fetchList.expandDates.map( d => {
             i['time' + d] = makeTheTimeObject(i[d]);
         });
 
         //Add Meta tags
-        i.meta = buildMetaFromItem( i, gridList );
+        i.meta = buildMetaFromItem( i, fetchList );
         
         //Add Search string
-        i.searchString = buildSearchStringFromItem( i, gridList );
+        i.searchString = buildSearchStringFromItem( i, fetchList );
     });
 
-    //private addTheseItemsToState( gridList: IGridList, allItems , errMessage : string ) {
-    allItems = addTheseItemsToState( gridList, allItems, errMessage );
+    //private addTheseItemsToState( fetchList: IGridList, allItems , errMessage : string ) {
+    allItems = addTheseItemsToState( fetchList, allItems, errMessage );
 
 }
 
@@ -300,10 +300,10 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
 //                                                                                     
 //     
 
-function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
+function buildMetaFromItem( theItem: IGridItemInfo, fetchList: IGridList, ) {
     let meta: string[] = ['All'];
 
-    gridList.metaColumns.map( c=> {
+    fetchList.metaColumns.map( c=> {
         if ( c.indexOf('/') > -1 ) { 
             let cols = c.split('/');
             //console.log( 'theItem', theItem);
@@ -321,10 +321,10 @@ function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
         
     });
 
-    gridList.dropdownColumns.map( ( col , colIndex ) => {
+    fetchList.dropdownColumns.map( ( col , colIndex ) => {
 
         let actualColName = col.replace('>', '' ).replace('+', '' ).replace('-', '' );
-        let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? gridList.dropdownColumns[colIndex - 1] : null;
+        let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? fetchList.dropdownColumns[colIndex - 1] : null;
         parentColName = parentColName !== null ? parentColName.replace('>', '' ).replace('+', '' ).replace('-', '' ) : null;
 
         let thisItemsChoices = theItem[ actualColName ];
@@ -346,7 +346,7 @@ function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
 //                                                                                                 
 //         
 
-function buildSearchStringFromItem ( theItem: IGridItemInfo, gridList: IGridList, ) {
+function buildSearchStringFromItem ( theItem: IGridItemInfo, fetchList: IGridList, ) {
 
     let result = '';
     let delim = '|||';
@@ -354,7 +354,7 @@ function buildSearchStringFromItem ( theItem: IGridItemInfo, gridList: IGridList
     if ( theItem.Title ) { result += 'Title=' + theItem.Title + delim ; }
     if ( theItem.Id ) { result += 'Id=' + theItem.Id + delim ; }
 
-    gridList.searchColumns.map( c => {
+    fetchList.searchColumns.map( c => {
         let thisCol = c.replace('/','');
         if ( c.indexOf('/') > -1 ) { 
             let cols = c.split('/');
@@ -373,7 +373,7 @@ function buildSearchStringFromItem ( theItem: IGridItemInfo, gridList: IGridList
      * if ( theItem['odata.type'] ) { result += theItem['odata.type'] + delim ; }
      * 
      */
-    gridList.odataSearch.map( odata => {
+    fetchList.odataSearch.map( odata => {
         if ( theItem[ odata ] ) { result += theItem[ odata ] + delim ; }
     });
 

@@ -50,6 +50,12 @@ import { ICSSChartSeries,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfac
  * 
  */
 
+export interface IPerformanceSettings {
+    fetchCount: number;
+    fetchCountMobile: number;
+    restFilter: string;
+    minDataDownload: boolean;
+}
 
 export type IScaleMethod = 'slider' | 'blink' | 'pivot' | 'other' | 'na' | 'TBD';
 
@@ -94,12 +100,7 @@ export interface IGridchartsProps {
   
       scaleMethod: IScaleMethod;
 
-      performance: {
-          fetchCount: number;
-          fetchCountMobile: number;
-          restFilter: string;
-          minDataDownload: boolean;
-      };
+      performance: IPerformanceSettings;
   
       parentListFieldTitles: string;
   
