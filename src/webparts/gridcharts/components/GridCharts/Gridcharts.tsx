@@ -47,6 +47,9 @@ import { IPickedWebBasic, IPickedList, IMyProgress,
 IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
 } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
 
+
+import { getExpandColumns, getSelectColumns, IPerformanceSettings, createFetchList, IZBasicList, } from '@mikezimm/npmfunctions/dist/getFunctions';
+
 /**
  * 
  * 
@@ -72,7 +75,7 @@ import * as links from '../HelpInfo/AllLinks';
 
 import { createSlider, createChoiceSlider } from '../fields/sliderFieldBuilder';
 
-import { createGridList, getAllItems, IGridList } from './GetListData';
+import {getAllItems, IGridList } from './GetListData';
 
 
 /**
@@ -191,7 +194,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let dropDownColumns: string[] = this.props.dropDownColumns;
         let searchColumns : string[] = this.props.searchColumns;
         let metaColumns : string[] = this.props.metaColumns;
-        let expandDates : string[] = [this.props.dateColumn, 'Created', 'Modified'];
+        let expandDates : string[] = [this.props.dateColumn];
         let selectedDropdowns: string[] = [];
         allColumns.push( this.props.dateColumn );
         allColumns.push( this.props.valueColumn );
@@ -203,8 +206,13 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); selectedDropdowns.push('') ; });
 
+        let basicList : IZBasicList = createFetchList( this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates );
+        //Have to do this to add dropDownColumns and dropDownSort to IZBasicList
+        let tempList : any = basicList;
+        tempList.dropDownColumns = dropDownColumns;
+        tempList.dropDownSort = dropDownSort;
+        let fetchList : IGridList = tempList;
 
-        let fetchList = createGridList( this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
         /**
          * Add this at this point to be able to search on specific odata types
          * fetchList.odataSearch = ['odata.type'];
@@ -376,7 +384,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         let dropDownColumns: string[] = this.props.dropDownColumns;
         let searchColumns : string[] = this.props.searchColumns;
         let metaColumns : string[] = this.props.metaColumns;
-        let expandDates : string[] = [this.props.dateColumn, 'Created', 'Modified'];
+        let expandDates : string[] = [this.props.dateColumn];
         
         allColumns.push( this.props.dateColumn );
         allColumns.push( this.props.valueColumn );
@@ -388,7 +396,12 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
         dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); });
 
-        let fetchList = createGridList(this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates, dropDownColumns, dropDownSort );
+        let basicList : IZBasicList = createFetchList( this.props.parentListWeb, null, this.props.parentListTitle, null, null, this.props.performance, this.props.pageContext, allColumns, searchColumns, metaColumns, expandDates );
+        //Have to do this to add dropDownColumns and dropDownSort to IZBasicList
+        let tempList : any = basicList;
+        tempList.dropDownColumns = dropDownColumns;
+        tempList.dropDownSort = dropDownSort;
+        let fetchList : IGridList = tempList;
 
         getAllItems( fetchList, this.addTheseItemsToState.bind(this), null, null );
         
