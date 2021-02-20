@@ -17,7 +17,7 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "GridCharts-TMT" },
+    "title": { "default": "GridCharts-TMT (Beta Testing)" },
     "description": { "default": "Show list data as HeatMap of TMT by day of week.  Mimics Github Contributor chart" },
     "officeFabricIconFontName": "ScatterChart",
     "properties": {
@@ -44,7 +44,7 @@
   {
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "GridCharts-Documents" },
+    "title": { "default": "GridCharts-Documents (Beta Testing)" },
     "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart" },
     "officeFabricIconFontName": "ScatterChart",
     "properties": {
@@ -71,7 +71,7 @@
   {
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "GridCharts-ACH Turnover" },
+    "title": { "default": "GridCharts-ACH Turnover (Beta Testing)" },
     "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart" },
     "officeFabricIconFontName": "ScatterChart",
     "properties": {

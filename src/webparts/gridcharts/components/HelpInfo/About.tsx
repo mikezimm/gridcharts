@@ -131,6 +131,7 @@ public constructor(props:IInfoAboutMeProps){
                 {/* 3 files to update version number:  package-solution.json, package-lock.json, package.json*/}
                 <table className={styles.infoTable}>
                     <tr><th>Date</th><th>Version</th><th>Focus</th><th>Notes</th></tr>
+                    <tr><td>2021-02-14</td><td>{'1.0.1.3'}</td><td>Add pre-config for Turnover</td><td></td></tr>
                     <tr><td>2021-02-14</td><td>{'1.0.1.2'}</td><td>Add custom colors</td><td></td></tr>
                     <tr><td>2021-02-09</td><td>{'1.0.1.1'}</td><td>Fix default WebURL</td><td>Correctly picks current site.  Allows /sites/ or entire Url</td></tr>
                     <tr><td>2021-02-09</td><td>{'1.0.1.0'}</td><td>Dropdowns, slider work</td><td>Month scale does not slide though</td></tr>
