@@ -82,6 +82,7 @@ export interface IGridchartsWebPartProps {
     parentListTitle: string;
     parentListName: string;
     parentListWeb: string;
+    fetchListFieldTitles: string;
 
     dateColumn: string;
     monthGap: string;
@@ -313,6 +314,29 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
   }
 
 
+  private async UpdateTitles(): Promise<boolean> {
+
+    let listName = this.properties.parentListTitle ? this.properties.parentListTitle : 'ParentListTitle';
+    const list = sp.web.lists.getByTitle(listName);
+    const r = await list.fields();
+
+    //2020-05-13:  Remove Active since it's replaced with StatusTMT which is not applicable here
+    let defFields = ["Title","Author","Editor","Created","Modified"];
+    let filterFields=["SSChoice1","SSChoiceA","MSChoice2","MSChoiceB"];
+    let allFields = defFields.concat(filterFields);
+
+    let fieldTitles = r.filter(f => f.Hidden !== true && allFields.indexOf(f.StaticName) > -1).map( 
+      f => {return [f.StaticName,f.Title,f.Description,f.Required,f.FieldTypeKind];});
+    
+    //Update properties here:
+    this.properties.fetchListFieldTitles = JSON.stringify(fieldTitles);
+
+    console.log('list fields: ', r);
+    console.log('fieldTitles: ', fieldTitles);
+    
+    return true;
+
+  } 
 
   /***
   *         d8888b. d8888b.  .d88b.  d8888b.      d8888b.  .d8b.  d8b   db d88888b 
