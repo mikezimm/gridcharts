@@ -1,9 +1,12 @@
-/**
- * 
- * 
- * Official Community Imports
- * 
- * 
+/***
+ *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b       .d88b.  d88888b d88888b d888888b  .o88b. d888888b  .d8b.  db      
+ *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      .8P  Y8. 88'     88'       `88'   d8P  Y8   `88'   d8' `8b 88      
+ *       88    88  88  88 88oodD' 88    88 88oobY'    88         88    88 88ooo   88ooo      88    8P         88    88ooo88 88      
+ *       88    88  88  88 88~~~   88    88 88`8b      88         88    88 88~~~   88~~~      88    8b         88    88~~~88 88      
+ *      .88.   88  88  88 88      `8b  d8' 88 `88.    88         `8b  d8' 88      88        .88.   Y8b  d8   .88.   88   88 88booo. 
+ *    Y888888P YP  YP  YP 88       `Y88P'  88   YD    YP          `Y88P'  YP      YP      Y888888P  `Y88P' Y888888P YP   YP Y88888P 
+ *                                                                                                                                  
+ *                                                                                                                                  
  */
 
 import * as React from 'react';
@@ -29,16 +32,19 @@ import {
 
 import { IGrid } from 'office-ui-fabric-react';
 
-/**
- * 
- * 
- * @mikezimm/npmfunctions/dist/ Imports
- * 
- * 
+/***
+ *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      d8b   db d8888b. .88b  d88.      d88888b db    db d8b   db  .o88b. d888888b d888888b  .d88b.  d8b   db .d8888. 
+ *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      888o  88 88  `8D 88'YbdP`88      88'     88    88 888o  88 d8P  Y8 `~~88~~'   `88'   .8P  Y8. 888o  88 88'  YP 
+ *       88    88  88  88 88oodD' 88    88 88oobY'    88         88V8o 88 88oodD' 88  88  88      88ooo   88    88 88V8o 88 8P         88       88    88    88 88V8o 88 `8bo.   
+ *       88    88  88  88 88~~~   88    88 88`8b      88         88 V8o88 88~~~   88  88  88      88~~~   88    88 88 V8o88 8b         88       88    88    88 88 V8o88   `Y8b. 
+ *      .88.   88  88  88 88      `8b  d8' 88 `88.    88         88  V888 88      88  88  88      88      88b  d88 88  V888 Y8b  d8    88      .88.   `8b  d8' 88  V888 db   8D 
+ *    Y888888P YP  YP  YP 88       `Y88P'  88   YD    YP         VP   V8P 88      YP  YP  YP      YP      ~Y8888P' VP   V8P  `Y88P'    YP    Y888888P  `Y88P'  VP   V8P `8888Y' 
+ *                                                                                                                                                                              
+ *                                                                                                                                                                              
  */
 
 import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-  getNicks, makeTheTimeObject, makeSmallTimeObject, ISO8601_week_no, getTimeDelta, monthStr3, monthStr, weekday3, msPerDay} from '@mikezimm/npmfunctions/dist/dateServices';
+  getNicks, makeTheTimeObject, makeSmallTimeObject, ISO8601_week_no, getTimeDelta, monthStr3, monthStr, weekday3, msPerDay, getOffSetDayOfWeek, getYearMonthLabel, getYearWeekLabel} from '@mikezimm/npmfunctions/dist/dateServices';
 
 
 import { sortObjectArrayByStringKey, doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
@@ -50,22 +56,29 @@ IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
 
 import { getExpandColumns, getSelectColumns, IPerformanceSettings, createFetchList, IZBasicList, } from '@mikezimm/npmfunctions/dist/getFunctions';
 
-/**
- * 
- * 
- * Services Imports
- * 
- * 
+/***
+ *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 
+ *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      88'  YP 88'     88  `8D 88    88   `88'   d8P  Y8 88'     88'  YP 
+ *       88    88  88  88 88oodD' 88    88 88oobY'    88         `8bo.   88ooooo 88oobY' Y8    8P    88    8P      88ooooo `8bo.   
+ *       88    88  88  88 88~~~   88    88 88`8b      88           `Y8b. 88~~~~~ 88`8b   `8b  d8'    88    8b      88~~~~~   `Y8b. 
+ *      .88.   88  88  88 88      `8b  d8' 88 `88.    88         db   8D 88.     88 `88.  `8bd8'    .88.   Y8b  d8 88.     db   8D 
+ *    Y888888P YP  YP  YP 88       `Y88P'  88   YD    YP         `8888Y' Y88888P 88   YD    YP    Y888888P  `Y88P' Y88888P `8888Y' 
+ *                                                                                                                                 
+ *                                                                                                                                 
  */
 
 import { saveTheTime, saveAnalytics, getTheCurrentTime } from '../../../../services/createAnalytics';
 
-/**
- * 
- * 
- * Helper Imports
- * 
- * 
+
+ /***
+ *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      db   db d88888b db      d8888b. d88888b d8888b. .d8888. 
+ *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      88   88 88'     88      88  `8D 88'     88  `8D 88'  YP 
+ *       88    88  88  88 88oodD' 88    88 88oobY'    88         88ooo88 88ooooo 88      88oodD' 88ooooo 88oobY' `8bo.   
+ *       88    88  88  88 88~~~   88    88 88`8b      88         88~~~88 88~~~~~ 88      88~~~   88~~~~~ 88`8b     `Y8b. 
+ *      .88.   88  88  88 88      `8b  d8' 88 `88.    88         88   88 88.     88booo. 88      88.     88 `88. db   8D 
+ *    Y888888P YP  YP  YP 88       `Y88P'  88   YD    YP         YP   YP Y88888P Y88888P 88      Y88888P 88   YD `8888Y' 
+ *                                                                                                                       
+ *                                                                                                                       
  */
 
 import InfoPage from '../HelpInfo/infoPages';
@@ -78,17 +91,33 @@ import { createSlider, createChoiceSlider } from '../fields/sliderFieldBuilder';
 import {getAllItems, IGridList } from './GetListData';
 
 
-/**
- * 
- * This Component Imports
- * 
- * 
+
+ /***
+ *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b       .o88b.  .d88b.  .88b  d88. d8888b.  .d88b.  d8b   db d88888b d8b   db d888888b 
+ *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      d8P  Y8 .8P  Y8. 88'YbdP`88 88  `8D .8P  Y8. 888o  88 88'     888o  88 `~~88~~' 
+ *       88    88  88  88 88oodD' 88    88 88oobY'    88         8P      88    88 88  88  88 88oodD' 88    88 88V8o 88 88ooooo 88V8o 88    88    
+ *       88    88  88  88 88~~~   88    88 88`8b      88         8b      88    88 88  88  88 88~~~   88    88 88 V8o88 88~~~~~ 88 V8o88    88    
+ *      .88.   88  88  88 88      `8b  d8' 88 `88.    88         Y8b  d8 `8b  d8' 88  88  88 88      `8b  d8' 88  V888 88.     88  V888    88    
+ *    Y888888P YP  YP  YP 88       `Y88P'  88   YD    YP          `Y88P'  `Y88P'  YP  YP  YP 88       `Y88P'  VP   V8P Y88888P VP   V8P    YP    
+ *                                                                                                                                               
+ *                                                                                                                                               
  */
 
 import styles from './Gridcharts.module.scss';
 import { IGridchartsProps } from './IGridchartsProps';
 import { IGridchartsState, IGridchartsData, IGridchartsDataPoint, IGridItemInfo, ITimeScale } from './IGridchartsState';
 
+
+/***
+ *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
+ *    88'     `8b  d8' 88  `8D .8P  Y8. 88  `8D `~~88~~'        `88'   888o  88 `~~88~~' 88'     88  `8D 88'     d8' `8b d8P  Y8 88'     88'  YP 
+ *    88ooooo  `8bd8'  88oodD' 88    88 88oobY'    88            88    88V8o 88    88    88ooooo 88oobY' 88ooo   88ooo88 8P      88ooooo `8bo.   
+ *    88~~~~~  .dPYb.  88~~~   88    88 88`8b      88            88    88 V8o88    88    88~~~~~ 88`8b   88~~~   88~~~88 8b      88~~~~~   `Y8b. 
+ *    88.     .8P  Y8. 88      `8b  d8' 88 `88.    88           .88.   88  V888    88    88.     88 `88. 88      88   88 Y8b  d8 88.     db   8D 
+ *    Y88888P YP    YP 88       `Y88P'  88   YD    YP         Y888888P VP   V8P    YP    Y88888P 88   YD YP      YP   YP  `Y88P' Y88888P `8888Y' 
+ *                                                                                                                                               
+ *                                                                                                                                               
+ */
 
 
 /**
@@ -258,6 +287,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           total: null,
           count: 0,
           leadingBlanks: 0,
+
+          maxValue: null,
+          minValue: null,
 
         };
 
@@ -486,6 +518,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     if ( this.state.allLoaded === true ) {
 
+      console.log('gridData Render:', this.state.gridData );
       /**
        * These loops add leading squares and must be before pushing actual data
        */
@@ -1112,45 +1145,6 @@ private _updateChoiceSlider(newValue: number){
  *                                                                                                                          
  */
 
-    //This will be in npmfunctions in v.0.0.5
-    private getOffSetDayOfWeek ( d : string, day: number, which: 'prior' | 'next' ) {
-      //First get current day number of week
-      let theDate = new Date( d );
-      let dayOfWeek = theDate.getDay();
-      if ( dayOfWeek === day ) {
-        return theDate; 
-
-      } else {
-        let deltaDays = which === 'prior' ? -dayOfWeek :  7 - dayOfWeek ;
-        let deltaMS = deltaDays * msPerDay;
-        let adjustedTime = theDate.getTime() + deltaMS;
-        let adjustedDate = new Date( adjustedTime );
-
-        return adjustedDate;
-      }
-  } 
-
-  private getYearMonthLabel ( theDate : Date ) {
-
-    let year = theDate.getFullYear();
-    let month = theDate.getMonth();
-    let monthNo = ( month + 1 ).toString();
-    let monthLabel : any = year + ' : ' + monthNo + '-' + monthStr3["en-us"][month];
-
-    return monthLabel;
-
-  }
-
-  private getYearWeekLabel ( theDate : Date ) {
-
-    let year = theDate.getFullYear();
-    let weekNo = ISO8601_week_no(theDate).toString();
-    if ( weekNo.length === 1 ) { weekNo = "0" + weekNo; }
-    let weekLabel : any = year + ' :  w' + weekNo ;
-    return weekLabel;
-
-  }
-
   private buildGridData ( fetchList: IGridList, allItems : IGridItemInfo[] ) {
     
     let count = allItems.length;
@@ -1192,15 +1186,15 @@ private _updateChoiceSlider(newValue: number){
     });
 
     let startDate = new Date( firstDate );
-    // let gridStart = this.getOffSetDayOfWeek( firstDate, 7, 'prior' ); //This gets prior sunday
+    // let gridStart = getOffSetDayOfWeek( firstDate, 7, 'prior' ); //This gets prior sunday
     let gridStart  = new Date( startDate.getFullYear(), startDate.getMonth() , 1 ); //First day of this month
 
-    let priorSundayStart = this.getOffSetDayOfWeek( gridStart.toDateString(), 7, 'prior' ); //This gets prior sunday
+    let priorSundayStart = getOffSetDayOfWeek( gridStart.toDateString(), 7, 'prior' ); //This gets prior sunday
     
     let leadingBlanks = getTimeDelta( priorSundayStart, gridStart, 'days' ) + 1; //Days gives full days but not difference between dates so I'm taking away 1 day.
 
     gridStart.setHours(0,0,0,0);
-    let endDate = this.getOffSetDayOfWeek( lastDate, 7, 'next' );
+    let endDate = getOffSetDayOfWeek( lastDate, 7, 'next' );
     endDate.setHours(0,0,0,0);
 
     // Last day of current month: https://stackoverflow.com/a/222439
@@ -1211,8 +1205,8 @@ private _updateChoiceSlider(newValue: number){
       allDateStringArray.push( d.toLocaleDateString() ) ;
 
       let thisYear = d.getFullYear();
-      let yearMonth : any = this.getYearMonthLabel(d);
-      let yearWeek : any = this.getYearWeekLabel(d);
+      let yearMonth : any = getYearMonthLabel(d);
+      let yearWeek : any = getYearWeekLabel(d);
 
       if (  allYearsStringArray.indexOf( thisYear.toString() ) < 0 ) {  allYearsStringArray.push( thisYear.toString() ) ; }
       if (  allMonthsStringArray.indexOf( yearMonth ) < 0 ) {  allMonthsStringArray.push( yearMonth ) ; }
@@ -1233,8 +1227,8 @@ private _updateChoiceSlider(newValue: number){
         week: null,
         month: theDate.getMonth(),
         year: theDate.getFullYear(),
-        yearMonth: this.getYearMonthLabel( theDate ),
-        yearWeek: this.getYearWeekLabel( theDate ),
+        yearMonth: getYearMonthLabel( theDate ),
+        yearWeek: getYearWeekLabel( theDate ),
 
         yearIndex: null,
         yearMonthIndex: null,
@@ -1278,8 +1272,8 @@ private _updateChoiceSlider(newValue: number){
       item.month = itemDateProp.month;
       item.year = itemDateProp.year;
       
-      let yearMonth : any =this.getYearMonthLabel( itemDateDate ) ;
-      let yearWeek : any = this.getYearWeekLabel( itemDateDate ) ;
+      let yearMonth : any =getYearMonthLabel( itemDateDate ) ;
+      let yearWeek : any = getYearWeekLabel( itemDateDate ) ;
 
       item.yearMonth = yearMonth;
       item.yearWeek = yearWeek;
@@ -1372,6 +1366,8 @@ private _updateChoiceSlider(newValue: number){
       visibleDateArray: [],
       visibleDateStringArray: [],
       visibleWeeks: 0,
+      maxValue: maxValue,
+      minValue: minValue,
 
     };
 

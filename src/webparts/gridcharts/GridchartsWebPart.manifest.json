@@ -17,8 +17,8 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "GridCharts-TMT (Beta Testing)" },
-    "description": { "default": "Show list data as HeatMap of TMT by day of week.  Mimics Github Contributor chart" },
+    "title": { "default": "FPS GridCharts-TMT (Beta Testing)" },
+    "description": { "default": "Show list data as HeatMap of TMT by day of week.  Mimics Github Contributor chart.  By Fuzzy Paws Solutions" },
     "officeFabricIconFontName": "ScatterChart",
     "properties": {
       "description": "GridCharts-TMT",
@@ -44,8 +44,8 @@
   {
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "GridCharts-Documents (Beta Testing)" },
-    "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart" },
+    "title": { "default": "FPS GridCharts-Documents (Beta Testing)" },
+    "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart.  By Fuzzy Paws Solutions" },
     "officeFabricIconFontName": "ScatterChart",
     "properties": {
       "description": "GridCharts-Documents",
@@ -71,8 +71,8 @@
   {
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
     "group": { "default": "Other" },
-    "title": { "default": "GridCharts-ACH Turnover (Beta Testing)" },
-    "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart" },
+    "title": { "default": "FPS GridCharts-ACH Turnover (Beta Testing)" },
+    "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart.  By Fuzzy Paws Solutions" },
     "officeFabricIconFontName": "ScatterChart",
     "properties": {
       "description": "GridCharts-ACH Turnover",
@@ -93,6 +93,33 @@
       "fetchCount": 5000,
       "enableSearch": true,
       "dropDownColumns": "+zzzChoice1,+zzzItemCategory"
+    }
+  },
+  {
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
+    "group": { "default": "Other" },
+    "title": { "default": "FPS GridCharts-ttpGrid Testing" },
+    "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart.  By Fuzzy Paws Solutions" },
+    "officeFabricIconFontName": "ScatterChart",
+    "properties": {
+      "description": "GridCharts-TTPGrid",
+      "parentListWeb": "/sites/Templates/Brasov",
+      "parentListTitle": "ttpGrid",
+
+      "dateColumn": "TheDate",
+      "monthGap": "0",
+      "squareCustom": "black,pink,red,pink,yellow",
+      "cellColor": "green",
+
+      "valueColumn": "Id",
+      "valueType": "Number",
+      "valueOperator": "Count",
+      "minDataDownload": true,
+      "showEarlyAccess": true,
+      "scaleMethod": "blink",
+      "fetchCount": 5000,
+      "enableSearch": true,
+      "dropDownColumns": "+Author/Title,+Message"
     }
   }]
 }

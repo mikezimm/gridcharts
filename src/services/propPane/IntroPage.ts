@@ -305,7 +305,7 @@ export class IntroPage {
 
           //squareCustom
           PropertyPaneTextField('squareCustom', {
-            label: 'Must be 4 colors , separated',
+            label: 'Must be 5 colors , separated',
             disabled: webPartProps.cellColor === 'custom' ? false : true,
             description: 'Empty/Gap,Level1,Level2,Level3',
           }),
