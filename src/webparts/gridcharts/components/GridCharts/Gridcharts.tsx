@@ -1288,6 +1288,7 @@ private _updateChoiceSlider(newValue: number){
 
       item.searchString += 'yearMonth=' + item.yearMonth + '|||' + 'yearWeek=' + item.yearWeek + '|||' + 'year=' + item.year + '|||' + 'week=' + item.week + '|||';
 
+      //Copied section from GridCharts VVVV
       let valueColumn = item[ this.props.valueColumn ];
       let valueType = typeof valueColumn;
 
@@ -1297,7 +1298,8 @@ private _updateChoiceSlider(newValue: number){
       else if ( valueType === 'object' ) { valueColumn = 0 ; }
       else if ( valueType === 'undefined' ) { valueColumn = 0 ; }
       else if ( valueType === 'function' ) { valueColumn = 0 ; }
-
+      //Copied section from GridCharts ^^^^
+      
       allDataPoints[dateIndex].items.push( item );
       allDataPoints[dateIndex].values.push( valueColumn );
       allDataPoints[dateIndex].valuesString.push( valueColumn.toFixed(2) );
