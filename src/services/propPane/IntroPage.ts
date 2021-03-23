@@ -84,7 +84,6 @@ export class IntroPage {
 
     if ( webPartProps.sites && webPartProps.sites.length > 0 && webPartProps.sites[0].url && webPartProps.sites[0].url.length > 0 ) { webAbsoluteUrl = webPartProps.sites[0].url ; }
     let selectedUrl = "Site Url: " + webAbsoluteUrl.slice(webAbsoluteUrl.indexOf('/sites/'));
-
     
     let sourceListTextFields : any[] = makePropDataText( ['parentListWeb', 'parentListTitle', 'dateColumn', 'valueColumn' ]  );
 
@@ -112,7 +111,7 @@ export class IntroPage {
       },
       displayGroupsAsAccordion: true,
       groups: [
-        WebPartInfoGroup( links.gitRepoCarrotCharts, `<h4>This webpart looks at data in a whole new way.</h4>
+        WebPartInfoGroup( links.gitRepoGridCharts, `<h4>This webpart looks at data in a whole new way.</h4>
         <p>Use it to show relative magnitudes of data over a period of days.</p>`),
 
         //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 VVVVVVV
