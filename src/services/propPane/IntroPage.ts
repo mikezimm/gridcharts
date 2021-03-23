@@ -12,7 +12,7 @@ import * as strings from 'GridchartsWebPartStrings';
 import { pivotOptionsGroup} from './index';
 import { gridChartsOptionsGroup } from './index';
 
-import * as links from '../../webparts/gridcharts/components/HelpInfo/AllLinks';   //              { links.gitRepoTrackMyTime.issues }
+import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';
 
 import { IGridchartsWebPartProps } from '../../webparts/gridcharts/GridchartsWebPart';
 

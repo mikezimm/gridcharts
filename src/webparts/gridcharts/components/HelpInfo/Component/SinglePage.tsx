@@ -1,32 +1,14 @@
 import * as React from 'react';
 
-import * as strings from 'GridchartsWebPartStrings';
-
-import * as links from './AllLinks';
-
-import { Link, ILinkProps } from 'office-ui-fabric-react';
-import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
-import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
-
-import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
-import { IGridchartsState } from '../GridCharts/IGridchartsState';
 import styles from './InfoPane.module.scss';
 
-export interface IWebPartLinksProps {
-    parentListURL: string; //Get from list item
-    childListURL?: string; //Get from list item
-  
-    parentListName: string;  // Static Name of list (for URL) - used for links and determined by first returned item
-    childListName?: string;  // Static Name of list (for URL) - used for links and determined by first returned item
+import { IHelpTableRow, IHelpTable, IPageContent, ISinglePageProps } from './ISinglePageProps';
+//Moved these to npmFunctions 
 
+export interface ISinglePageState {
 }
 
-export interface IWebPartLinksState {
-    selectedChoice: string;
-    lastChoice: string;
-}
-
-export default class WebPartLinks extends React.Component<IWebPartLinksProps, IWebPartLinksState> {
+export default class SinglePage extends React.Component<ISinglePageProps, ISinglePageState> {
 
 
 /***
@@ -40,25 +22,14 @@ export default class WebPartLinks extends React.Component<IWebPartLinksProps, IW
  *                                                                                                       
  */
 
-public constructor(props:IWebPartLinksProps){
+public constructor(props:ISinglePageProps){
     super(props);
     this.state = { 
-        selectedChoice: 'About',
-        lastChoice: '',
-
     };
-
-    // because our event handler needs access to the component, bind 
-    //  the component to the function so it can get access to the
-    //  components properties (this.props)... otherwise "this" is undefined
-    // this.onLinkClick = this.onLinkClick.bind(this);
-
-    
   }
 
 
   public componentDidMount() {
-    
   }
 
 
@@ -74,14 +45,6 @@ public constructor(props:IWebPartLinksProps){
  */
 
   public componentDidUpdate(prevProps){
-
-    let rebuildTiles = false;
-    /*
-    if (rebuildTiles === true) {
-      this._updateStateOnPropsChange({});
-    }
-    */
-
   }
 
 /***
@@ -95,8 +58,10 @@ public constructor(props:IWebPartLinksProps){
  *                                                          
  */
 
-    public render(): React.ReactElement<IWebPartLinksProps> {
+    public render(): React.ReactElement<ISinglePageProps> {
 
+        if ( this.props.allLoaded && this.props.showInfo ) {
+            console.log('SinglePage.tsx', this.props, this.state);
 
 /***
  *              d888888b db   db d888888b .d8888.      d8888b.  .d8b.   d888b  d88888b 
@@ -105,27 +70,38 @@ public constructor(props:IWebPartLinksProps){
  *                 88    88~~~88    88      `Y8b.      88~~~   88~~~88 88  ooo 88~~~~~ 
  *                 88    88   88   .88.   db   8D      88      88   88 88. ~8~ 88.     
  *                 YP    YP   YP Y888888P `8888Y'      88      YP   YP  Y888P  Y88888P 
- *                                                                                     
- *                                                                                     
+ *
+ *
  */
-            
-            const stackTokensBody: IStackTokens = { childrenGap: 20 };
 
-            let thisPage = null;
+            let thisTable = null;
+            let propsTable = this.props.content.table;
+            if ( propsTable && propsTable.rows.length > 0 ) {
 
-            thisPage = <div>
-                <Stack horizontal={true} wrap={true} horizontalAlign={"stretch"} tokens={stackTokensBody}>
-                    <div><b>Your Lists:</b></div>
-                    { links.createLink(this.props.parentListURL,'_blank', this.props.parentListName ) }
-                    { links.createLink(this.props.childListURL,'_blank', this.props.childListName ) }
-                    <div></div>
-                    <div><b>Webpart info on Github:</b></div>
-                    { links.gitRepoTrackMyTime.repo }
-                    { links.gitRepoTrackMyTime.issues }
-                    { links.gitRepoTrackMyTime.wiki }
-                </Stack>
+                let heading = propsTable.heading ? <h2> { propsTable.heading } </h2> : null;
 
-            </div>;
+                let tableHeaders = propsTable.headers.map( header => {
+                    return <th>{ header }</th>;
+                });
+
+                let tableRows = propsTable.rows.map( row => {
+                    let cells = row.map( cell => {
+                        let style = null;
+                        if ( cell['style'] ) { style = cell['style'];}
+                        return <td style={ style }>{ cell['style'] ? cell['info'] : cell } </td>;
+                    });
+                    return <tr>{ cells }</tr>;
+                });
+
+                thisTable = <div>
+                    { heading }
+                    <table className={styles.infoTable}>
+                        { tableHeaders }
+                        { tableRows }
+                    </table>
+                </div>;
+
+            }
 
 /***
  *              d8888b. d88888b d888888b db    db d8888b. d8b   db 
@@ -134,14 +110,22 @@ public constructor(props:IWebPartLinksProps){
  *              88`8b   88~~~~~    88    88    88 88`8b   88 V8o88 
  *              88 `88. 88.        88    88b  d88 88 `88. 88  V888 
  *              88   YD Y88888P    YP    ~Y8888P' 88   YD VP   V8P 
- *                                                                 
- *                                                                 
+ *
+ *
  */
 
             return (
-                <div>
-                    { thisPage }
+                <div className={ styles.infoPane } style={{ paddingTop: '10px'}}>
+                    { this.props.content.header }
+                    { this.props.content.html1 }
+                    { thisTable }
+                    { this.props.content.html2 }
+                    { this.props.content.footer }
                 </div>
             ); 
+        } else {
+            console.log('infoPages.tsx return null');
+            return ( null );
+        }
     }   //End Public Render
 }
