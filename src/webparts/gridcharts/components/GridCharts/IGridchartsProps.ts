@@ -19,10 +19,9 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
  * 
  */
 
-import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-  getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime} from '@mikezimm/npmfunctions/dist/dateServices';
+import { ITheTime} from '@mikezimm/npmfunctions/dist/Services/Time/Interfaces';
 
-import { ICSSChartSeries,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+import { ICSSChartSeries,  } from '@mikezimm/npmfunctions/dist/CSSCharts/ICSSCharts';
 
 /**
  * 

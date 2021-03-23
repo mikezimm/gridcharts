@@ -19,7 +19,7 @@ import { DateTimePicker, DateConvention, TimeConvention, TimeDisplayControlType 
  * 
  */
 
-import { IUser, ILink, IChartSeries, ICharNote,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+//import { IUser, ILink, IChartSeries, ICharNote,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
 
 /**
  * 

@@ -39,11 +39,11 @@ import { sp } from '@pnp/sp';
  *                                                                                                                                                                              
  */
 
-import { makeTheTimeObject } from '@mikezimm/npmfunctions/dist/dateServices';
+import { makeTheTimeObject } from '@mikezimm/npmfunctions/dist/Services/Time/timeObject';
 
-import { getAllItems } from '@mikezimm/npmfunctions/dist/PropPaneFunctions';
+import { getAllItems } from '@mikezimm/npmfunctions/dist/Services/PropPane/PPFunctions';
 
-import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 
@@ -550,18 +550,14 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
                       potentialValue = JSON.parse(potentialValue);
                     } else { potentialValue = [] ; }
 
-                    if ( thisWebPartProp === 'rules0' && potentialValue != null) {
-                      //rules0 was found in list item and so we should update rules0 in props.
-                      this.properties.rules0 = potentialValue;
-                    } else if ( thisWebPartProp === 'rules1' && potentialValue != null) {
-                      //rules0 was found in list item and so we should update rules0 in props.
-                      this.properties.rules1 = potentialValue;
-                    } else if ( thisWebPartProp === 'rules2' && potentialValue != null) {
-                      //rules0 was found in list item and so we should update rules0 in props.
-                      this.properties.rules2 = potentialValue;
-                    }
-                  } else {
-                    this.properties[thisWebPartProp] = '';
+                    this.properties[thisWebPartProp] = potentialValue;
+
+                  } else if ( this.properties[thisWebPartProp] !== potentialValue ) { //If values are different, then update
+                      if ( potentialValue === '') { //If value is intentionally empty string, do the update
+                        this.properties[thisWebPartProp] = potentialValue;
+                      } else {
+                        this.properties[thisWebPartProp] = potentialValue;
+                      }
                   }
                 }
               }

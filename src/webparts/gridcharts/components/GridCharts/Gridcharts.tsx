@@ -43,18 +43,18 @@ import { IGrid } from 'office-ui-fabric-react';
  *                                                                                                                                                                              
  */
 
-import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-  getNicks, makeTheTimeObject, makeSmallTimeObject, ISO8601_week_no, getTimeDelta, monthStr3, monthStr, weekday3, msPerDay, getOffSetDayOfWeek, getYearMonthLabel, getYearWeekLabel} from '@mikezimm/npmfunctions/dist/dateServices';
+import {  getOffSetDayOfWeek, getYearWeekLabel} from '@mikezimm/npmfunctions/dist/Services/Time/weeks';
 
+import { getYearMonthLabel } from '@mikezimm/npmfunctions/dist/Services/Time/getLabels';
 
-import { sortObjectArrayByStringKey, doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { monthStr3, } from '@mikezimm/npmfunctions/dist/Services/Time/monthLabels';
+import { weekday3 } from '@mikezimm/npmfunctions/dist/Services/Time/dayLabels';
 
-import { IPickedWebBasic, IPickedList, IMyProgress,
-IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons,
-} from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+import { getTimeDelta } from '@mikezimm/npmfunctions/dist/Services/Time/deltas';
 
+import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/Arrays/sorting';
 
-import { getExpandColumns, getSelectColumns, IPerformanceSettings, createFetchList, IZBasicList, } from '@mikezimm/npmfunctions/dist/getFunctions';
+import { getExpandColumns, getSelectColumns, IPerformanceSettings, createFetchList, IZBasicList, } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 

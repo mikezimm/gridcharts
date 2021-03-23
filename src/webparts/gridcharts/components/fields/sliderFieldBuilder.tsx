@@ -14,7 +14,7 @@ import { Slider, ISliderProps } from 'office-ui-fabric-react/lib/Slider';
  * 
  */
 
-import { IUser, ILink, IChartSeries, ICharNote,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+//import { IUser, ILink, IChartSeries, ICharNote,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
 
 /**
  * 
