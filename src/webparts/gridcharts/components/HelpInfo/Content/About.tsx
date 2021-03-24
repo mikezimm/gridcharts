@@ -11,6 +11,7 @@ export function aboutTable() {
         rows: [],
     };
 
+    table.rows.push( ['2021-02-14', '1.0.2.1',   <span>update to npmFunctions v1.0.16, add InfoPages</span> ] );
     table.rows.push( ['2021-02-14', '1.0.1.3',   <span>Add pre-config for Turnover</span> ] );
     table.rows.push( ['2021-02-14', '1.0.1.2',   <span>Add custom colors</span> ] );
     table.rows.push( ['2021-02-09', '1.0.1.1',   <span>Fix default WebURL. Correctly picks current site.  Allows /sites/ or entire Url</span> ] );
