@@ -523,6 +523,10 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let sliderTransform = null;
     let weekSliderMax = ( this.state.gridData.allDateArray.length -365 ) / 7 + 1;
+
+    //Add extra 'weeks' or spaces for each month's gaps
+    weekSliderMax += this.state.gridData.allMonthsStringArray.length * parseInt( this.props.monthGap );
+
     if ( weekSliderMax < 2 ) { weekSliderMax = 2 ; }
 
     const squares : any[] = [];
@@ -1124,6 +1128,7 @@ private _updateChoiceSlider(newValue: number){
         monthLables: monthLables,
         monthScales: monthScales,
         lastStateChange: 'searchForItems: ' + item,
+        sliderValueWeek: 0,
 
     });
 
