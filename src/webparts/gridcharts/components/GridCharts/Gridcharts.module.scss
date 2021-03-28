@@ -29,7 +29,9 @@
 
   .months {
     display: grid;
-//    grid-template-columns: 72px 72px 72px 90px 72px 72px 90px 72px 72px 90px 72px 90px;
+    //grid-auto-columns: 15px;
+    grid-gap: 3px;
+    grid-template-columns: repeat(52, 15px);
   }
 
   .days,

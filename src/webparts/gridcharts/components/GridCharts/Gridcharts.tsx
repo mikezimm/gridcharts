@@ -487,6 +487,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     let weekNoSliderMax = ( this.state.gridData.allWeekNosStringArray.length -365 );
     let monthSliderMax = ( this.state.gridData.allMonthsStringArray.length -365 );
 
+    let monthLabels = [];
+    let lastMonth = null;
     //transparent,#ebedf0,#c6e48b,#7bc96f,#196127   li, -1, 1, 2, 3
 
     let cellColor = this.props.gridStyles.cellColor;
@@ -549,6 +551,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       /**
        * This loop adds all the real squares to the mix
        */
+
+
       this.state.gridData.allDataPoints.map( ( d, index ) => {
         if ( this.props.scaleMethod === 'blink' && sliderValueWeek > 0 &&
             index < sliderValueWeek * 7 ) {
@@ -558,12 +562,27 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           //This will add 7 days of white spaces between months
           let fillerDays = this.props.monthGap === "2" ? 14 : this.props.monthGap === "1" ? 7 : 0 ;
           if ( fillerDays > 0 && index !== 0 && d.dateNo === 1 ) {
-
             for (let day = 0; day < fillerDays; day++) { //this works for regular leading blanks
               squares.push(<li data-level={ -1 } style={ dataLevelMinus1Style }></li>);
             }
           }
-          
+
+          if ( d.dayNo === 0 ) { //This is a sunday, update MonthLabels
+            if ( d.month !== lastMonth ) {
+              lastMonth = d.month;
+              if ( lastMonth !== null ) { //Add spacer weeks but Skip this on the first month
+                if ( fillerDays >= 7 ) { monthLabels.push( null ); }
+                if ( fillerDays >= 14 ) { monthLabels.push( null ); }
+              }
+              monthLabels.push( monthStr3["en-us"][ lastMonth ] );
+
+            } else {
+              monthLabels.push( null );
+            }
+          } else if ( index === 0 ) { //Add spacer if first day of range is not Sunday
+            //monthLabels.push( null );
+          }
+
           let thisStyle = null;
           if ( d.dataLevel === 0 ) { thisStyle = dataLevel0Style ; }
           else if ( d.dataLevel === 1 ) { thisStyle = dataLevel1Style ; }
@@ -712,7 +731,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
     const months : any[] = this.state.monthLables;
     const days : any[] = weekday3['en-us'];
 
-    const gridTemplateColumns : string = this.state.monthScales.map( v => 20*v*.9 + 'px').join( ' ');
+    //let fillerDays = this.props.monthGap === "2" ? 14 : this.props.monthGap === "1" ? 7 : 0 ;
+    let monthGap = parseInt( this.props.monthGap ) * 2;
+    const gridTemplateColumns : string = this.state.monthScales.map( v => 20* (v + monthGap ) *.9 + 'px').join( ' ');
 
     /**
      * Add early access bar
@@ -765,10 +786,15 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     }
 
-
+    /**
+     * months were:   monthLabels
+     *         <ul className={ styles.months } style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns, transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
+     * 
+     *                { months.map( m=> { return <li> { m } </li> ; }) }  
+     */
     let theGraph = <div className={styles.graph} style={{ width: '900px' }}>
-        <ul className={ styles.months } style={{ listStyleType: 'none', gridTemplateColumns: gridTemplateColumns, transform: sliderTransform, transition: 'transform .3s cubic-bezier(0, .52, 0, 1)' }}>
-          { months.map( m=> { return <li> { m } </li> ; }) }
+        <ul className={ styles.months } style={{ listStyleType: 'none', }}>
+          { monthLabels.map( m=> { return <li> { m } </li> ; }) }
         </ul>
         <ul className={styles.days} style={{ listStyleType: 'none' }}>
             { days.map( d=> { return <li> { d } </li> ; }) }
