@@ -553,7 +553,7 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
       /**
        * This loop adds all the real squares to the mix
        */
-
+      let pushSpacer = true;
 
       this.state.gridData.allDataPoints.map( ( d, index ) => {
         if ( this.props.scaleMethod === 'blink' && sliderValueWeek > 0 &&
@@ -571,26 +571,28 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
           if ( d.dayNo === 0 ) { //This is a sunday, update MonthLabels
             if ( d.month !== lastMonth ) {
-              lastMonth = d.month;
               if ( lastMonth !== null ) { //Add spacer weeks but Skip this on the first month
-                if ( fillerDays >= 7 ) { monthLabels.push( null ); }
-                if ( fillerDays >= 14 ) { monthLabels.push( null ); }
+                if ( fillerDays >= 7 ) { monthLabels.push( null ); yearLabels.push( null );}
+                if ( fillerDays >= 14 ) { monthLabels.push( null ); yearLabels.push( null ); }
               }
+              lastMonth = d.month;
               monthLabels.push( monthStr3["en-us"][ lastMonth ] );
 
             } else {
               monthLabels.push( null );
             }
-          } else if ( index === 0 ) { //Add spacer if first day of range is not Sunday
-            //monthLabels.push( null );
+          } else if ( pushSpacer === true ) { //Add spacer if first day of range is not Sunday
+            monthLabels.push( null );
+            yearLabels.push( null );
+            pushSpacer = false;
           }
 
           if ( d.dayNo === 0 ) { //This is a sunday, update MonthLabels
             if ( d.year !== lastYear ) {
               lastYear = d.year;
               if ( lastYear !== null ) { //Add spacer weeks but Skip this on the first month
-                if ( fillerDays >= 7 ) { yearLabels.push( null ); }
-                if ( fillerDays >= 14 ) { yearLabels.push( null ); }
+                //if ( fillerDays >= 7 ) { yearLabels.push( null ); }
+                //if ( fillerDays >= 14 ) { yearLabels.push( null ); }
               }
               yearLabels.push( d.year );
 
