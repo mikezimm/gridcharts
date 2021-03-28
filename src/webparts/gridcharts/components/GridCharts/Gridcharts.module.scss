@@ -14,17 +14,30 @@
     --week-width: calc(15px + var(5px));
   }
 */
-
+  .years { grid-area: years; }
   .months { grid-area: months; }
   .days { grid-area: days; }
   .squares { grid-area: squares; }
 
+
   .graph {
     display: inline-grid;
-    grid-template-areas: "empty months"
+    grid-template-areas: "empty years"
+                        "empty months"
                         "days squares";
+    grid-template-rows: 25px 25px auto ;
     grid-template-columns: auto 1fr;
-    grid-gap: 10px;
+    grid-column-gap: 10px;
+    grid-row-gap: 0px 10px;
+    column-gap: 10px;
+    row-gap: 0px 10px;
+  }
+
+  .years {
+    display: grid;
+    //grid-auto-columns: 15px;
+    grid-gap: 3px;
+    grid-template-columns: repeat(55, 15px);
   }
 
   .months {

@@ -489,6 +489,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
     let monthLabels = [];
     let lastMonth = null;
+    let yearLabels = [];
+    let lastYear = null;
     //transparent,#ebedf0,#c6e48b,#7bc96f,#196127   li, -1, 1, 2, 3
 
     let cellColor = this.props.gridStyles.cellColor;
@@ -582,6 +584,21 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           } else if ( index === 0 ) { //Add spacer if first day of range is not Sunday
             //monthLabels.push( null );
           }
+
+          if ( d.dayNo === 0 ) { //This is a sunday, update MonthLabels
+            if ( d.year !== lastYear ) {
+              lastYear = d.year;
+              if ( lastYear !== null ) { //Add spacer weeks but Skip this on the first month
+                if ( fillerDays >= 7 ) { yearLabels.push( null ); }
+                if ( fillerDays >= 14 ) { yearLabels.push( null ); }
+              }
+              yearLabels.push( d.year );
+
+            } else {
+              yearLabels.push( null );
+            }
+          }
+
 
           let thisStyle = null;
           if ( d.dataLevel === 0 ) { thisStyle = dataLevel0Style ; }
@@ -792,7 +809,12 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
      * 
      *                { months.map( m=> { return <li> { m } </li> ; }) }  
      */
+
+    console.log( 'yearLabels: ', yearLabels );
     let theGraph = <div className={styles.graph} style={{ width: '900px' }}>
+        <ul className={ styles.years } style={{ listStyleType: 'none', }}>
+          { yearLabels.map( m=> { return <li> { m } </li> ; }) }
+        </ul>
         <ul className={ styles.months } style={{ listStyleType: 'none', }}>
           { monthLabels.map( m=> { return <li> { m } </li> ; }) }
         </ul>
