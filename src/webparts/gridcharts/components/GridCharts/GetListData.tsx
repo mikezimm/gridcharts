@@ -1,10 +1,12 @@
-
-/**
- * 
- * 
- * Official Community Imports
- * 
- * 
+/***
+ *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b       .d88b.  d88888b d88888b d888888b  .o88b. d888888b  .d8b.  db      
+ *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      .8P  Y8. 88'     88'       `88'   d8P  Y8   `88'   d8' `8b 88      
+ *       88    88  88  88 88oodD' 88    88 88oobY'    88         88    88 88ooo   88ooo      88    8P         88    88ooo88 88      
+ *       88    88  88  88 88~~~   88    88 88`8b      88         88    88 88~~~   88~~~      88    8b         88    88~~~88 88      
+ *      .88.   88  88  88 88      `8b  d8' 88 `88.    88         `8b  d8' 88      88        .88.   Y8b  d8   .88.   88   88 88booo. 
+ *    Y888888P YP  YP  YP 88       `Y88P'  88   YD    YP          `Y88P'  YP      YP      Y888888P  `Y88P' Y888888P YP   YP Y88888P 
+ *                                                                                                                                  
+ *                                                                                                                                  
  */
 
 import { Web, IList, IItem } from "@pnp/sp/presets/all";
@@ -13,197 +15,67 @@ import "@pnp/sp/webs";
 import "@pnp/sp/clientside-pages/web";
 import "@pnp/sp/site-users/web";
 
-/**
- * 
- * 
- * @mikezimm/npmfunctions Imports
- * 
- * 
+/***
+ *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      d8b   db d8888b. .88b  d88.      d88888b db    db d8b   db  .o88b. d888888b d888888b  .d88b.  d8b   db .d8888. 
+ *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      888o  88 88  `8D 88'YbdP`88      88'     88    88 888o  88 d8P  Y8 `~~88~~'   `88'   .8P  Y8. 888o  88 88'  YP 
+ *       88    88  88  88 88oodD' 88    88 88oobY'    88         88V8o 88 88oodD' 88  88  88      88ooo   88    88 88V8o 88 8P         88       88    88    88 88V8o 88 `8bo.   
+ *       88    88  88  88 88~~~   88    88 88`8b      88         88 V8o88 88~~~   88  88  88      88~~~   88    88 88 V8o88 8b         88       88    88    88 88 V8o88   `Y8b. 
+ *      .88.   88  88  88 88      `8b  d8' 88 `88.    88         88  V888 88      88  88  88      88      88b  d88 88  V888 Y8b  d8    88      .88.   `8b  d8' 88  V888 db   8D 
+ *    Y888888P YP  YP  YP 88       `Y88P'  88   YD    YP         VP   V8P 88      YP  YP  YP      YP      ~Y8888P' VP   V8P  `Y88P'    YP    Y888888P  `Y88P'  VP   V8P `8888Y' 
+ *                                                                                                                                                                              
+ *                                                                                                                                                                              
  */
 
-import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist, sortKeysByOtherKey } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { addItemToArrayIfItDoesNotExist } from '@mikezimm/npmfunctions/dist/Services/Arrays/manipulation';
 
-import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/dateServices';
+import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/Services/Time/timeObject';
 
-import { getHelpfullError } from '@mikezimm/npmfunctions/dist/ErrorHandler';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Services/Logging/ErrorHandler';
 
-/**
- * 
- * 
- * Services Imports
- * 
- * 
+import { ensureUserInfo } from '@mikezimm/npmfunctions/dist/Services/Users/userServices';
+
+import { getExpandColumns, getSelectColumns, IZBasicList, IPerformanceSettings, createFetchList, } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
+
+
+ /***
+ *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      db   db d88888b db      d8888b. d88888b d8888b. .d8888. 
+ *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      88   88 88'     88      88  `8D 88'     88  `8D 88'  YP 
+ *       88    88  88  88 88oodD' 88    88 88oobY'    88         88ooo88 88ooooo 88      88oodD' 88ooooo 88oobY' `8bo.   
+ *       88    88  88  88 88~~~   88    88 88`8b      88         88~~~88 88~~~~~ 88      88~~~   88~~~~~ 88`8b     `Y8b. 
+ *      .88.   88  88  88 88      `8b  d8' 88 `88.    88         88   88 88.     88booo. 88      88.     88 `88. db   8D 
+ *    Y888888P YP  YP  YP 88       `Y88P'  88   YD    YP         YP   YP Y88888P Y88888P 88      Y88888P 88   YD `8888Y' 
+ *                                                                                                                       
+ *                                                                                                                       
  */
 
-import { IPickedList, IPickedWebBasic, IMyPivots, IPivot,  ILink, IUser, IMyProgress, IMyIcons, IMyFonts, IChartSeries, 
-    ICharNote, IRefinerRules, RefineRuleValues, ICustViewDef, IRefinerStat, ICSSChartTypes, QuickCommandsTMT } from '../../../../services/IReUsableInterfaces';
-
-import { ensureUserInfo } from '../../../../services/userServices';
-
-import { getExpandColumns, getSelectColumns } from '../../../../services/getFunctions';
-
-
-/**
- * 
- * This Component Imports
- * 
- * 
+ /***
+ *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b       .o88b.  .d88b.  .88b  d88. d8888b.  .d88b.  d8b   db d88888b d8b   db d888888b 
+ *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      d8P  Y8 .8P  Y8. 88'YbdP`88 88  `8D .8P  Y8. 888o  88 88'     888o  88 `~~88~~' 
+ *       88    88  88  88 88oodD' 88    88 88oobY'    88         8P      88    88 88  88  88 88oodD' 88    88 88V8o 88 88ooooo 88V8o 88    88    
+ *       88    88  88  88 88~~~   88    88 88`8b      88         8b      88    88 88  88  88 88~~~   88    88 88 V8o88 88~~~~~ 88 V8o88    88    
+ *      .88.   88  88  88 88      `8b  d8' 88 `88.    88         Y8b  d8 `8b  d8' 88  88  88 88      `8b  d8' 88  V888 88.     88  V888    88    
+ *    Y888888P YP  YP  YP 88       `Y88P'  88   YD    YP          `Y88P'  `Y88P'  YP  YP  YP 88       `Y88P'  VP   V8P Y88888P VP   V8P    YP    
+ *                                                                                                                                               
+ *                                                                                                                                               
  */
 
 import { IGridItemInfo } from './IGridchartsState';
 
 
-
-
 /***
- *    db    db d8888b. d8888b.  .d8b.  d888888b d88888b      d8888b. d8888b. d888888b db      db      db      d888888b .d8888. d888888b       .o88b.  .d88b.  db      db    db .88b  d88. d8b   db .d8888. 
- *    88    88 88  `8D 88  `8D d8' `8b `~~88~~' 88'          88  `8D 88  `8D   `88'   88      88      88        `88'   88'  YP `~~88~~'      d8P  Y8 .8P  Y8. 88      88    88 88'YbdP`88 888o  88 88'  YP 
- *    88    88 88oodD' 88   88 88ooo88    88    88ooooo      88   88 88oobY'    88    88      88      88         88    `8bo.      88         8P      88    88 88      88    88 88  88  88 88V8o 88 `8bo.   
- *    88    88 88~~~   88   88 88~~~88    88    88~~~~~      88   88 88`8b      88    88      88      88         88      `Y8b.    88         8b      88    88 88      88    88 88  88  88 88 V8o88   `Y8b. 
- *    88b  d88 88      88  .8D 88   88    88    88.          88  .8D 88 `88.   .88.   88booo. 88booo. 88booo.   .88.   db   8D    88         Y8b  d8 `8b  d8' 88booo. 88b  d88 88  88  88 88  V888 db   8D 
- *    ~Y8888P' 88      Y8888D' YP   YP    YP    Y88888P      Y8888D' 88   YD Y888888P Y88888P Y88888P Y88888P Y888888P `8888Y'    YP          `Y88P'  `Y88P'  Y88888P ~Y8888P' YP  YP  YP VP   V8P `8888Y' 
- *                                                                                                                                                                                                         
- *                                                                                                                                                                                                         
+ *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
+ *    88'     `8b  d8' 88  `8D .8P  Y8. 88  `8D `~~88~~'        `88'   888o  88 `~~88~~' 88'     88  `8D 88'     d8' `8b d8P  Y8 88'     88'  YP 
+ *    88ooooo  `8bd8'  88oodD' 88    88 88oobY'    88            88    88V8o 88    88    88ooooo 88oobY' 88ooo   88ooo88 8P      88ooooo `8bo.   
+ *    88~~~~~  .dPYb.  88~~~   88    88 88`8b      88            88    88 V8o88    88    88~~~~~ 88`8b   88~~~   88~~~88 8b      88~~~~~   `Y8b. 
+ *    88.     .8P  Y8. 88      `8b  d8' 88 `88.    88           .88.   88  V888    88    88.     88 `88. 88      88   88 Y8b  d8 88.     db   8D 
+ *    Y88888P YP    YP 88       `Y88P'  88   YD    YP         Y888888P VP   V8P    YP    Y88888P 88   YD YP      YP   YP  `Y88P' Y88888P `8888Y' 
+ *                                                                                                                                               
+ *                                                                                                                                               
  */
-
-
-export function updateGridListColumns( list: IGridList ) {
-       
-    let selectCols: string = list.minDataDownload === true ? "" : "*";
-    let expandThese = "";
-
-    let allColumns = ['Title','Id','Created','Modified','Author/Title','Author/ID','Author/Name','Editor/Title','Editor/ID','Editor/Name'];
-
-    list.staticColumns.map( c => {
-        allColumns.push( c );
-    });
-
-    //Add all refiner columns to array.
-
-    let expColumns = getExpandColumns(allColumns);
-    let selColumns = getSelectColumns(allColumns);
-
-    selColumns.length > 0 ? selectCols += "," + allColumns.join(",") : selectCols = selectCols;
-    if (expColumns.length > 0) { expandThese = expColumns.join(","); }
-
-    list.selectColumns = selColumns;
-    list.staticColumns = allColumns;
-    list.expandColumns = expColumns;
-
-    list.selectColumnsStr = selColumns.join(',') ;
-    list.staticColumnsStr = allColumns.join(',');
-    list.expandColumnsStr = expColumns.join(',');
-
-    return list;
-
-}
-
-
-/***
- *     .o88b. d8888b. d88888b  .d8b.  d888888b d88888b      d8888b. d8888b. d888888b db      db           db      d888888b .d8888. d888888b 
- *    d8P  Y8 88  `8D 88'     d8' `8b `~~88~~' 88'          88  `8D 88  `8D   `88'   88      88           88        `88'   88'  YP `~~88~~' 
- *    8P      88oobY' 88ooooo 88ooo88    88    88ooooo      88   88 88oobY'    88    88      88           88         88    `8bo.      88    
- *    8b      88`8b   88~~~~~ 88~~~88    88    88~~~~~      88   88 88`8b      88    88      88           88         88      `Y8b.    88    
- *    Y8b  d8 88 `88. 88.     88   88    88    88.          88  .8D 88 `88.   .88.   88booo. 88booo.      88booo.   .88.   db   8D    88    
- *     `Y88P' 88   YD Y88888P YP   YP    YP    Y88888P      Y8888D' 88   YD Y888888P Y88888P Y88888P      Y88888P Y888888P `8888Y'    YP    
- *                                                                                                                                          
- *                                                                                                                                          
- */
-
-export function createGridList(webURL: string, parentListURL: string, title: string, name: string, isLibrary: boolean, performance: any, pageContext: any, 
-    staticColumns: string[] , searchColumns: string[], metaColumns: string[], expandDates: string[] , dropDownColumns: string[], dropDownSort: string[] ) {
-
-    let list: IGridList = {
-        title: title,
-        name: name,
-        guid: '',
-        contextUserInfo: {
-            LoginName: pageContext.user.loginName,
-            Title: pageContext.user.displayName,
-            email: pageContext.user.email,
-            remoteID: null, //This is for cross site ID requirements
-            Id: pageContext.user.Id
-
-        },
-        sourceUserInfo: null,
-        fetchCount: performance.fetchCount,
-        fetchCountMobile: performance.fetchCountMobile,
-        restFilter: !performance.restFilter ? ' ' : performance.restFilter,
-        minDataDownload: performance.minDataDownload === true ? true : false,
-        odataSearch: [],
-
-        isLibrary: isLibrary,
-        hasAttach: false,
-
-        webURL: webURL,
-        parentListURL: parentListURL,
-        staticColumns: staticColumns,
-        searchColumns: searchColumns,
-        metaColumns: metaColumns,
-        expandDates: expandDates,
-        selectColumns: [],
-        expandColumns: [],
-        dropdownColumns: dropDownColumns,
-        dropDownSort: dropDownSort,
-        staticColumnsStr: '',
-        selectColumnsStr: '',
-        expandColumnsStr: '',
-        removeFromSelect: ['currentTime','currentUser'],
-    };
-
-    list = updateGridListColumns( list ) ;
-
-    return list;
-}
-
-
-/***
- *    d888888b      d8888b. d8888b. d888888b db      db      db      d888888b .d8888. d888888b 
- *      `88'        88  `8D 88  `8D   `88'   88      88      88        `88'   88'  YP `~~88~~' 
- *       88         88   88 88oobY'    88    88      88      88         88    `8bo.      88    
- *       88         88   88 88`8b      88    88      88      88         88      `Y8b.    88    
- *      .88.        88  .8D 88 `88.   .88.   88booo. 88booo. 88booo.   .88.   db   8D    88    
- *    Y888888P      Y8888D' 88   YD Y888888P Y88888P Y88888P Y88888P Y888888P `8888Y'    YP    
- *                                                                                             
- *                                                                                             
- */
-
-export interface IZBasicList extends Partial<IPickedList> {
-    title: string;
-    name?: string;
-    guid?: string;
-    fetchCount: number;
-    fetchCountMobile: number;
-    restFilter: string;
-    minDataDownload: boolean;
-    isLibrary?: boolean;
-    hasAttach: boolean;
-    webURL?: string;
-    parentListURL?: string;
-    contextUserInfo?: IUser;  //For site you are on ( aka current page context )
-    sourceUserInfo?: IUser;   //For site where the list is stored
-
-//    refinerRules: IRefinerRules[][];
-//    refinerStats: IRefinerStat[];
-//    viewDefs: ICustViewDef[];
-    metaColumns: string[];
-    searchColumns: string[];
-    expandDates: string[];
-    odataSearch?: string[];  //Used optionally in search text... but can cause issues if the list name/content type are the same text as you may want to search
-
-    staticColumns: string[];
-    selectColumns: string[];
-    expandColumns: string[];
-
-    staticColumnsStr: string;
-    selectColumnsStr: string;
-    expandColumnsStr: string;
-    removeFromSelect: string[];
-}
 
 
 export interface IGridList extends IZBasicList {
-    dropdownColumns: string[];
+    dropDownColumns: string[];
     dropDownSort: string[];
   }
 
@@ -219,41 +91,41 @@ export interface IGridList extends IZBasicList {
 //        
 
 // This is what it was before I split off the other part
-export async function getAllItems( gridList: IGridList, addTheseItemsToState: any, setProgress: any, markComplete: any ): Promise<void>{
+export async function getAllItems( fetchList: IGridList, addTheseItemsToState: any, setProgress: any, markComplete: any ): Promise<void>{
 
     let allItems : IGridItemInfo[] = [];
     let errMessage = '';
 
     let sourceUserInfo: any = null;
     try {
-        sourceUserInfo = await ensureUserInfo( gridList.webURL, gridList.contextUserInfo.email );
+        sourceUserInfo = await ensureUserInfo( fetchList.webURL, fetchList.contextUserInfo.email );
     } catch (e) {
         errMessage = getHelpfullError(e, true, true);
     }
 
 
-    gridList.sourceUserInfo = sourceUserInfo;
+    fetchList.sourceUserInfo = sourceUserInfo;
     //lists.getById(listGUID).webs.orderBy("Title", true).get().then(function(result) {
     //let allItems : IGridItemInfo[] = await sp.web.webs.get();
 
 
 
-    let thisListWeb = Web(gridList.webURL);
-    let selColumns = gridList.selectColumnsStr;
-    let expandThese = gridList.expandColumnsStr;
-    let staticCols = gridList.staticColumns.length > 0 ? gridList.staticColumns.join(',') : '';
-    let selectCols = gridList.minDataDownload === true ?  staticCols :  '*,' + staticCols;
+    let thisListWeb = Web(fetchList.webURL);
+    let selColumns = fetchList.selectColumnsStr;
+    let expandThese = fetchList.expandColumnsStr;
+    let staticCols = fetchList.staticColumns.length > 0 ? fetchList.staticColumns.join(',') : '';
+    let selectCols = fetchList.minDataDownload === true ?  staticCols :  '*,' + staticCols;
 
-    let thisListObject = thisListWeb.lists.getByTitle(gridList.title);
+    let thisListObject = thisListWeb.lists.getByTitle(fetchList.title);
 
     /**
      * IN FUTURE, ALWAYS BE SURE TO PUT SELECT AND EXPAND AFTER .ITEMS !!!!!!
      */
 
     try {
-        let fetchCount = gridList.fetchCount > 0 ? gridList.fetchCount : 200;
-        if ( gridList.restFilter.length > 1 ) {
-            allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(fetchCount).filter(gridList.restFilter).get();
+        let fetchCount = fetchList.fetchCount > 0 ? fetchList.fetchCount : 200;
+        if ( fetchList.restFilter.length > 1 ) {
+            allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(fetchCount).filter(fetchList.restFilter).get();
         } else {
             allItems = await thisListObject.items.select(selectCols).expand(expandThese).orderBy('ID',false).top(fetchCount).get();
         }
@@ -267,19 +139,19 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
      */
     allItems.map( i => {
         //Add all date field objects
-        gridList.expandDates.map( d => {
+        fetchList.expandDates.map( d => {
             i['time' + d] = makeTheTimeObject(i[d]);
         });
 
         //Add Meta tags
-        i.meta = buildMetaFromItem( i, gridList );
+        i.meta = buildMetaFromItem( i, fetchList );
         
         //Add Search string
-        i.searchString = buildSearchStringFromItem( i, gridList );
+        i.searchString = buildSearchStringFromItem( i, fetchList );
     });
 
-    //private addTheseItemsToState( gridList: IGridList, allItems , errMessage : string ) {
-    allItems = addTheseItemsToState( gridList, allItems, errMessage );
+    //private addTheseItemsToState( fetchList: IGridList, allItems , errMessage : string ) {
+    allItems = addTheseItemsToState( fetchList, allItems, errMessage );
 
 }
 
@@ -299,10 +171,10 @@ export async function getAllItems( gridList: IGridList, addTheseItemsToState: an
 //                                                                                     
 //     
 
-function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
+function buildMetaFromItem( theItem: IGridItemInfo, fetchList: IGridList, ) {
     let meta: string[] = ['All'];
 
-    gridList.metaColumns.map( c=> {
+    fetchList.metaColumns.map( c=> {
         if ( c.indexOf('/') > -1 ) { 
             let cols = c.split('/');
             //console.log( 'theItem', theItem);
@@ -320,10 +192,10 @@ function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
         
     });
 
-    gridList.dropdownColumns.map( ( col , colIndex ) => {
+    fetchList.dropDownColumns.map( ( col , colIndex ) => {
 
         let actualColName = col.replace('>', '' ).replace('+', '' ).replace('-', '' );
-        let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? gridList.dropdownColumns[colIndex - 1] : null;
+        let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? fetchList.dropDownColumns[colIndex - 1] : null;
         parentColName = parentColName !== null ? parentColName.replace('>', '' ).replace('+', '' ).replace('-', '' ) : null;
 
         let thisItemsChoices = theItem[ actualColName ];
@@ -345,7 +217,7 @@ function buildMetaFromItem( theItem: IGridItemInfo, gridList: IGridList, ) {
 //                                                                                                 
 //         
 
-function buildSearchStringFromItem ( theItem: IGridItemInfo, gridList: IGridList, ) {
+function buildSearchStringFromItem ( theItem: IGridItemInfo, fetchList: IGridList, ) {
 
     let result = '';
     let delim = '|||';
@@ -353,7 +225,7 @@ function buildSearchStringFromItem ( theItem: IGridItemInfo, gridList: IGridList
     if ( theItem.Title ) { result += 'Title=' + theItem.Title + delim ; }
     if ( theItem.Id ) { result += 'Id=' + theItem.Id + delim ; }
 
-    gridList.searchColumns.map( c => {
+    fetchList.searchColumns.map( c => {
         let thisCol = c.replace('/','');
         if ( c.indexOf('/') > -1 ) { 
             let cols = c.split('/');
@@ -372,7 +244,7 @@ function buildSearchStringFromItem ( theItem: IGridItemInfo, gridList: IGridList
      * if ( theItem['odata.type'] ) { result += theItem['odata.type'] + delim ; }
      * 
      */
-    gridList.odataSearch.map( odata => {
+    fetchList.odataSearch.map( odata => {
         if ( theItem[ odata ] ) { result += theItem[ odata ] + delim ; }
     });
 

@@ -5,13 +5,17 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
   IPropertyPaneDropdownProps, IPropertyPaneDropdownOption, PropertyPaneToggle, 
   IPropertyPaneConfiguration, PropertyPaneButton, PropertyPaneButtonType, PropertyPaneSlider,
 } from "@microsoft/sp-property-pane";
+import { PropertyPaneWebPartInformation } from '@pnp/spfx-property-controls/lib/PropertyPaneWebPartInformation';
 
 
 import * as strings from 'GridchartsWebPartStrings';
-import { pivotOptionsGroup} from './index';
+import { pivotOptionsGroup} from '@mikezimm/npmfunctions/dist/Services/PropPane/ReactPivotOptions';
+
+import { WebPartInfoGroup, makePropDataToggles, makePropDataText } from '@mikezimm/npmfunctions/dist/Services/PropPane/zReusablePropPane';
+
 import { gridChartsOptionsGroup } from './index';
 
-import * as links from '../../webparts/gridcharts/components/HelpInfo/AllLinks';   //              { links.gitRepoTrackMyTime.issues }
+import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';
 
 import { IGridchartsWebPartProps } from '../../webparts/gridcharts/GridchartsWebPart';
 
@@ -19,6 +23,8 @@ import { PropertyFieldSitePicker } from '@pnp/spfx-property-controls/lib/Propert
 import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
 
 import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
+
+import { fpsLogo326 } from '@mikezimm/npmfunctions/dist/SVGIcons/fpsLogo326';
 
 /*
 
@@ -72,12 +78,31 @@ import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/sp
     */
 
 export class IntroPage {
-  public getPropertyPanePage(webPartProps: IGridchartsWebPartProps, context, onPropertyPaneFieldChanged ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
+  public getPropertyPanePage(webPartProps: IGridchartsWebPartProps, context, onPropertyPaneFieldChanged, _getListDefintions ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
 
     let webAbsoluteUrl = context.pageContext.web.absoluteUrl;
 
     if ( webPartProps.sites && webPartProps.sites.length > 0 && webPartProps.sites[0].url && webPartProps.sites[0].url.length > 0 ) { webAbsoluteUrl = webPartProps.sites[0].url ; }
     let selectedUrl = "Site Url: " + webAbsoluteUrl.slice(webAbsoluteUrl.indexOf('/sites/'));
+    
+    let sourceListTextFields : any[] = makePropDataText( ['parentListWeb', 'parentListTitle', 'dateColumn', 'valueColumn' ]  );
+
+    let searchTextFields : any[] = makePropDataText( ['dropDownColumns', 'searchColumns', 'metaColumns'], [],'comma separated column names' );
+
+    let gridStyles : any[] = makePropDataText( [ 'yearStyles', 'monthStyles', 'dayStyles', 'cellStyles' ]  );
+    gridStyles = makePropDataText( [ 'otherStyles', 'hoverInfo' ] ,gridStyles, '', true  );
+  
+    //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 VVVVVVV
+    let theListChoices : IPropertyPaneDropdownOption[] = [];
+
+    //Tried checking but for some reason this returns false when the promise for .newMap was actually resolved.
+    //if ( webPartProps.newMap && webPartProps.newMap.length > 0 ) {
+      theListChoices.push ( { key: 'na', text: 'na' } );
+      theListChoices = theListChoices.concat(  webPartProps.newMap.map( d => {
+        return { key: d.Title, text: d.Title };
+      }) );
+    //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 ^^^^^
+
 
     return <IPropertyPanePage>
     { // <page1>
@@ -86,51 +111,37 @@ export class IntroPage {
       },
       displayGroupsAsAccordion: true,
       groups: [
-        { groupName: 'Web Part Info',
-          isCollapsed: true ,
-          groupFields: [
-            PropertyPaneLabel('About Text', {
-              text: 'This webpart displays summary of list/library items in date grid format.'
-            }),
+        WebPartInfoGroup( links.gitRepoGridCharts, `<h4>This webpart looks at data in a whole new way.</h4>
+        <p>Use it to show relative magnitudes of data over a period of days.</p>`),
 
-            PropertyPaneLink('About Link' , {
-              text: 'Github Repo:  ' + links.gitRepoGridCharts.desc ,
-              href: links.gitRepoGridCharts.href,
-              target: links.gitRepoGridCharts.target,
-            }),
+        //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 VVVVVVV
+        {  groupName: 'Get pre-configured setup',
+            isCollapsed: false ,
+            groupFields: [
+              PropertyPaneToggle('definitionToggle', {
+                label: 'Lock list defintion - prevents accidently reseting props!',
+                offText: 'Off',
+                onText: 'On',
+              }),
 
-            PropertyPaneLink('Issues Link' , {
-              text: 'Report Issues:  ' + links.gitRepoGridCharts.desc ,
-              href: links.gitRepoGridCharts.href  + '/issues',
-              target: links.gitRepoGridCharts.target,
-            }),
+              PropertyPaneDropdown('listDefinition', <IPropertyPaneDropdownProps>{
+                label: 'Pre-defined setup choices',
+                options: theListChoices,
+                selectedKey: webPartProps.listDefinition != '' ? webPartProps.listDefinition : 'na',
+                disabled: webPartProps.definitionToggle,
+              }),
+            ]},
+            //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 ^^^^^^
 
-          ]
-        },
 
         // 2 - Source and destination list information    
         { groupName: 'Your list info',
         isCollapsed: true ,
-        groupFields: [
-
-          PropertyPaneTextField('parentListWeb', {
-              label: 'Your List Web url'
-          }),
-          PropertyPaneTextField('parentListTitle', {
-            label: 'Your List Title'
-          }),
-
-          PropertyPaneTextField('dateColumn', {
-            label: 'Date Column'
-          }),
+        groupFields: sourceListTextFields.concat([
 
           PropertyPaneDropdown('monthGap', <IPropertyPaneDropdownProps>{
             label: 'Month gap',
             options: gridChartsOptionsGroup.monthGapChoices,
-          }),
-
-          PropertyPaneTextField('valueColumn', {
-            label: 'Value Column'
           }),
 
           PropertyPaneDropdown('valueType', <IPropertyPaneDropdownProps>{
@@ -143,7 +154,8 @@ export class IntroPage {
             options: gridChartsOptionsGroup.valueOperatorChoices,
           }),
 
-        ]}, // this group
+        ])
+      }, // this group
 /* */
 
         // 2 - Source and destination list information    
@@ -189,22 +201,7 @@ export class IntroPage {
         // 2 - Source and destination list information    
         { groupName: 'Search settings',
         isCollapsed: true ,
-        groupFields: [
- 
-          PropertyPaneTextField('dropDownColumns', {
-            label: 'Dropdown Columns',
-            description: 'comma separated column names'
-          }),
-
-          PropertyPaneTextField('searchColumns', {
-            label: 'Search Columns',
-            description: 'comma separated column names'
-          }),         
-          
-          PropertyPaneTextField('metaColumns', {
-            label: 'Meta Columns',
-            description: 'comma separated column names'
-          }),
+        groupFields: searchTextFields.concat([
 
           PropertyPaneDropdown('scaleMethod', <IPropertyPaneDropdownProps>{
             label: 'Time scale method',
@@ -217,8 +214,8 @@ export class IntroPage {
             onText: 'On',
           }),
 
-
-        ]}, // this group
+        ])
+      }, // this group
 /* */
 
         { groupName: 'Performance Properties',
@@ -262,35 +259,7 @@ export class IntroPage {
         // 2 - Source and destination list information    
         { groupName: 'Styling',
         isCollapsed: true ,
-        groupFields: [
-
-          PropertyPaneTextField('yearStyles', {
-            label: 'css for Year headings'
-          }),
-
-          PropertyPaneTextField('monthStyles', {
-            label: 'css for Month headings'
-          }),
-
-          PropertyPaneTextField('dayStyles', {
-            label: 'css for Day headings'
-          }),
-          
-          PropertyPaneTextField('cellStyles', {
-            label: 'css for Cell headings'
-          }),
-                      
-          PropertyPaneTextField('otherStyles', {
-            label: 'Other styles',
-            disabled: true,
-          }),
-
-          PropertyPaneTextField('hoverInfo', {
-            label: 'Hover settings',
-            disabled: true,
-          }),
-
-        ]}, // this group
+        groupFields: gridStyles }, // this group
 
         // 2 - Source and destination list information    
         { groupName: 'Squares styling',
@@ -305,7 +274,7 @@ export class IntroPage {
 
           //squareCustom
           PropertyPaneTextField('squareCustom', {
-            label: 'Must be 4 colors , separated',
+            label: 'Must be 5 colors , separated',
             disabled: webPartProps.cellColor === 'custom' ? false : true,
             description: 'Empty/Gap,Level1,Level2,Level3',
           }),
@@ -354,7 +323,7 @@ export class IntroPage {
         ]}, // this group
 
 
-          /* */
+/* 
 
         // 9 - Other web part options
         { groupName: 'Pivot Styles (headings) - future use',
@@ -376,7 +345,7 @@ export class IntroPage {
               disabled: true,
             }),
           ]}, // this group
-
+*/
         ]}; // Groups
   } // getPropertyPanePage()
 }

@@ -1,36 +1,31 @@
 import * as React from 'react';
 
-import * as strings from 'GridchartsWebPartStrings';
+import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/AllLinks';
 
-import { Link, ILinkProps } from 'office-ui-fabric-react';
+import { Stack, IStackTokens } from 'office-ui-fabric-react';
 
-import * as links from './AllLinks';
+export interface IWebPartLinksProps {
+    parentListURL: string; //Get from list item
+    childListURL?: string; //Get from list item
 
-import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
-import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/ChoiceGroup';
+    parentListName: string;  // Static Name of list (for URL) - used for links and determined by first returned item
+    childListName?: string;  // Static Name of list (for URL) - used for links and determined by first returned item
 
-import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
-import { IGridchartsState } from '../GridCharts/IGridchartsState';
-
-import WebPartLinks from './WebPartLinks';
-
-import styles from './InfoPane.module.scss';
-
-export interface IGettingStartedProps {
-    showInfo: boolean;
-    allLoaded: boolean;
-    parentListURL: string;
-    parentListName: string;
-
+    repoObject: any;  // Looking for structure from AllLinks.tsx like:  links.gitRepoTrackMyTime
 }
 
-export interface IGettingStartedState {
+export interface IWebPartLinksState {
     selectedChoice: string;
     lastChoice: string;
 }
 
-export default class GettingStarted extends React.Component<IGettingStartedProps, IGettingStartedState> {
+export default class WebPartLinks extends React.Component<IWebPartLinksProps, IWebPartLinksState> {
 
+    private parentListURL : any = this.props.parentListURL;
+    private parentListName : any = this.props.parentListName;
+
+    private childListURL : any = this.props.childListURL;
+    private childListName : any = this.props.childListName;
 
 /***
  *          .o88b.  .d88b.  d8b   db .d8888. d888888b d8888b. db    db  .o88b. d888888b  .d88b.  d8888b. 
@@ -43,27 +38,16 @@ export default class GettingStarted extends React.Component<IGettingStartedProps
  *                                                                                                       
  */
 
-public constructor(props:IGettingStartedProps){
+public constructor(props:IWebPartLinksProps){
     super(props);
-    this.state = { 
-        selectedChoice: 'projectList',
+    this.state = {
+        selectedChoice: 'About',
         lastChoice: '',
 
     };
-
-    // because our event handler needs access to the component, bind 
-    //  the component to the function so it can get access to the
-    //  components properties (this.props)... otherwise "this" is undefined
-    // this.onLinkClick = this.onLinkClick.bind(this);
-
-    
   }
 
-
-  public componentDidMount() {
-    
-  }
-
+  // public componentDidMount() { }
 
   /***
  *         d8888b. d888888b d8888b.      db    db d8888b. d8888b.  .d8b.  d888888b d88888b 
@@ -76,16 +60,7 @@ public constructor(props:IGettingStartedProps){
  *                                                                                         
  */
 
-  public componentDidUpdate(prevProps){
-
-    let rebuildTiles = false;
-    /*
-    if (rebuildTiles === true) {
-      this._updateStateOnPropsChange({});
-    }
-    */
-
-  }
+ // public componentDidUpdate(prevProps : any){ }
 
 /***
  *         d8888b. d88888b d8b   db d8888b. d88888b d8888b. 
@@ -98,10 +73,7 @@ public constructor(props:IGettingStartedProps){
  *                                                          
  */
 
-    public render(): React.ReactElement<IGettingStartedProps> {
-
-        if ( this.props.allLoaded && this.props.showInfo ) {
-            console.log('infoPages.tsx', this.props, this.state);
+    public render(): React.ReactElement<IWebPartLinksProps> {
 
 /***
  *              d888888b db   db d888888b .d8888.      d8888b.  .d8b.   d888b  d88888b 
@@ -113,18 +85,31 @@ public constructor(props:IGettingStartedProps){
  *                                                                                     
  *                                                                                     
  */
+        const stackTokensBody: IStackTokens = { childrenGap: 20 };
 
-            let thisPage = null;
-            thisPage =     <div className={styles.infoPane}>
+        let thisPage = null;
 
-            <h3>Please submit any issues or suggestions on github (requires free account)</h3>
-            <WebPartLinks
-                    parentListURL={  this.props.parentListURL }
-                    parentListName={  this.props.parentListName }
-            ></WebPartLinks>
+        let doParentList = this.parentListURL && this.parentListName && this.parentListURL.length > 0 && this.parentListName.length > 0 ? true : false;
+        let doChildList = this.childListURL && this.childListName && this.childListURL.length > 0 && this.childListName.length > 0 ? true : false;
 
-          </div>;
+        let parentListURL = doParentList ? links.createLink(this.parentListURL,'_blank', this.parentListName ) : null;
 
+        let childListURL = doChildList ? links.createLink(this.childListURL,'_blank', this.childListName ) : null;
+
+        let showLists = doParentList === true || doChildList === true ? true : false ;
+
+        thisPage = <div style={{paddingTop: '10px' , paddingBottom: '10px' }}>
+            <Stack horizontal={true} wrap={true} horizontalAlign={"stretch"} tokens={stackTokensBody}>
+                { ( showLists === true ? <div><b>Your Lists:</b></div> : null ) }
+                { ( doParentList === true ? parentListURL : null ) }
+                { ( doChildList === true ? childListURL : null ) }
+                { ( showLists === true ? <span style={{width: '30px' }}> </span> : null ) }
+                { this.props.repoObject ? <div style={{paddingLeft: doChildList === true ? '30px' : '' }}><b>Webpart info:</b></div> : null }
+                { this.props.repoObject ? this.props.repoObject.repo : null }
+                { this.props.repoObject ? this.props.repoObject.issues : null }
+                { this.props.repoObject ? this.props.repoObject.wiki : null }
+            </Stack>
+        </div>;
 
 /***
  *              d8888b. d88888b d888888b db    db d8888b. d8b   db 
@@ -137,19 +122,6 @@ public constructor(props:IGettingStartedProps){
  *                                                                 
  */
 
-            return (
-                <div className={ styles.infoPane }>
-                    { thisPage }
-                </div>
-            );
-            
-        } else {
-            console.log('infoPages.tsx return null');
-            return ( null );
-        }
-
-    }   //End Public Render
-
-
-
+        return ( thisPage ); 
+    }
 }

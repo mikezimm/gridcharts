@@ -1,6 +1,6 @@
 
 /*  https://docs.microsoft.com/en-us/sharepoint/dev/spfx/web-parts/guidance/reference-third-party-css-styles  */
-/*  Usage in Webpart.ts:  require('../../services/propPane/GrayPropPaneAccordions.css'); */
+/*  Usage in Webpart.ts:  require('@mikezimm/npmfunctions/dist/GrayPropPaneAccordions.css'); */
 /*  */
 /*  Sample with aria-expanded:  https://stackoverflow.com/a/39927006  */
 /*  */

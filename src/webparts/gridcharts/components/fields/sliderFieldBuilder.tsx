@@ -1,16 +1,44 @@
-
+/**
+ * 
+ * Official Community Imports
+ * 
+ */
 
 import * as React from 'react';
 
-import {IGridchartsState, } from '../GridCharts/IGridchartsState';
-
-import { IUser, ILink, IChartSeries, ICharNote,  } from '../../../../services/IReUsableInterfaces';
-
-import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
-import * as strings from 'GridchartsWebPartStrings';
-
 import { Slider, ISliderProps } from 'office-ui-fabric-react/lib/Slider';
 
+/**
+ * 
+ * @mikezimm/npmfunctions/dist/ Imports
+ * 
+ */
+
+//import { IUser, ILink, IChartSeries, ICharNote,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+
+/**
+ * 
+ * Services Imports
+ * 
+ */
+
+ 
+/**
+ * 
+ * Helper Imports
+ * 
+ */
+
+
+/**
+ * 
+ * This Component Imports
+ * 
+ */
+
+import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
+import {IGridchartsState, } from '../GridCharts/IGridchartsState';
+import * as strings from 'GridchartsWebPartStrings';
 import styles from '../GridCharts/Gridcharts.module.scss';
 
 export function createSlider( label: string , timeSliderValue , timeSliderMax, timeSliderInc, _onChange, hStyles : any = null ){

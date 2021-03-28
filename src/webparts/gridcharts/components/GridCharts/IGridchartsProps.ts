@@ -1,11 +1,60 @@
 
+/**
+ * 
+ * 
+ * Official Community Imports
+ * 
+ * 
+ */
+
 import { PageContext } from '@microsoft/sp-page-context';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
-import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-  getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime} from '@mikezimm/npmfunctions/dist/dateServices';
 
-import { ICSSChartSeries,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+/**
+ * 
+ * 
+ * @mikezimm/npmfunctions/dist/ Imports
+ * 
+ * 
+ */
+
+import { ITheTime} from '@mikezimm/npmfunctions/dist/Services/Time/Interfaces';
+
+import { ICSSChartSeries,  } from '@mikezimm/npmfunctions/dist/CSSCharts/ICSSCharts';
+
+/**
+ * 
+ * 
+ * Services Imports
+ * 
+ * 
+ */
+
+
+ 
+/**
+ * 
+ * 
+ * Helper Imports
+ * 
+ * 
+ */
+
+
+/**
+ * 
+ * This Component Imports
+ * 
+ * 
+ */
+
+export interface IPerformanceSettings {
+    fetchCount: number;
+    fetchCountMobile: number;
+    restFilter: string;
+    minDataDownload: boolean;
+}
 
 export type IScaleMethod = 'slider' | 'blink' | 'pivot' | 'other' | 'na' | 'TBD';
 
@@ -50,12 +99,7 @@ export interface IGridchartsProps {
   
       scaleMethod: IScaleMethod;
 
-      performance: {
-          fetchCount: number;
-          fetchCountMobile: number;
-          restFilter: string;
-          minDataDownload: boolean;
-      };
+      performance: IPerformanceSettings;
   
       parentListFieldTitles: string;
   

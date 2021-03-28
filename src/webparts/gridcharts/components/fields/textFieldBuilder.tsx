@@ -1,29 +1,65 @@
 
 
+
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ * Official Community Imports
+ * 
+ */
+
 import * as React from 'react';
 
-import { IGridchartsState, } from '../GridCharts/IGridchartsState';
-
-import { IUser, ILink, IChartSeries, ICharNote,  } from '../../../../services/IReUsableInterfaces';
-
-import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
-import * as strings from 'GridchartsWebPartStrings';
-
-import ButtonCompound from '../createButtons/ICreateButtons';
-import { IButtonProps,ISingleButtonProps,IButtonState } from "../createButtons/ICreateButtons";
-import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
+import {
+  Button,
+  ButtonType
+} from 'office-ui-fabric-react';
 
 import { TextField, MaskedTextField } from "office-ui-fabric-react";
+import { CompoundButton, Stack, IStackTokens, elementContains } from 'office-ui-fabric-react';
+
+/**
+ * 
+ * @mikezimm/npmfunctions/dist/ Imports
+ * 
+ */
+//import { IUser, ILink, IChartSeries, ICharNote,  } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+
+
+/**
+ * 
+ * Services Imports
+ * 
+ */
+
+ 
+/**
+ * 
+ * Helper Imports
+ * 
+ */
+import { IFieldDef } from './fieldDefinitions';
+import ButtonCompound from '../createButtons/ICreateButtons';
+import { IButtonProps,ISingleButtonProps,IButtonState } from "../createButtons/ICreateButtons";
+
+/**
+ * 
+ * This Component Imports
+ * 
+ */
+import { IGridchartsProps } from '../GridCharts/IGridchartsProps';
+import { IGridchartsState, } from '../GridCharts/IGridchartsState';
+import * as strings from 'GridchartsWebPartStrings';
 import styles from '../GridCharts/Gridcharts.module.scss';
 
-import { IFieldDef } from './fieldDefinitions';
-
-import {
-    Button,
-    ButtonType
-  } from 'office-ui-fabric-react';
-
-  
  
   export function createPrefixTextField(field: IFieldDef, currentValue, updateField, prefix, blinkOnProjectClassName){
     // it is possible to have an option to hide labels in lue of placeholder text for more compressed look
