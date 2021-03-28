@@ -11,6 +11,7 @@ export function aboutTable() {
         rows: [],
     };
 
+    table.rows.push( ['2021-03-28', '1.0.2.3',   <span>Year and Months slide now.  npmFunctions v1.0.26</span> ] );
     table.rows.push( ['2021-03-23', '1.0.2.2',   <span>update to npmFunctions v1.0.16, add InfoPages</span> ] );
     table.rows.push( ['2021-02-14', '1.0.1.3',   <span>Add pre-config for Turnover</span> ] );
     table.rows.push( ['2021-02-14', '1.0.1.2',   <span>Add custom colors</span> ] );

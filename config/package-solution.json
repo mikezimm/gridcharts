@@ -3,7 +3,7 @@
   "solution": {
     "name": "Gridcharts-heat-map",
     "id": "e6cb75f9-8ba8-44c9-b445-e35be83fbe34",
-    "version": "1.0.2.2",
+    "version": "1.0.2.3",
     "includeClientSideAssets": true,
     "isDomainIsolated": false,
     "developer": {
