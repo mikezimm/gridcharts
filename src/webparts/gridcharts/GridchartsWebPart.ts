@@ -511,7 +511,9 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
 
                 if ( potentialValue ) { //If value exists, continue
 
-                  potentialValue = potentialValue.replace('\"','"'); //Replace any cases where I copied the hashed characters from JSON file directly.
+                  if ( typeof potentialValue === 'string') {
+                    potentialValue = potentialValue.replace('\"','"'); //Replace any cases where I copied the hashed characters from JSON file directly.
+                  }
 
                   if ( typeof this.properties[thisWebPartProp] === 'boolean') {
                     if ( potentialValue === "true" ) { potentialValue = true; }
@@ -580,7 +582,7 @@ export default class GridchartsWebPart extends BaseClientSideWebPart<IGridcharts
      * This section is used to determine when to refresh the pane options
      */
 
-    let updateOnThese = [
+    let updateOnThese = [ 'listDefinition',
       'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
       'stressMultiplierTime', 'webPartScenario', '', '', '',
 
