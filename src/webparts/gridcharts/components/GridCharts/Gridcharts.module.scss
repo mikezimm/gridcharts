@@ -14,23 +14,44 @@
     --week-width: calc(15px + var(5px));
   }
 */
+ /* */
+  .metrics { grid-area: metrics; }
+  .timeSlide { grid-area: timeSlide; }
+  .legend { grid-area: legend; }
+  .graphFooter { grid-area: graphFooter; }
+
+  .legend {
+    display: grid;
+    grid-gap: 5px;
+    grid-template-columns: repeat(5, auto);
+  }
+
+  .graphFooter {
+    display: inline-grid;
+    grid-template-areas: "metrics timeSlide legend";
+    grid-template-columns: auto auto auto;
+    grid-column-gap: 10px;
+    column-gap: 10px;
+    padding-left: 40px;
+  }
+
   .years { grid-area: years; }
   .months { grid-area: months; }
   .days { grid-area: days; }
   .squares { grid-area: squares; }
 
-
   .graph {
     display: inline-grid;
     grid-template-areas: "empty years"
                         "empty months"
-                        "days squares";
-    grid-template-rows: 25px 25px auto ;
+                        "days squares"
+                        "graphFooter graphFooter";
+    grid-template-rows: 25px 25px auto auto ;
     grid-template-columns: auto 1fr;
     grid-column-gap: 10px;
-    grid-row-gap: 0px 10px;
+    grid-row-gap: 0px 10px 10px;
     column-gap: 10px;
-    row-gap: 0px 10px;
+    row-gap: 0px 10px 10px;
   }
 
   .years {
