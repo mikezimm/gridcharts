@@ -298,6 +298,8 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           maxValue: null,
           minValue: null,
 
+          dataLevelLabels: [],
+
         };
 
         this.state = { 
@@ -713,7 +715,15 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
         </div> ;
     }
 
-    let metrics = this.state.gridData.count > 0 ? `${ this.state.gridData.count } items with ${ this.props.valueOperator} of ${ this.props.valueColumn } = ${ this.state.gridData.total.toFixed(0) }` : 'TBD' ;
+    let metrics : any = <div className={ styles.metrics }>TBD</div>;
+    if ( this.state.gridData.count > 0 ) {
+      let line1 = `${ this.state.gridData.count } items`;
+      let line2 = `${ this.props.valueOperator} of ${ this.props.valueColumn } = ${ this.state.gridData.total.toFixed(0) }`;
+      metrics = <div className={ styles.metrics }>
+          <div>{line1}</div>
+          <div>{line2}</div>
+      </div>;
+    } 
 
     let timeSlider = null;
     if ( this.props.scaleMethod === 'slider' ||  this.props.scaleMethod === 'blink' ) {
@@ -741,15 +751,22 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
 
       }
 
-      timeSlider = <div><div style={{position: 'absolute', paddingTop: '10px', paddingLeft: '30px'}}>{ metrics }</div>
-        <Stack horizontal horizontalAlign='center' >
-          <div style={{ width: '30%', paddingLeft: '50px', paddingRight: '50px', paddingTop: '10px' }} onClick={ this._updateCurrentTimeScale.bind(this) }>
+      timeSlider = 
+          <div className={ styles.timeSlide } style={{ }} onClick={ this._updateCurrentTimeScale.bind(this) }>
             { activeSlider }
-          </div>
-        </Stack></div>;
-
+          </div>;
     } 
-          
+    
+    let legendSample = { width: '15px', height: '15px', marginTop: '5px' };
+    let spacerLegend = { width: '15px', height: '15px', marginTop: '5px', border: '1px dotted gray' };
+
+    let legend = <div className={styles.legend} >
+      <div><div>{ this.state.gridData.dataLevelLabels[0] }</div><div style={ {...dataLevel0Style,...legendSample} } ></div></div>
+      <div><div>{ this.state.gridData.dataLevelLabels[1] }</div><div style={ {...dataLevel1Style,...legendSample} } ></div></div>
+      <div><div>{ this.state.gridData.dataLevelLabels[2] }</div><div style={ {...dataLevel2Style,...legendSample} } ></div></div>
+      <div><div>{ this.state.gridData.dataLevelLabels[3] }</div><div style={ {...dataLevel3Style,...legendSample} } ></div></div>
+      <div><div>Space</div><div style={ {...dataLevelMinus1Style,...spacerLegend} } ></div></div>
+    </div>;
 
     const months : any[] = this.state.monthLables;
     const days : any[] = weekday3['en-us'];
@@ -828,6 +845,9 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
             { days.map( d=> { return <li> { d } </li> ; }) }
         </ul>
         { gridElement }
+        <div className={ styles.graphFooter }>
+          { metrics } { timeSlider } { legend }
+        </div>
       </div>;
 
     if ( this.state.errMessage !== '' && this.state.errMessage != null ) {
@@ -874,7 +894,6 @@ export default class Gridcharts extends React.Component<IGridchartsProps, IGridc
           { infoPages }
           { searchStack }
           { theGraph }
-          { timeSlider }
         </div>
       </div>
     );
@@ -1437,13 +1456,27 @@ private _updateChoiceSlider(newValue: number){
     
     let dataLevelIncriment = ( maxValue - minValue ) / 3;
 
+    let dataLevel3 = maxValue - 1 * dataLevelIncriment;
+    let dataLevel2 = maxValue - 2 * dataLevelIncriment;
+    let dataLevel1 = minValue;
+    let dataLevelTop = maxValue;
+
+    let dataLevelLabels : string[] = [];
+
+    dataLevelLabels.push( 'No data'); //DataLevel 0 label
+    dataLevelLabels.push( '>= ' + dataLevel1.toFixed( 2 ) ); //DataLevel 1 label
+    dataLevelLabels.push( '> ' + dataLevel2.toFixed( 2 ) ); //DataLevel 2 label
+    dataLevelLabels.push( '> ' + dataLevel3.toFixed( 2 ) ); //DataLevel 3 label
+    dataLevelLabels.push( ); //DataLevel 4 label
+
+
     allDataPoints.map( data => {
       data.avg = data.count !== null && data.count !== undefined && data.count !== 0 ? data.sum / data.count : null;
       data.value = data[ this.props.valueOperator.toLowerCase() ] ;
 
       if ( data.count === 0 ) { data.dataLevel = 0 ; }
       else if ( data.value > ( maxValue - 1 * dataLevelIncriment ) ) { data.dataLevel = 3 ; }
-      else if ( data.value > ( maxValue - 2 * dataLevelIncriment ) ) { data.dataLevel = 2 ; }
+      else if ( data.value > dataLevel2 ) { data.dataLevel = 2 ; }
       else if ( data.value >= minValue ) { data.dataLevel = 1 ; }
       else { data.dataLevel = 0 ; }
 
@@ -1475,6 +1508,8 @@ private _updateChoiceSlider(newValue: number){
       visibleWeeks: 0,
       maxValue: maxValue,
       minValue: minValue,
+
+      dataLevelLabels: dataLevelLabels,
 
     };
 

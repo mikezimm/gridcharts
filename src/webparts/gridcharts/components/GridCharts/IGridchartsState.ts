@@ -95,6 +95,8 @@ export interface IGridchartsData {
     maxValue: number;
     minValue: number;
 
+    dataLevelLabels: string[];
+
 
 }
 
