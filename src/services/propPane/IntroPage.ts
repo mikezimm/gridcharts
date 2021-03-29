@@ -199,7 +199,7 @@ export class IntroPage {
 /* */
 
         // 2 - Source and destination list information    
-        { groupName: 'Search settings',
+        { groupName: 'Search',
         isCollapsed: true ,
         groupFields: searchTextFields.concat([
 
@@ -218,7 +218,7 @@ export class IntroPage {
       }, // this group
 /* */
 
-        { groupName: 'Performance Properties',
+        { groupName: 'Performance',
         isCollapsed: true ,
         groupFields: [
 
@@ -255,11 +255,6 @@ export class IntroPage {
           }),
 
         ]}, // this group
-
-        // 2 - Source and destination list information    
-        { groupName: 'Styling',
-        isCollapsed: true ,
-        groupFields: gridStyles }, // this group
 
         // 2 - Source and destination list information    
         { groupName: 'Squares styling',
@@ -322,6 +317,11 @@ export class IntroPage {
 
         ]}, // this group
 
+        
+        // 2 - Source and destination list information    
+        { groupName: 'Other styling',
+        isCollapsed: true ,
+        groupFields: gridStyles }, // this group
 
 /* 
 

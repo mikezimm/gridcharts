@@ -9,15 +9,19 @@ export function gettingStartedContent() {
 
     let html1 = <div>
 
-        <h2>Add extension to site or Webpart to page</h2>
+        <h2>Setup webpart to show some data</h2>
         <ol>
             <li>Go to <b>WebPart Properties</b> - Edit Page, Edit Webpart.</li>
-            <li>Pick list items to show (Entire Site, This Page, This Page targetting towards user</li>
+            <li>Define your list in <b>Get pre-configured setup</b> or <b>Your list info</b> sections</li>
+            <li><b>Your list info</b> properties define the list and required properties</li>
+            <li><b>Search </b> properties define Dropdown boxes and searchable fields</li>
+            <li><b>Performance</b> properties impact how fast the webpart loads and how much data to pull</li>
+            <li><b>Squares styling</b> properties let you customize the look of the grid squares</li>
+            <li><b>Other Styling</b> properties let you customize other style properties</li>
         </ol>
-        <h2>How to use</h2>
+        <h2>Quick setup tip</h2>
         <ol>
-            <li>Press the <b>+</b> icon to add a new reminder</li>
-            <li>Or... Select the reminder to update</li>
+            <li><b>Get pre-configured setup</b> properties let you pick settings for common lists and libraries :)</li>
         </ol>
     </div>;
 
