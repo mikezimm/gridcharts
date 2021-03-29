@@ -1464,9 +1464,9 @@ private _updateChoiceSlider(newValue: number){
     let dataLevelLabels : string[] = [];
 
     dataLevelLabels.push( 'No data'); //DataLevel 0 label
-    dataLevelLabels.push( '>= ' + dataLevel1.toFixed( 2 ) ); //DataLevel 1 label
-    dataLevelLabels.push( '> ' + dataLevel2.toFixed( 2 ) ); //DataLevel 2 label
-    dataLevelLabels.push( '> ' + dataLevel3.toFixed( 2 ) ); //DataLevel 3 label
+    dataLevelLabels.push( '>= ' + dataLevel1.toFixed( valueOperator === 'count' ? 0 : 2 ) ); //DataLevel 1 label
+    dataLevelLabels.push( '> ' + dataLevel2.toFixed( valueOperator === 'count' ? 0 : 2 ) ); //DataLevel 2 label
+    dataLevelLabels.push( '> ' + dataLevel3.toFixed( valueOperator === 'count' ? 0 : 2 ) ); //DataLevel 3 label
     dataLevelLabels.push( ); //DataLevel 4 label
 
 
